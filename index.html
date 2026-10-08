@@ -8,57 +8,92 @@
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;700;800;900&display=swap');
 
     :root {
-      --chassis-bg: #121316;
-      --chassis-texture: #181a1f;
-      --panel-border: #282c35;
-      --oled-bg: #030806;
-      --oled-text: #38ef7d;
-      --oled-glow: rgba(56, 239, 125, 0.35);
-      --text: #d8dee9;
-      --text-muted: #6e7687;
-      --text-dim: #434c5e;
-      --accent: #f59e0b; /* Cycles Amber default */
-      --accent-glow: rgba(245, 158, 11, 0.4);
-      --step-off: #1e2129;
-      --step-off-border: #14161c;
+      --chassis-bg: #8f928e;
+      --chassis-surface: #9ea19c;
+      --chassis-recess: #848782;
+      --panel-border: #757873;
+      --text: #26282b;
+      --text-muted: #55595f;
+      --text-dim: #73787f;
+      --accent: #ff8c42; /* Model:Cycles Orange LED Glow */
+      --accent-glow: rgba(255, 140, 66, 0.6);
+      --oled-bg: #ffffff;
+      --oled-text: #1a1c20;
+      --step-off: #7f827e;
+      --step-off-border: #6d706a;
       --step-on: var(--accent);
-      --danger: #ef4444;
-      --neon-cyan: #06b6d4;
-      --neon-purple: #c084fc;
+      --danger: #e11d48;
+      --neon-cyan: #0284c7;
+      --neon-purple: #7c3aed;
     }
 
+    /* MODEL:CYCLES - Matte Industrial Warm Grey */
     body[data-device="cycles"] { 
-      --accent: #f59e0b; 
-      --accent-glow: rgba(245, 158, 11, 0.45);
-      --oled-text: #ffb020;
-      --oled-glow: rgba(255, 176, 32, 0.4);
+      --chassis-bg: #90938f;
+      --chassis-surface: #9ea19c;
+      --chassis-recess: #828580;
+      --panel-border: #747772;
+      --accent: #ff7538; 
+      --accent-glow: rgba(255, 117, 56, 0.65);
+      --oled-bg: #f8fafc;
+      --oled-text: #0f172a;
+      --step-off: #7e817d;
+      --step-off-border: #686a65;
     }
+
+    /* MODEL:SAMPLES - Matte Industrial Off-White / Concrete */
     body[data-device="samples"] { 
-      --accent: #06b6d4; 
-      --accent-glow: rgba(6, 182, 212, 0.45);
-      --oled-text: #22d3ee;
-      --oled-glow: rgba(34, 211, 238, 0.4);
+      --chassis-bg: #9fa29d;
+      --chassis-surface: #aaada8;
+      --chassis-recess: #8f928d;
+      --panel-border: #80837e;
+      --accent: #0284c7; 
+      --accent-glow: rgba(2, 132, 199, 0.65);
+      --oled-bg: #f8fafc;
+      --oled-text: #0f172a;
+      --step-off: #8d908b;
+      --step-off-border: #777a75;
     }
+
+    /* DIGITAKT - Dark Matte Stealth Metal */
     body[data-device="digitakt"] { 
+      --chassis-bg: #14161a;
+      --chassis-surface: #1a1d24;
+      --chassis-recess: #0c0e11;
+      --panel-border: #2c303c;
+      --text: #e2e8f0;
+      --text-muted: #848e9f;
       --accent: #10b981; 
-      --accent-glow: rgba(16, 185, 129, 0.45);
+      --accent-glow: rgba(16, 185, 129, 0.5);
+      --oled-bg: #030806;
       --oled-text: #34d399;
-      --oled-glow: rgba(52, 211, 153, 0.4);
+      --step-off: #20242e;
+      --step-off-border: #14171f;
     }
+
+    /* ANALOG FOUR - Deep Charcoal MKII */
     body[data-device="a4"] { 
+      --chassis-bg: #18191e;
+      --chassis-surface: #20222a;
+      --chassis-recess: #0f1013;
+      --panel-border: #303340;
+      --text: #e2e8f0;
+      --text-muted: #8892a4;
       --accent: #ec4899; 
-      --accent-glow: rgba(236, 72, 153, 0.45);
+      --accent-glow: rgba(236, 72, 153, 0.5);
+      --oled-bg: #090306;
       --oled-text: #f472b6;
-      --oled-glow: rgba(244, 114, 182, 0.4);
+      --step-off: #252834;
+      --step-off-border: #171821;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
     
     body {
-      background: radial-gradient(circle at 50% 20%, #1c1e24 0%, #0d0e11 100%);
+      background: radial-gradient(circle at 50% 20%, #1f2126 0%, #0d0e11 100%);
       color: var(--text);
       min-height: 100vh;
-      padding: 24px;
+      padding: 30px 16px;
       font-size: 12px;
       letter-spacing: -0.01em;
       -webkit-font-smoothing: antialiased;
@@ -68,29 +103,31 @@
     .elektron-device {
       max-width: 1400px;
       margin: 0 auto;
-      background: linear-gradient(180deg, #181a20 0%, #131418 100%);
-      border: 2px solid #2d313b;
-      border-radius: 12px;
-      padding: 22px 24px;
+      background: var(--chassis-bg);
+      border: 3px solid #6b6e68;
+      border-radius: 20px;
+      padding: 24px 28px;
       box-shadow: 
-        0 30px 60px rgba(0,0,0,0.85),
-        0 0 0 1px #0a0b0d,
-        inset 0 1px 1px rgba(255,255,255,0.08),
-        inset 0 -2px 4px rgba(0,0,0,0.6);
+        0 40px 80px rgba(0,0,0,0.85),
+        inset 0 2px 2px rgba(255,255,255,0.45),
+        inset 0 -4px 8px rgba(0,0,0,0.4);
       position: relative;
     }
 
-    /* CORNER CHASSIS SCREWS */
-    .elektron-device::before, .elektron-device::after {
-      content: "✕";
+    /* EMBOSSED ELEKTRON LOGO (Right Corner) */
+    .elektron-device::after {
+      content: "Elektron";
       position: absolute;
-      font-size: 10px;
-      color: #3b404d;
-      text-shadow: 0 1px 0 rgba(255,255,255,0.05);
+      top: 14px;
+      right: 32px;
+      font-size: 15px;
       font-weight: 900;
+      font-style: italic;
+      color: rgba(0, 0, 0, 0.22);
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+      letter-spacing: 1.5px;
+      pointer-events: none;
     }
-    .elektron-device::before { top: 8px; left: 10px; }
-    .elektron-device::after { top: 8px; right: 10px; }
 
     header {
       display: flex;
@@ -99,16 +136,16 @@
       align-items: center;
       justify-content: space-between;
       padding-bottom: 18px;
-      border-bottom: 2px solid #1f222a;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.18);
       margin-bottom: 18px;
     }
 
     .logo {
       font-family: 'Inter', sans-serif;
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 900;
-      letter-spacing: 2.5px;
-      color: #f1f5f9;
+      letter-spacing: 2px;
+      color: var(--text);
       display: flex;
       align-items: center;
       gap: 12px;
@@ -116,90 +153,113 @@
     }
     .logo span.brand-dot {
       display: inline-block;
-      width: 10px;
-      height: 10px;
-      background: var(--accent);
+      width: 12px;
+      height: 12px;
+      background: #5b8fb9; /* Model:Cycles Blue Level/Data Knob color */
       border-radius: 50%;
-      box-shadow: 0 0 8px var(--accent);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.5);
     }
+    body[data-device="digitakt"] .logo span.brand-dot { background: #10b981; }
+    body[data-device="a4"] .logo span.brand-dot { background: #ec4899; }
+
     .badge {
       font-family: 'Share Tech Mono', monospace;
       font-size: 11px;
-      background: #090a0d;
-      border: 1px solid #262a34;
-      padding: 4px 8px;
+      background: #e2e4df;
+      border: 1px solid #777a74;
+      padding: 3px 8px;
       border-radius: 3px;
-      color: var(--accent);
-      letter-spacing: 1px;
+      color: #1a1c20;
+      letter-spacing: 0.8px;
       font-weight: 700;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.15);
+    }
+    body[data-device="digitakt"] .badge, body[data-device="a4"] .badge {
+      background: #090a0d;
+      color: var(--accent);
+      border-color: #262a34;
     }
 
     /* HARDWARE BUTTONS & KNOBS */
     .ctrl-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
     .ctrl-row label {
       font-size: 10px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.8px;
       text-transform: uppercase;
       color: var(--text-muted);
     }
 
     select, input {
-      background: #0d0f13;
-      color: #e2e8f0;
-      border: 1px solid #2b303c;
+      background: #e4e7e1;
+      color: #1a1c20;
+      border: 1px solid #797c76;
       padding: 6px 10px;
       border-radius: 4px;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       outline: none;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.4);
       transition: all 0.15s;
+    }
+    body[data-device="digitakt"] select, body[data-device="digitakt"] input,
+    body[data-device="a4"] select, body[data-device="a4"] input {
+      background: #0d0f13;
+      color: #e2e8f0;
+      border-color: #2b303c;
     }
     select:focus, input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 1px var(--accent), inset 0 2px 4px rgba(0,0,0,0.6);
+      box-shadow: 0 0 0 1px var(--accent);
     }
 
-    /* MECHANICAL CHUNKY PUSH BUTTONS */
+    /* HARDWARE RUBBERIZED SQUIRCLE BUTTONS */
     button {
       cursor: pointer;
       font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
       text-transform: uppercase;
-      padding: 7px 12px;
-      border-radius: 4px;
-      background: linear-gradient(180deg, #2b2f3a 0%, #1c1f26 100%);
-      color: #cbd5e1;
-      border: 1px solid #3d4352;
-      border-bottom: 2px solid #14161c;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+      padding: 7px 13px;
+      border-radius: 6px;
+      background: linear-gradient(180deg, #b8bbb5 0%, #9fa29c 100%);
+      color: #282a2e;
+      border: 1px solid #82857f;
+      border-bottom: 2px solid #5a5d57;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.5);
       transition: all 0.08s ease;
       display: inline-flex;
       align-items: center;
       gap: 5px;
     }
+    body[data-device="digitakt"] button, body[data-device="a4"] button {
+      background: linear-gradient(180deg, #2b2f3a 0%, #1c1f26 100%);
+      color: #cbd5e1;
+      border-color: #3d4352;
+      border-bottom-color: #14161c;
+    }
     button:hover {
+      background: linear-gradient(180deg, #c2c5bf 0%, #a8aba5 100%);
+      color: #111;
+    }
+    body[data-device="digitakt"] button:hover, body[data-device="a4"] button:hover {
       background: linear-gradient(180deg, #353a47 0%, #242831 100%);
       color: #fff;
-      border-color: #4b5366;
     }
     button:active {
       transform: translateY(1px);
-      box-shadow: 0 0 2px rgba(0,0,0,0.8), inset 0 2px 4px rgba(0,0,0,0.6);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
       border-bottom-width: 1px;
     }
 
-    /* PRIMARY ILLUMINATED BUTTON */
+    /* PLAY / TRANSPORT LED BUTTON */
     button.primary {
-      background: linear-gradient(180deg, #ffb326 0%, #d97706 100%);
-      color: #111;
-      border: 1px solid #f59e0b;
-      border-bottom: 2px solid #92400e;
+      background: linear-gradient(180deg, #ffa756 0%, #ea580c 100%);
+      color: #fff;
+      border: 1px solid #ff8c42;
+      border-bottom: 2px solid #9a3412;
       box-shadow: 0 2px 8px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.4);
-      font-weight: 800;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.4);
     }
     body[data-device="samples"] button.primary {
       background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
@@ -218,91 +278,116 @@
     }
     button.primary:hover {
       filter: brightness(1.1);
-      opacity: 1;
     }
 
     button.chaos {
-      background: linear-gradient(180deg, #6d28d9 0%, #4c1d95 100%);
-      color: #f3e8ff;
-      border-color: #8b5cf6;
-      border-bottom-color: #2e1065;
+      background: linear-gradient(180deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #fff;
+      border-color: #7c3aed;
+      border-bottom-color: #4c1d95;
       box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
     }
-    button.chaos:hover { filter: brightness(1.15); color: #fff; }
 
     button.rec {
-      background: linear-gradient(180deg, #991b1b 0%, #581212 100%);
-      color: #fecaca;
-      border-color: #dc2626;
-      border-bottom-color: #450a0a;
+      background: linear-gradient(180deg, #b91c1c 0%, #881337 100%);
+      color: #fee2e2;
+      border-color: #e11d48;
+      border-bottom-color: #4c0519;
     }
     button.rec.armed {
       background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
       color: #fff;
-      box-shadow: 0 0 12px rgba(239, 68, 68, 0.7);
+      box-shadow: 0 0 14px rgba(239, 68, 68, 0.8);
       animation: recPulse 0.8s infinite alternate;
     }
     @keyframes recPulse {
       0% { opacity: 0.85; }
-      100% { opacity: 1; box-shadow: 0 0 16px rgba(239, 68, 68, 0.9); }
+      100% { opacity: 1; box-shadow: 0 0 16px rgba(239, 68, 68, 0.95); }
     }
 
-    /* DEVICE SELECTOR DIAL TABS */
+    /* DEVICE SELECTOR TABS */
     .device-tabs {
       display: flex;
       gap: 3px;
-      background: #090a0d;
+      background: #7a7d77;
       padding: 3px;
-      border-radius: 6px;
-      border: 1px solid #232732;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+      border-radius: 7px;
+      border: 1px solid #636660;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+    }
+    body[data-device="digitakt"] .device-tabs, body[data-device="a4"] .device-tabs {
+      background: #090a0d;
+      border-color: #232732;
     }
     .tab-btn {
       background: transparent;
       border: none;
-      color: var(--text-muted);
+      color: #2a2c30;
       padding: 6px 14px;
       font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.8px;
-      border-radius: 4px;
+      border-radius: 5px;
       box-shadow: none;
     }
-    .tab-btn:hover { background: #181a22; color: #cbd5e1; }
+    body[data-device="digitakt"] .tab-btn, body[data-device="a4"] .tab-btn {
+      color: var(--text-muted);
+    }
+    .tab-btn:hover { background: rgba(255,255,255,0.25); color: #000; }
     .tab-btn.active {
+      background: #ffffff;
+      color: #000;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+    }
+    body[data-device="digitakt"] .tab-btn.active, body[data-device="a4"] .tab-btn.active {
       background: var(--accent);
       color: #000;
       box-shadow: 0 0 10px var(--accent-glow);
     }
 
-    /* OLED SCREEN CONTAINER */
+    /* MODEL:CYCLES OLED SCREEN PANEL */
     .matrix-panel {
-      background: #08090d;
-      border: 2px solid #232732;
+      background: #ffffff;
+      border: 3px solid #1a1c20;
       border-radius: 8px;
       padding: 16px 18px;
       margin-bottom: 18px;
-      box-shadow: inset 0 3px 10px rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.05);
+      box-shadow: 
+        inset 0 0 10px rgba(0,0,0,0.1),
+        0 2px 6px rgba(0,0,0,0.2),
+        0 0 0 2px #737670;
       position: relative;
+    }
+    body[data-device="digitakt"] .matrix-panel, body[data-device="a4"] .matrix-panel {
+      background: #08090d;
+      border-color: #232732;
+      box-shadow: inset 0 3px 10px rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.05);
     }
     .matrix-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 14px;
-      border-bottom: 1px solid #1a1d26;
+      border-bottom: 2px solid #e2e8f0;
       padding-bottom: 10px;
+    }
+    body[data-device="digitakt"] .matrix-header, body[data-device="a4"] .matrix-header {
+      border-bottom-color: #1a1d26;
     }
     .matrix-header h3 {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 14px;
+      font-size: 15px;
       text-transform: uppercase;
       letter-spacing: 1.5px;
-      color: var(--oled-text);
-      text-shadow: 0 0 8px var(--oled-glow);
+      color: #0f172a;
       display: flex;
       align-items: center;
       gap: 8px;
+      font-weight: 900;
+    }
+    body[data-device="digitakt"] .matrix-header h3, body[data-device="a4"] .matrix-header h3 {
+      color: var(--oled-text);
+      text-shadow: 0 0 8px var(--oled-glow);
     }
     .matrix-header h3::before {
       content: "▶";
@@ -314,90 +399,116 @@
       font-family: 'Share Tech Mono', monospace;
       font-size: 11px !important;
       padding: 5px 8px !important;
-      background: #090b0e !important;
-      border: 1px solid #252a36;
+      background: #e2e5df !important;
+      border: 1px solid #787b74;
       border-radius: 4px;
+      color: #1a1c20 !important;
+      letter-spacing: 0.5px;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.15);
+    }
+    body[data-device="digitakt"] #syncStatusBadge, body[data-device="a4"] #syncStatusBadge {
+      background: #090b0e !important;
+      border-color: #252a36;
       color: var(--oled-text) !important;
       text-shadow: 0 0 5px var(--oled-glow);
-      letter-spacing: 0.5px;
     }
 
     /* TRACK ROWS */
-    .tracks-container { display: flex; flex-direction: column; gap: 8px; }
+    .tracks-container { display: flex; flex-direction: column; gap: 10px; }
     .track-row {
       display: grid;
       grid-template-columns: 190px 1fr 200px;
       gap: 14px;
       align-items: center;
-      background: linear-gradient(180deg, #161820 0%, #121318 100%);
-      border: 1px solid #262b37;
-      border-radius: 6px;
+      background: #848782;
+      border: 1px solid #6b6e68;
+      border-radius: 8px;
       padding: 10px 14px;
+      box-shadow: 
+        inset 0 1px 1px rgba(255,255,255,0.35),
+        0 2px 4px rgba(0,0,0,0.18);
+    }
+    body[data-device="digitakt"] .track-row, body[data-device="a4"] .track-row {
+      background: linear-gradient(180deg, #161820 0%, #121318 100%);
+      border-color: #262b37;
       box-shadow: 0 3px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
     }
     
     .track-meta { display: flex; flex-direction: column; gap: 6px; }
     .track-title {
       font-family: 'Share Tech Mono', monospace;
-      font-weight: 700;
+      font-weight: 800;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 13px;
-      color: #f1f5f9;
+      color: #1a1c20;
       letter-spacing: 0.5px;
     }
+    body[data-device="digitakt"] .track-title, body[data-device="a4"] .track-title {
+      color: #f1f5f9;
+    }
     .track-controls { display: flex; gap: 6px; align-items: center; }
-    .track-controls select { padding: 4px 6px; font-size: 11px; background: #0c0e12; }
+    .track-controls select { padding: 4px 6px; font-size: 11px; }
     .track-controls button { padding: 4px 8px; font-size: 11px; }
 
-    /* HARDWARE STEP KEYS (TRIG KEYS) */
+    /* MODEL:CYCLES ROUNDED CHUNKY STEP KEYS (T1-T16) */
     .step-grid {
       display: grid;
       grid-template-columns: repeat(16, 1fr);
-      gap: 5px;
+      gap: 6px;
+      background: #737670;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #5d605a;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.35);
+    }
+    body[data-device="digitakt"] .step-grid, body[data-device="a4"] .step-grid {
       background: #0a0b0e;
-      padding: 6px;
-      border-radius: 6px;
-      border: 1px solid #1e222c;
+      border-color: #1e222c;
       box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
     }
     .step {
-      height: 38px;
-      background: linear-gradient(180deg, #232733 0%, #181a22 100%);
-      border-radius: 3px;
-      border: 1px solid #323746;
-      border-bottom: 2px solid #0f1015;
+      height: 40px;
+      background: linear-gradient(180deg, #bcc0b9 0%, #9fa29c 100%);
+      border-radius: 5px;
+      border: 1px solid #8c908a;
+      border-bottom: 3px solid #5a5d57;
       cursor: pointer;
       position: relative;
       transition: all 0.06s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.6);
+    }
+    body[data-device="digitakt"] .step, body[data-device="a4"] .step {
+      background: linear-gradient(180deg, #232733 0%, #181a22 100%);
+      border-color: #323746;
+      border-bottom-color: #0f1015;
       box-shadow: 0 1px 2px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.07);
     }
-    /* Elektron 1-4-8-12-16 Bar Marker Accent */
+    /* Model:Cycles Bar Markers (1, 5, 9, 13) */
     .step:nth-child(4n+1) {
-      border-top: 3px solid #64748b;
+      border-top: 3px solid #e2e8f0;
     }
     .step:hover {
-      background: linear-gradient(180deg, #2b3040 0%, #1e212b 100%);
-      border-color: #434c60;
+      background: linear-gradient(180deg, #c7cbc4 0%, #aaada7 100%);
     }
     .step:active {
       transform: translateY(1px);
       border-bottom-width: 1px;
     }
 
-    /* ILLUMINATED ACTIVE LED TRIG */
+    /* ILLUMINATED ACTIVE LED TRIG (Soft Neon Glow behind translucent button) */
     .step.active {
-      background: radial-gradient(circle at 50% 40%, #ffc453 0%, #d97706 70%, #92400e 100%) !important;
-      border-color: #f59e0b !important;
-      border-bottom: 2px solid #78350f !important;
-      box-shadow: 0 0 12px var(--accent-glow), inset 0 1px 2px rgba(255,255,255,0.6) !important;
+      background: radial-gradient(circle at 50% 40%, #ffad66 0%, #ea580c 70%, #9a3412 100%) !important;
+      border-color: #ff8c42 !important;
+      border-bottom: 2px solid #7c2d12 !important;
+      box-shadow: 0 0 14px var(--accent-glow), inset 0 1px 3px rgba(255,255,255,0.8) !important;
     }
     body[data-device="samples"] .step.active {
-      background: radial-gradient(circle at 50% 40%, #67e8f9 0%, #06b6d4 70%, #0e7490 100%) !important;
-      border-color: #22d3ee !important;
-      border-bottom: 2px solid #164e63 !important;
-      box-shadow: 0 0 12px var(--accent-glow), inset 0 1px 2px rgba(255,255,255,0.6) !important;
+      background: radial-gradient(circle at 50% 40%, #7dd3fc 0%, #0284c7 70%, #0369a1 100%) !important;
+      border-color: #38bdf8 !important;
+      border-bottom: 2px solid #075985 !important;
+      box-shadow: 0 0 14px var(--accent-glow), inset 0 1px 3px rgba(255,255,255,0.8) !important;
     }
     body[data-device="digitakt"] .step.active {
       background: radial-gradient(circle at 50% 40%, #6ee7b7 0%, #10b981 70%, #047857 100%) !important;
@@ -412,30 +523,30 @@
       box-shadow: 0 0 12px var(--accent-glow), inset 0 1px 2px rgba(255,255,255,0.6) !important;
     }
 
-    /* RUNNING PLAYHEAD CURSOR */
+    /* PLAYHEAD CURSOR */
     .step.current {
-      border: 1px solid #ffffff !important;
-      transform: scale(1.06);
+      border: 2px solid #ffffff !important;
+      transform: scale(1.08);
       z-index: 5;
-      box-shadow: 0 0 14px rgba(255,255,255,0.9), inset 0 0 6px #fff !important;
+      box-shadow: 0 0 16px rgba(255,255,255,0.95), inset 0 0 6px #fff !important;
     }
     .step.chaos-trig {
-      background: radial-gradient(circle at 50% 40%, #e9d5ff 0%, #a855f7 70%, #6b21a8 100%) !important;
-      border-color: #c084fc !important;
+      background: radial-gradient(circle at 50% 40%, #c084fc 0%, #7c3aed 70%, #5b21b6 100%) !important;
+      border-color: #a855f7 !important;
       box-shadow: 0 0 14px rgba(168, 85, 247, 0.7) !important;
     }
 
     .track-actions { display: flex; gap: 5px; justify-content: flex-end; }
     .track-actions button { padding: 5px 8px; font-size: 10px; }
     button.cc-edit-btn {
-      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%);
       border-color: #3b82f6;
-      color: #93c5fd;
+      border-bottom-color: #1d4ed8;
+      color: #fff;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.3);
     }
     button.cc-edit-btn:hover {
-      background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
-      border-color: #60a5fa;
-      color: #fff;
+      background: linear-gradient(180deg, #93c5fd 0%, #3b82f6 100%);
     }
 
     .footer-bar {

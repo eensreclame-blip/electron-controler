@@ -404,7 +404,7 @@
     .tracks-container { display: flex; flex-direction: column; gap: 10px; }
     .track-row {
       display: grid;
-      grid-template-columns: 190px 1fr 200px;
+      grid-template-columns: 190px 1fr 270px;
       gap: 14px;
       align-items: center;
       background: #848782;
@@ -1069,8 +1069,10 @@
         const actions = document.createElement('div');
         actions.className = 'track-actions';
         actions.innerHTML = `
+          <button title="Shift Pattern Links" onclick="shiftTrackPattern(${tIdx}, -1)">◀</button>
+          <button title="Shift Pattern Rechts" onclick="shiftTrackPattern(${tIdx}, 1)">▶</button>
+          <button title="Randomize Note Pitch" onclick="randomizeTrackPitch(${tIdx})">🎲 Pitch</button>
           <button class="cc-edit-btn" onclick="openCCModal(${tIdx})" title="Open Sound CC Editor">CC Edit</button>
-          <button title="Mutate Track" onclick="mutateTrack(${tIdx})">Mut</button>
           <button title="Randomize Sound CC" onclick="randomizeTrackCC(${tIdx})">Rnd</button>
           <button title="Clear Steps" onclick="clearTrack(${tIdx})">Clr</button>
         `;
@@ -1100,6 +1102,52 @@
 
     function clearTrack(trkIdx) {
       tracks[trkIdx].steps.fill(0);
+      renderTracks();
+    }
+
+    // SHIFT PATTERN (CIRCULAR ROTATE LINKS / RECHTS)
+    function shiftTrackPattern(trkIdx, dir) {
+      const trk = tracks[trkIdx];
+      if (dir === 1) {
+        // Shift naar rechts (stap 16 wordt stap 1)
+        const lastStep = trk.steps.pop();
+        trk.steps.unshift(lastStep);
+        const lastNote = trk.notes.pop();
+        trk.notes.unshift(lastNote);
+        const lastVel = trk.velocity.pop();
+        trk.velocity.unshift(lastVel);
+      } else if (dir === -1) {
+        // Shift naar links (stap 1 wordt stap 16)
+        const firstStep = trk.steps.shift();
+        trk.steps.push(firstStep);
+        const firstNote = trk.notes.shift();
+        trk.notes.push(firstNote);
+        const firstVel = trk.velocity.shift();
+        trk.velocity.push(firstVel);
+      }
+      renderTracks();
+    }
+
+    // RANDOMIZE NOTE PITCH (VOLGENS GESELECTEERDE TOONSOORT)
+    function randomizeTrackPitch(trkIdx) {
+      const trk = tracks[trkIdx];
+      const root = parseInt(document.getElementById('scaleRoot').value) || 0;
+      const scaleName = document.getElementById('scaleType').value || 'minor';
+      const scale = SCALES[scaleName] || SCALES.minor;
+
+      // Genereer voor elke step een muzikale noot binnen de toonladder
+      for (let s = 0; s < 16; s++) {
+        const deg = scale[Math.floor(Math.random() * scale.length)];
+        const octaveOffset = (trk.role === 'Bass' ? -1 : (trk.role === 'Melody' || trk.role === 'Chord' ? Math.floor(Math.random() * 2) : 0));
+        trk.notes[s] = Math.max(24, Math.min(84, 48 + root + deg + (octaveOffset * 12)));
+      }
+
+      // Als het apparaat Model:Cycles is, stuur direct de Pitch CC (CC 16) met random subtiele variatie
+      if (currentDevice === 'cycles' && trk.ccValues) {
+        const rndPitchCC = 48 + Math.floor(Math.random() * 32);
+        trk.ccValues[16] = rndPitchCC;
+        sendCC(trk.channel, 16, rndPitchCC);
+      }
       renderTracks();
     }
 

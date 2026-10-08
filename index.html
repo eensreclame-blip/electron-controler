@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELEKTRON // LAB ULTRA - Modal CC Editor</title>
+  <style>
+    :root {
+      --bg: #0d0f12;
+      --card-bg: #15181e;
+      --panel-border: #232730;
+      --text: #e2e8f0;
+      --text-muted: #838d9e;
+      --accent: #f59e0b; /* Cycles Amber default */
+      --step-off: #1b1e26;
+      --step-on: var(--accent);
+      --danger: #ef4444;
+      --neon-cyan: #06b6d4;
+      --neon-purple: #a855f7;
+    }
+
+    body[data-device="cycles"] { --accent: #f59e0b; }
+    body[data-device="samples"] { --accent: #06b6d4; }
+    body[data-device="digitakt"] { --accent: #10b981; }
+    body[data-device="a4"] { --accent: #ec4899; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; }
+    body { background: var(--bg); color: var(--text); padding: 16px; font-size: 13px; }
+
+    header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--panel-border); margin-bottom: 14px; }
+    .logo { font-size: 17px; font-weight: 800; letter-spacing: 1px; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+    .badge { font-size: 10px; background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; color: var(--text-muted); font-weight: normal; }
+
+    .ctrl-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    select, button, input { background: #1c212b; color: var(--text); border: 1px solid var(--panel-border); padding: 6px 10px; border-radius: 4px; font-size: 12px; outline: none; }
+    select:focus, input:focus { border-color: var(--accent); }
+    button { cursor: pointer; font-weight: 600; transition: all 0.15s ease; }
+    button:hover { background: #252b38; border-color: #3b4252; }
+    button.primary { background: var(--accent); color: #000; border: none; }
+    button.primary:hover { opacity: 0.9; }
+    button.chaos { background: #4c1d95; color: #e9d5ff; border: 1px solid #7c3aed; }
+    button.chaos:hover { background: #6d28d9; color: #fff; }
+    button.rec { background: #7f1d1d; color: #fecaca; border: 1px solid var(--danger); }
+    button.rec:hover { background: var(--danger); color: #fff; }
+
+    .device-tabs { display: flex; gap: 4px; background: #12151c; padding: 3px; border-radius: 6px; border: 1px solid var(--panel-border); }
+    .tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 5px 12px; font-size: 11px; font-weight: 700; border-radius: 4px; }
+    .tab-btn.active { background: var(--accent); color: #000; }
+
+    .matrix-panel { background: var(--card-bg); border: 1px solid var(--panel-border); border-radius: 6px; padding: 12px; margin-bottom: 14px; }
+    .matrix-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .matrix-header h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent); }
+
+    .tracks-container { display: flex; flex-direction: column; gap: 8px; }
+    .track-row { display: grid; grid-template-columns: 180px 1fr 190px; gap: 10px; align-items: center; background: var(--card-bg); border: 1px solid var(--panel-border); border-radius: 6px; padding: 8px 12px; }
+    
+    .track-meta { display: flex; flex-direction: column; gap: 4px; }
+    .track-title { font-weight: 700; display: flex; justify-content: space-between; font-size: 12px; }
+    .track-controls { display: flex; gap: 4px; align-items: center; }
+    .track-controls select { padding: 3px 6px; font-size: 11px; }
+
+    .step-grid { display: grid; grid-template-columns: repeat(16, 1fr); gap: 4px; }
+    .step { height: 32px; background: var(--step-off); border-radius: 3px; border: 1px solid #232732; cursor: pointer; position: relative; transition: all 0.1s; }
+    .step:nth-child(4n+1) { border-top: 2px solid #3d4455; }
+    .step.active { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 6px rgba(245,158,11,0.3); }
+    body[data-device="samples"] .step.active { box-shadow: 0 0 6px rgba(6,182,212,0.3); }
+    body[data-device="digitakt"] .step.active { box-shadow: 0 0 6px rgba(16,185,129,0.3); }
+    body[data-device="a4"] .step.active { box-shadow: 0 0 6px rgba(236,72,153,0.3); }
+    .step.current { border-color: #fff !important; transform: scale(1.08); z-index: 2; }
+    .step.chaos-trig { background: var(--neon-purple); border-color: #c084fc; }
+
+    .track-actions { display: flex; gap: 4px; justify-content: flex-end; }
+    .track-actions button { padding: 4px 6px; font-size: 10px; }
+    button.cc-edit-btn { background: #1e293b; border-color: #475569; color: #93c5fd; }
+    button.cc-edit-btn:hover { background: #334155; border-color: #60a5fa; color: #fff; }
+
+    .footer-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 11px; color: var(--text-muted); }
+
+    /* MODAL STYLES */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(2px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-card {
+      background: #15181e;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      width: 520px;
+      max-width: 95vw;
+      padding: 16px 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+    .modal-header h3 { font-size: 14px; color: var(--accent); text-transform: uppercase; }
+    .modal-close { background: transparent; border: none; font-size: 16px; color: var(--text-muted); cursor: pointer; }
+    .modal-close:hover { color: #fff; }
+
+    .cc-slider-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .cc-slider-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: #11141a;
+      padding: 8px 10px;
+      border-radius: 4px;
+      border: 1px solid #232732;
+    }
+    .cc-slider-item .label-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .cc-slider-item .label-line strong { color: var(--text); }
+    .cc-slider-item input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--panel-border);
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body data-device="cycles">
+
+  <header>
+    <div class="logo">
+      ELEKTRON // LAB ULTRA
+      <span class="badge" id="deviceBadge">MODEL:CYCLES (6 TRK)</span>
+    </div>
+
+    <div class="device-tabs">
+      <button class="tab-btn active" onclick="setDevice('cycles')">CYCLES</button>
+      <button class="tab-btn" onclick="setDevice('samples')">SAMPLES</button>
+      <button class="tab-btn" onclick="setDevice('digitakt')">DIGITAKT</button>
+      <button class="tab-btn" onclick="setDevice('a4')">ANALOG FOUR</button>
+    </div>
+
+    <div class="ctrl-row">
+      <label>MIDI In (Clock):</label>
+      <select id="midiInSelect"><option value="">Zoeken naar In poorten...</option></select>
+      <label>MIDI Out:</label>
+      <select id="midiOutSelect"><option value="">Zoeken naar Out poorten...</option></select>
+      <button id="btnPlay" class="primary" onclick="togglePlay()">LOCAL PLAY</button>
+      <input type="number" id="bpmInput" value="128" min="40" max="240" style="width: 55px;" onchange="updateBPM()"> BPM
+      <button id="btnArmRec" class="rec" onclick="toggleArmStream()">ARM TRK RECORD</button>
+      <span id="syncStatusBadge" style="font-size:10px; padding:3px 6px; background:#1e293b; border-radius:4px; color:#94a3b8;">SLAVE: Wacht op Elektron...</span>
+    </div>
+  </header>
+
+  <!-- GROOVE MATRIX EXTENDED PANEL -->
+  <div class="matrix-panel">
+    <div class="matrix-header">
+      <h3>Polyend Groove Matrix & Genre Engine</h3>
+      <div class="ctrl-row">
+        <label>Scale:</label>
+        <select id="scaleRoot">
+          <option value="0">C</option><option value="1">C#</option><option value="2">D</option><option value="3">D#</option>
+          <option value="4">E</option><option value="5">F</option><option value="6">F#</option><option value="7">G</option>
+          <option value="8">G#</option><option value="9">A</option><option value="10">A#</option><option value="11">B</option>
+        </select>
+        <select id="scaleType">
+          <option value="minor">Natural Minor</option>
+          <option value="dorian">Dorian</option>
+          <option value="phrygian">Phrygian</option>
+          <option value="harmonicMinor">Harmonic Minor</option>
+          <option value="major">Major</option>
+          <option value="pentatonicMinor">Pentatonic Minor</option>
+          <option value="blues">Blues</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="ctrl-row" style="margin-bottom: 10px;">
+      <label>Genre / Stijl Preset:</label>
+      <select id="genreSelect" style="min-width: 170px;">
+        <option value="techno">Techno (Four-to-floor / Industrial)</option>
+        <option value="house">House / Deep House</option>
+        <option value="dnb">Drum & Bass (174 BPM Syncopated)</option>
+        <option value="jungle">Jungle / Breakbeat</option>
+        <option value="boombap">Hip-Hop / Boom-Bap</option>
+        <option value="trap">Trap / Drill (Rolling Hihats)</option>
+        <option value="electro">Detroit Electro / 808 Beat</option>
+        <option value="dub">Dub Techno (Deep & Sparse)</option>
+        <option value="idm">IDM / Glitch Polyrhythm</option>
+        <option value="ambient">Ambient / Minimal Texture</option>
+      </select>
+      <button class="primary" onclick="generateGenreGroove()">Generate Style Pattern</button>
+      <button onclick="mutateAll()">Mutate Matrix</button>
+      <button onclick="generateAllEuclidean()">Euclidean Grid</button>
+      <button class="chaos" onclick="triggerTotalChaos()">⚡ TOTAL CHAOS RANDOMIZE</button>
+    </div>
+
+    <div class="ctrl-row" style="margin-top: 6px;">
+      <label>Parameter Sweetspots:</label>
+      <select id="sweetspotMode">
+        <option value="safe">SAFE (Muzikale Sweetspots per Machine)</option>
+        <option value="wild">WILD (Volledige Vrijheid CC 0-127)</option>
+      </select>
+      <button onclick="randomizeAllCC()">Randomize CC All Tracks</button>
+    </div>
+  </div>
+
+  <!-- TRACKS DISPLAY -->
+  <div class="tracks-container" id="tracksContainer"></div>
+
+  <div class="footer-bar">
+    <div>Gekoppeld apparaat: <strong id="activeDeviceLabel">Elektron Model:Cycles</strong> | MIDI Transport: Start/Stop & 16-Step Grid</div>
+    <div>Rotterdam Lab v3.5 | Modal CC Editor</div>
+  </div>
+
+  <!-- CC MODAL EDITOR -->
+  <div class="modal-overlay" id="ccModalOverlay" onclick="handleModalOverlayClick(event)">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle">Track 1: Kick - CC Editor</h3>
+        <button class="modal-close" onclick="closeCCModal()">&times;</button>
+      </div>
+
+      <div class="cc-slider-grid" id="modalSliderContainer">
+        <!-- Sliders dynamically populated based on active device -->
+      </div>
+
+      <div class="modal-footer">
+        <button onclick="randomizeCurrentModalCC()">Randomize Deze Track CC</button>
+        <button class="primary" onclick="closeCCModal()">Klaar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- APP STATE & CONFIG ---
+    let currentDevice = 'cycles';
+    let midiAccess = null;
+    let midiOutput = null;
+    let midiInput = null;
+    let isPlaying = false;
+    let isHardwareSlaveRunning = false;
+    let isArmedForStream = false;
+    let armedTrackIdx = 0;
+    let armedOneShotCompleted = false;
+    let currentStep = 0;
+    let midiTickCount = 0;
+    let clockInterval = null;
+    let bpm = 128;
+    let activeModalTrackIdx = 0;
+
+    const DEVICE_CONFIGS = {
+      cycles: { 
+        name: 'MODEL:CYCLES', 
+        tracks: 6, 
+        defaultRoles: ['Kick','Snare','HiHat','Perc','Tone','Chord'],
+        ccDefs: [
+          { cc: 16, label: 'Pitch / Tune', def: 64 },
+          { cc: 17, label: 'Decay', def: 64 },
+          { cc: 18, label: 'Color', def: 64 },
+          { cc: 19, label: 'Shape', def: 64 },
+          { cc: 20, label: 'Sweep', def: 32 },
+          { cc: 21, label: 'Contour', def: 64 },
+          { cc: 66, label: 'Punch (0 of 127)', def: 0 },
+          { cc: 12, label: 'Track Level', def: 100 }
+        ]
+      },
+      samples: { 
+        name: 'MODEL:SAMPLES', 
+        tracks: 6, 
+        defaultRoles: ['Kick','Snare','HiHat','Perc','Sample','Lead'],
+        ccDefs: [
+          { cc: 16, label: 'Pitch (Speed)', def: 64 },
+          { cc: 17, label: 'Decay', def: 64 },
+          { cc: 18, label: 'Sample Start', def: 0 },
+          { cc: 19, label: 'Sample Length', def: 127 },
+          { cc: 20, label: 'Cutoff', def: 127 },
+          { cc: 21, label: 'Resonance', def: 0 },
+          { cc: 12, label: 'Track Level', def: 100 }
+        ]
+      },
+      digitakt: { 
+        name: 'DIGITAKT', 
+        tracks: 8, 
+        defaultRoles: ['Kick','Snare','Clap','HiHat','Perc','Tom','Bass','Synth'],
+        ccDefs: [
+          { cc: 16, label: 'Tune', def: 64 },
+          { cc: 19, label: 'Sample Start', def: 0 },
+          { cc: 20, label: 'Sample Length', def: 127 },
+          { cc: 74, label: 'Filter Cutoff', def: 127 },
+          { cc: 75, label: 'Filter Resonance', def: 0 },
+          { cc: 78, label: 'Overdrive', def: 0 },
+          { cc: 79, label: 'Bit Reduction', def: 0 },
+          { cc: 95, label: 'Sample Level', def: 100 }
+        ]
+      },
+      a4: { 
+        name: 'ANALOG FOUR MKII', 
+        tracks: 4, 
+        defaultRoles: ['Bass','Lead','Perc/Pluck','Pad/FX'],
+        ccDefs: [
+          { cc: 16, label: 'Osc 1 Pitch', def: 64 },
+          { cc: 20, label: 'Osc 2 Pitch', def: 64 },
+          { cc: 74, label: 'Ladder Cutoff', def: 64 },
+          { cc: 75, label: 'Ladder Res', def: 20 },
+          { cc: 76, label: 'Multi-Filter Cutoff', def: 100 },
+          { cc: 78, label: 'Overdrive', def: 10 },
+          { cc: 7,  label: 'Track Volume', def: 100 }
+        ]
+      }
+    };
+
+    let tracks = [];
+
+    // SCALE DEFINITIONS
+    const SCALES = {
+      minor: [0, 2, 3, 5, 7, 8, 10],
+      dorian: [0, 2, 3, 5, 7, 9, 10],
+      phrygian: [0, 1, 3, 5, 7, 8, 10],
+      harmonicMinor: [0, 2, 3, 5, 7, 8, 11],
+      major: [0, 2, 4, 5, 7, 9, 11],
+      pentatonicMinor: [0, 3, 5, 7, 10],
+      blues: [0, 3, 5, 6, 7, 10]
+    };
+
+    // EXTENDED GENRE PATTERNS
+    const GENRE_PATTERNS = {
+      techno: {
+        Kick:  [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
+        Snare: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        HiHat: [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0],
+        Perc:  [0,1,0,0, 0,1,0,1, 0,0,1,0, 0,1,0,0],
+        Bass:  [0,0,1,1, 0,0,1,0, 0,0,1,1, 0,1,0,0],
+        Melody:[1,0,0,1, 0,0,1,0, 0,1,0,0, 1,0,0,0]
+      },
+      house: {
+        Kick:  [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
+        Snare: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        HiHat: [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0],
+        Perc:  [0,0,0,1, 0,1,0,0, 0,0,1,0, 0,1,0,1],
+        Bass:  [1,0,0,1, 0,0,1,0, 0,1,0,0, 0,0,1,0],
+        Melody:[0,0,1,0, 0,0,0,1, 0,1,0,0, 1,0,0,0]
+      },
+      dnb: {
+        Kick:  [1,0,0,0, 0,0,0,0, 0,0,1,0, 0,0,0,0],
+        Snare: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        HiHat: [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
+        Perc:  [0,0,1,0, 0,1,0,0, 0,1,0,0, 0,0,1,0],
+        Bass:  [1,0,0,0, 0,0,1,0, 0,0,1,1, 0,0,0,0],
+        Melody:[0,0,0,1, 0,0,0,0, 1,0,0,0, 0,1,0,0]
+      },
+      jungle: {
+        Kick:  [1,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0],
+        Snare: [0,0,0,0, 1,0,0,1, 0,1,0,0, 1,0,0,0],
+        HiHat: [1,0,1,1, 1,1,0,1, 1,0,1,1, 1,1,1,0],
+        Perc:  [0,1,0,0, 1,0,0,0, 0,0,1,0, 0,1,0,1],
+        Bass:  [1,0,0,0, 0,0,0,1, 0,0,1,0, 0,0,0,0],
+        Melody:[0,0,1,0, 0,0,0,0, 0,1,0,0, 0,0,1,0]
+      },
+      boombap: {
+        Kick:  [1,0,0,0, 0,0,0,0, 0,0,1,0, 0,1,0,0],
+        Snare: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        HiHat: [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0],
+        Perc:  [0,0,0,1, 0,0,1,0, 0,0,0,0, 0,1,0,0],
+        Bass:  [1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,0,0],
+        Melody:[1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]
+      },
+      trap: {
+        Kick:  [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,1,0],
+        Snare: [0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+        HiHat: [1,1,1,1, 1,1,1,0, 1,1,1,1, 1,1,0,1],
+        Perc:  [0,0,1,0, 0,0,0,1, 0,0,1,0, 0,1,0,0],
+        Bass:  [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,1,0],
+        Melody:[0,0,0,1, 0,0,1,0, 0,0,0,1, 0,1,0,0]
+      },
+      electro: {
+        Kick:  [1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,0,0],
+        Snare: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,1],
+        HiHat: [1,0,1,1, 1,0,1,1, 1,0,1,1, 1,0,1,1],
+        Perc:  [0,1,0,0, 0,0,1,0, 0,1,0,0, 1,0,0,0],
+        Bass:  [1,0,1,0, 0,1,0,0, 1,0,1,0, 0,0,1,0],
+        Melody:[0,0,1,0, 1,0,0,1, 0,0,1,0, 1,0,0,0]
+      },
+      dub: {
+        Kick:  [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+        Snare: [0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+        HiHat: [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0],
+        Perc:  [0,0,0,0, 0,1,0,0, 0,0,0,0, 0,0,1,0],
+        Bass:  [1,0,0,0, 0,0,1,0, 0,0,0,0, 0,1,0,0],
+        Melody:[0,0,0,1, 0,0,0,0, 0,0,1,0, 0,0,0,0]
+      },
+      idm: {
+        Kick:  [1,0,0,1, 0,0,0,1, 0,1,0,0, 0,0,1,0],
+        Snare: [0,0,0,0, 1,0,1,0, 0,0,0,1, 1,0,0,0],
+        HiHat: [1,1,0,1, 0,1,1,0, 1,0,1,1, 0,1,1,1],
+        Perc:  [0,1,1,0, 1,0,0,1, 0,1,0,0, 1,1,0,1],
+        Bass:  [1,0,0,0, 0,1,0,0, 0,0,1,0, 1,0,0,0],
+        Melody:[0,1,0,1, 0,0,1,0, 1,0,0,1, 0,1,0,0]
+      },
+      ambient: {
+        Kick:  [1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        Snare: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        HiHat: [0,0,0,0, 0,0,1,0, 0,0,0,0, 0,0,0,0],
+        Perc:  [0,0,0,1, 0,0,0,0, 0,0,0,1, 0,0,0,0],
+        Bass:  [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+        Melody:[0,0,1,0, 0,0,0,0, 1,0,0,0, 0,0,1,0]
+      }
+    };
+
+    function getEuclidean(pulses, steps, rotate = 0) {
+      if (pulses >= steps) return Array(steps).fill(1);
+      if (pulses <= 0) return Array(steps).fill(0);
+      let pattern = [];
+      let counts = [];
+      let remainders = [];
+      let divisor = steps - pulses;
+      remainders.push(pulses);
+      let level = 0;
+      while (true) {
+        counts.push(Math.floor(divisor / remainders[level]));
+        let rem = divisor % remainders[level];
+        remainders.push(rem);
+        divisor = remainders[level];
+        level++;
+        if (rem <= 1) break;
+      }
+      counts.push(divisor);
+      function build(lvl) {
+        if (lvl > level) return [0];
+        if (lvl === -1) return [1];
+        let sub = [];
+        for (let i = 0; i < counts[lvl]; i++) sub = sub.concat(build(lvl - 1));
+        if (remainders[lvl] !== 0) sub = sub.concat(build(lvl - 2));
+        return sub;
+      }
+      let raw = build(level);
+      let rotated = Array(steps).fill(0);
+      for (let i = 0; i < steps; i++) {
+        rotated[(i + rotate) % steps] = raw[i] ? 1 : 0;
+      }
+      return rotated;
+    }
+
+    function init() {
+      setupMIDI();
+      setDevice('cycles');
+    }
+
+    function setDevice(deviceKey) {
+      currentDevice = deviceKey;
+      document.body.setAttribute('data-device', deviceKey);
+      
+      const config = DEVICE_CONFIGS[deviceKey];
+      document.getElementById('deviceBadge').textContent = `${config.name} (${config.tracks} TRK)`;
+      document.getElementById('activeDeviceLabel').textContent = config.name;
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.toLowerCase().includes(deviceKey));
+      });
+
+      tracks = [];
+      for (let i = 0; i < config.tracks; i++) {
+        const role = config.defaultRoles[i] || 'Perc';
+        const ccMap = {};
+        config.ccDefs.forEach(d => {
+          ccMap[d.cc] = d.def;
+        });
+
+        tracks.push({
+          id: i,
+          channel: i + 1,
+          role: role,
+          steps: Array(16).fill(0),
+          notes: Array(16).fill(60),
+          velocity: Array(16).fill(100),
+          mute: false,
+          ccValues: ccMap
+        });
+      }
+      renderTracks();
+    }
+
+    function renderTracks() {
+      const container = document.getElementById('tracksContainer');
+      container.innerHTML = '';
+
+      tracks.forEach((t, tIdx) => {
+        const row = document.createElement('div');
+        row.className = 'track-row';
+
+        const meta = document.createElement('div');
+        meta.className = 'track-meta';
+        meta.innerHTML = `
+          <div class="track-title">
+            <span>T${tIdx + 1}: ${t.role}</span>
+            <span style="color:var(--text-muted); font-size:10px;">CH ${t.channel}</span>
+          </div>
+          <div class="track-controls">
+            <select onchange="updateRole(${tIdx}, this.value)">
+              <option value="Kick" ${t.role === 'Kick' ? 'selected':''}>Kick</option>
+              <option value="Snare" ${t.role === 'Snare' ? 'selected':''}>Snare</option>
+              <option value="HiHat" ${t.role === 'HiHat' ? 'selected':''}>HiHat</option>
+              <option value="Perc" ${t.role === 'Perc' ? 'selected':''}>Perc</option>
+              <option value="Bass" ${t.role === 'Bass' ? 'selected':''}>Bass</option>
+              <option value="Melody" ${t.role === 'Melody' || t.role === 'Lead' || t.role === 'Tone' || t.role === 'Chord' ? 'selected':''}>Melody/Chord</option>
+            </select>
+            <button style="${t.mute ? 'background:#ef4444; color:#fff':''}" onclick="toggleMute(${tIdx})">M</button>
+          </div>
+        `;
+
+        const grid = document.createElement('div');
+        grid.className = 'step-grid';
+        grid.id = `grid-trk-${tIdx}`;
+
+        for (let s = 0; s < 16; s++) {
+          const stepBtn = document.createElement('div');
+          stepBtn.className = `step ${t.steps[s] ? 'active' : ''}`;
+          stepBtn.id = `step-${tIdx}-${s}`;
+          stepBtn.onclick = () => toggleStep(tIdx, s);
+          grid.appendChild(stepBtn);
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'track-actions';
+        actions.innerHTML = `
+          <button class="cc-edit-btn" onclick="openCCModal(${tIdx})" title="Open Sound CC Editor">CC Edit</button>
+          <button title="Mutate Track" onclick="mutateTrack(${tIdx})">Mut</button>
+          <button title="Randomize Sound CC" onclick="randomizeTrackCC(${tIdx})">Rnd</button>
+          <button title="Clear Steps" onclick="clearTrack(${tIdx})">Clr</button>
+        `;
+
+        row.appendChild(meta);
+        row.appendChild(grid);
+        row.appendChild(actions);
+        container.appendChild(row);
+      });
+    }
+
+    function toggleStep(trkIdx, stepIdx) {
+      tracks[trkIdx].steps[stepIdx] = tracks[trkIdx].steps[stepIdx] ? 0 : 1;
+      const el = document.getElementById(`step-${trkIdx}-${stepIdx}`);
+      el.classList.toggle('active', tracks[trkIdx].steps[stepIdx] === 1);
+      el.classList.remove('chaos-trig');
+    }
+
+    function toggleMute(trkIdx) {
+      tracks[trkIdx].mute = !tracks[trkIdx].mute;
+      renderTracks();
+    }
+
+    function updateRole(trkIdx, role) {
+      tracks[trkIdx].role = role;
+    }
+
+    function clearTrack(trkIdx) {
+      tracks[trkIdx].steps.fill(0);
+      renderTracks();
+    }
+
+    // --- CC MODAL FUNCTIONS ---
+    function openCCModal(tIdx) {
+      activeModalTrackIdx = tIdx;
+      const trk = tracks[tIdx];
+      const cfg = DEVICE_CONFIGS[currentDevice];
+      
+      document.getElementById('modalTitle').textContent = `T${tIdx + 1} (${trk.role}) - CC Editor [${cfg.name}]`;
+      const container = document.getElementById('modalSliderContainer');
+      container.innerHTML = '';
+
+      cfg.ccDefs.forEach(def => {
+        const currentVal = (trk.ccValues && trk.ccValues[def.cc] !== undefined) ? trk.ccValues[def.cc] : def.def;
+        const item = document.createElement('div');
+        item.className = 'cc-slider-item';
+        item.innerHTML = `
+          <div class="label-line">
+            <span><strong>${def.label}</strong> (CC ${def.cc})</span>
+            <span id="ccValDisplay-${def.cc}">${currentVal}</span>
+          </div>
+          <input type="range" min="0" max="127" value="${currentVal}" 
+                 oninput="onCCSliderChange(${tIdx}, ${def.cc}, this.value)">
+        `;
+        container.appendChild(item);
+      });
+
+      document.getElementById('ccModalOverlay').classList.add('open');
+    }
+
+    function onCCSliderChange(tIdx, cc, val) {
+      val = parseInt(val);
+      tracks[tIdx].ccValues[cc] = val;
+      const display = document.getElementById(`ccValDisplay-${cc}`);
+      if (display) display.textContent = val;
+      sendCC(tracks[tIdx].channel, cc, val);
+    }
+
+    function closeCCModal() {
+      document.getElementById('ccModalOverlay').classList.remove('open');
+    }
+
+    function handleModalOverlayClick(e) {
+      if (e.target.id === 'ccModalOverlay') closeCCModal();
+    }
+
+    function randomizeCurrentModalCC() {
+      randomizeTrackCC(activeModalTrackIdx);
+      openCCModal(activeModalTrackIdx);
+    }
+
+    // --- GENRE PATTERN GENERATOR ---
+    function generateGenreGroove() {
+      const genre = document.getElementById('genreSelect').value;
+      const template = GENRE_PATTERNS[genre] || GENRE_PATTERNS.techno;
+      const root = parseInt(document.getElementById('scaleRoot').value);
+      const scaleName = document.getElementById('scaleType').value;
+      const scale = SCALES[scaleName] || SCALES.minor;
+
+      tracks.forEach(trk => {
+        let pattern = template[trk.role] || template.Perc;
+        if (!pattern) pattern = [1,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0];
+        trk.steps = [...pattern];
+
+        for (let s = 0; s < 16; s++) {
+          if (trk.role === 'Bass') {
+            const deg = scale[Math.floor(Math.random() * scale.length)];
+            trk.notes[s] = 36 + root + deg;
+          } else if (trk.role === 'Melody' || trk.role === 'Lead' || trk.role === 'Tone' || trk.role === 'Chord') {
+            const deg = scale[Math.floor(Math.random() * scale.length)];
+            trk.notes[s] = 60 + root + deg;
+          } else {
+            trk.notes[s] = 60;
+          }
+        }
+      });
+      renderTracks();
+    }
+
+    function generateAllEuclidean() {
+      const euclideanPresets = [
+        { p: 4, r: 0 }, { p: 2, r: 4 }, { p: 8, r: 2 }, { p: 5, r: 1 },
+        { p: 3, r: 0 }, { p: 7, r: 3 }, { p: 6, r: 1 }, { p: 5, r: 5 }
+      ];
+
+      tracks.forEach((trk, idx) => {
+        const cfg = euclideanPresets[idx % euclideanPresets.length];
+        trk.steps = getEuclidean(cfg.p, 16, cfg.r);
+      });
+      renderTracks();
+    }
+
+    function mutateTrack(trkIdx) {
+      const trk = tracks[trkIdx];
+      const flips = 1 + Math.floor(Math.random() * 2);
+      for (let i = 0; i < flips; i++) {
+        const s = Math.floor(Math.random() * 16);
+        trk.steps[s] = trk.steps[s] ? 0 : 1;
+      }
+      renderTracks();
+    }
+
+    function mutateAll() {
+      tracks.forEach((_, idx) => mutateTrack(idx));
+    }
+
+    function triggerTotalChaos() {
+      const root = parseInt(document.getElementById('scaleRoot').value);
+      const scaleName = document.getElementById('scaleType').value;
+      const scale = SCALES[scaleName] || SCALES.minor;
+
+      tracks.forEach(trk => {
+        const density = 0.2 + Math.random() * 0.6;
+        for (let s = 0; s < 16; s++) {
+          trk.steps[s] = Math.random() < density ? 1 : 0;
+          const deg = scale[Math.floor(Math.random() * scale.length)];
+          const octave = Math.floor(Math.random() * 3) - 1;
+          trk.notes[s] = Math.max(24, Math.min(84, 48 + root + deg + (octave * 12)));
+          trk.velocity[s] = 40 + Math.floor(Math.random() * 87);
+        }
+      });
+
+      renderTracks();
+
+      tracks.forEach((trk, tIdx) => {
+        for (let s = 0; s < 16; s++) {
+          if (trk.steps[s]) {
+            const el = document.getElementById(`step-${tIdx}-${s}`);
+            if (el) el.classList.add('chaos-trig');
+          }
+        }
+      });
+
+      randomizeAllCC();
+    }
+
+    function randomizeTrackCC(tIdx) {
+      if (!midiOutput) return;
+      const trk = tracks[tIdx];
+      const isSafe = document.getElementById('sweetspotMode').value === 'safe';
+      const ch = trk.channel;
+
+      const setAndSend = (cc, val) => {
+        trk.ccValues[cc] = val;
+        sendCC(ch, cc, val);
+      };
+
+      if (currentDevice === 'cycles') {
+        if (isSafe) {
+          setAndSend(16, 58 + Math.floor(Math.random() * 12));
+          setAndSend(17, trk.role === 'Kick' ? 30 + Math.floor(Math.random() * 40) : 40 + Math.floor(Math.random() * 60));
+          setAndSend(18, 20 + Math.floor(Math.random() * 80));
+          setAndSend(19, 20 + Math.floor(Math.random() * 70));
+          setAndSend(20, trk.role === 'Kick' ? 10 + Math.floor(Math.random() * 40) : 0 + Math.floor(Math.random() * 70));
+          setAndSend(21, 20 + Math.floor(Math.random() * 60));
+          setAndSend(66, Math.random() > 0.5 ? 127 : 0);
+        } else {
+          [16,17,18,19,20,21,66].forEach(cc => setAndSend(cc, Math.floor(Math.random() * 128)));
+        }
+      } else if (currentDevice === 'samples') {
+        if (isSafe) {
+          setAndSend(16, 64);
+          setAndSend(17, 50 + Math.floor(Math.random() * 60));
+          setAndSend(18, 0 + Math.floor(Math.random() * 20));
+          setAndSend(19, 80 + Math.floor(Math.random() * 47));
+          setAndSend(20, 60 + Math.floor(Math.random() * 67));
+          setAndSend(21, 10 + Math.floor(Math.random() * 40));
+        } else {
+          [16,17,18,19,20,21].forEach(cc => setAndSend(cc, Math.floor(Math.random() * 128)));
+        }
+      } else if (currentDevice === 'digitakt') {
+        if (isSafe) {
+          setAndSend(16, 64);
+          setAndSend(74, 50 + Math.floor(Math.random() * 70));
+          setAndSend(75, 10 + Math.floor(Math.random() * 40));
+          setAndSend(78, Math.floor(Math.random() * 30));
+          setAndSend(79, Math.floor(Math.random() * 20));
+        } else {
+          [16,19,20,74,75,78,79].forEach(cc => setAndSend(cc, Math.floor(Math.random() * 128)));
+        }
+      } else if (currentDevice === 'a4') {
+        if (isSafe) {
+          setAndSend(74, 40 + Math.floor(Math.random() * 70));
+          setAndSend(75, 20 + Math.floor(Math.random() * 50));
+          setAndSend(78, Math.floor(Math.random() * 40));
+        } else {
+          [16,74,75,78].forEach(cc => setAndSend(cc, Math.floor(Math.random() * 128)));
+        }
+      }
+    }
+
+    function randomizeAllCC() {
+      tracks.forEach((_, idx) => randomizeTrackCC(idx));
+    }
+
+    function sendCC(channel, ccNumber, value) {
+      if (!midiOutput) return;
+      const status = 0xB0 | ((channel - 1) & 0x0F);
+      midiOutput.send([status, ccNumber & 0x7F, value & 0x7F]);
+    }
+
+    function togglePlay() {
+      if (isPlaying) {
+        stopSequencer();
+      } else {
+        startSequencer();
+      }
+    }
+
+    function startSequencer() {
+      if (clockInterval) clearInterval(clockInterval);
+      isPlaying = true;
+      currentStep = 0;
+      document.getElementById('btnPlay').textContent = 'STOP';
+      document.getElementById('btnPlay').style.background = '#ef4444';
+
+      if (midiOutput) midiOutput.send([0xFA]);
+
+      const stepMs = (60000 / bpm) / 4;
+      clockInterval = setInterval(tick, stepMs);
+    }
+
+    function stopSequencer() {
+      isPlaying = false;
+      if (clockInterval) clearInterval(clockInterval);
+      document.getElementById('btnPlay').textContent = 'LOCAL PLAY';
+      document.getElementById('btnPlay').style.background = 'var(--accent)';
+
+      if (midiOutput) midiOutput.send([0xFC]);
+      document.querySelectorAll('.step.current').forEach(el => el.classList.remove('current'));
+    }
+
+    function updateBPM() {
+      bpm = parseInt(document.getElementById('bpmInput').value) || 128;
+      if (isPlaying) startSequencer();
+    }
+
+    function tick() {
+      document.querySelectorAll('.step.current').forEach(el => el.classList.remove('current'));
+      tracks.forEach((trk, tIdx) => {
+        const stepEl = document.getElementById(`step-${tIdx}-${currentStep}`);
+        if (stepEl) stepEl.classList.add('current');
+
+        if (!trk.mute && trk.steps[currentStep] && midiOutput) {
+          const ch = trk.channel;
+          const note = trk.notes[currentStep] || 60;
+          const vel = trk.velocity[currentStep] || 100;
+          const noteOn = 0x90 | ((ch - 1) & 0x0F);
+          const noteOff = 0x80 | ((ch - 1) & 0x0F);
+
+          midiOutput.send([noteOn, note, vel]);
+          setTimeout(() => {
+            if (midiOutput) midiOutput.send([noteOff, note, 0]);
+          }, 80);
+        }
+      });
+
+      currentStep = (currentStep + 1) % 16;
+    }
+
+    function setupMIDI() {
+      const outSelect = document.getElementById('midiOutSelect');
+      const inSelect = document.getElementById('midiInSelect');
+      if (navigator.requestMIDIAccess) {
+        navigator.requestMIDIAccess({ sysex: false }).then(access => {
+          midiAccess = access;
+          updateMIDIPorts();
+          midiAccess.onstatechange = updateMIDIPorts;
+        }, () => {
+          outSelect.innerHTML = '<option value="">Geen Web MIDI ondersteuning</option>';
+          inSelect.innerHTML = '<option value="">Geen Web MIDI ondersteuning</option>';
+        });
+      } else {
+        outSelect.innerHTML = '<option value="">Web MIDI niet ondersteund</option>';
+        inSelect.innerHTML = '<option value="">Web MIDI niet ondersteund</option>';
+      }
+    }
+
+    function updateMIDIPorts() {
+      const outSelect = document.getElementById('midiOutSelect');
+      const inSelect = document.getElementById('midiInSelect');
+      outSelect.innerHTML = '';
+      inSelect.innerHTML = '';
+
+      const outputs = Array.from(midiAccess.outputs.values());
+      const inputs = Array.from(midiAccess.inputs.values());
+
+      if (outputs.length === 0) {
+        outSelect.innerHTML = '<option value="">Geen Output poorten</option>';
+      } else {
+        outputs.forEach(port => {
+          const opt = document.createElement('option');
+          opt.value = port.id;
+          opt.textContent = port.name;
+          outSelect.appendChild(opt);
+        });
+        const elkOut = outputs.find(p => p.name.toLowerCase().includes('elektron') || p.name.toLowerCase().includes('model'));
+        midiOutput = elkOut || outputs[0];
+        outSelect.value = midiOutput.id;
+      }
+
+      if (inputs.length === 0) {
+        inSelect.innerHTML = '<option value="">Geen Input poorten</option>';
+      } else {
+        inputs.forEach(port => {
+          const opt = document.createElement('option');
+          opt.value = port.id;
+          opt.textContent = port.name;
+          inSelect.appendChild(opt);
+        });
+        const elkIn = inputs.find(p => p.name.toLowerCase().includes('elektron') || p.name.toLowerCase().includes('model'));
+        setInputPort(elkIn || inputs[0]);
+        inSelect.value = (elkIn || inputs[0]).id;
+      }
+
+      outSelect.onchange = () => {
+        midiOutput = midiAccess.outputs.get(outSelect.value);
+      };
+      inSelect.onchange = () => {
+        const port = midiAccess.inputs.get(inSelect.value);
+        setInputPort(port);
+      };
+    }
+
+    function setInputPort(port) {
+      if (midiInput) {
+        midiInput.onmidimessage = null;
+      }
+      midiInput = port;
+      if (midiInput) {
+        midiInput.onmidimessage = handleIncomingMIDI;
+      }
+    }
+
+    // --- MIDI IN SLAVE ENGINE (HARDWARE DRIVEN) ---
+    function handleIncomingMIDI(event) {
+      const status = event.data[0];
+
+      // 0xFA = MIDI START (Elektron drukt op Play)
+      if (status === 0xFA) {
+        isHardwareSlaveRunning = true;
+        currentStep = 0;
+        midiTickCount = 0;
+        armedOneShotCompleted = false;
+        updateSyncBadge("LOCKED: Elektron loopt (Slave Actief)", "#10b981");
+        triggerStepHardwareSync(0);
+        return;
+      }
+
+      // 0xFC = MIDI STOP (Elektron stopt)
+      if (status === 0xFC) {
+        isHardwareSlaveRunning = false;
+        midiTickCount = 0;
+        document.querySelectorAll('.step.current').forEach(el => el.classList.remove('current'));
+        updateSyncBadge(isArmedForStream ? "ARMED: Druk Record+Play op Elektron" : "STANDBY: Wacht op Elektron...", isArmedForStream ? "#f59e0b" : "#94a3b8");
+        return;
+      }
+
+      // 0xF8 = MIDI TIMING CLOCK (24 ticks per kwartnoot, 6 ticks per 16e noot)
+      if (status === 0xF8 && isHardwareSlaveRunning) {
+        midiTickCount++;
+        if (midiTickCount >= 6) {
+          midiTickCount = 0;
+          currentStep = (currentStep + 1) % 16;
+          
+          if (isArmedForStream && currentStep === 0) {
+            armedOneShotCompleted = true;
+            isArmedForStream = false;
+            updateArmUI();
+            updateSyncBadge("Opname 1 bar voltooid!", "#3b82f6");
+          }
+
+          if (!armedOneShotCompleted) {
+            triggerStepHardwareSync(currentStep);
+          }
+        }
+      }
+    }
+
+    function triggerStepHardwareSync(stepIdx) {
+      document.querySelectorAll('.step.current').forEach(el => el.classList.remove('current'));
+
+      tracks.forEach((trk, tIdx) => {
+        const stepEl = document.getElementById(`step-${tIdx}-${stepIdx}`);
+        if (stepEl) stepEl.classList.add('current');
+
+        const shouldPlayTrack = isArmedForStream ? (tIdx === armedTrackIdx) : (!trk.mute);
+
+        if (shouldPlayTrack && trk.steps[stepIdx] && midiOutput) {
+          const ch = trk.channel;
+          const isMelodic = ['Tone', 'Chord', 'Bass', 'Lead', 'Melody', 'Synth'].includes(trk.role);
+          const note = isMelodic ? (trk.notes[stepIdx] || 60) : 60;
+          const vel = trk.velocity[stepIdx] || 100;
+          const noteOn = 0x90 | ((ch - 1) & 0x0F);
+          const noteOff = 0x80 | ((ch - 1) & 0x0F);
+
+          midiOutput.send([noteOn, note, vel]);
+          setTimeout(() => {
+            if (midiOutput) midiOutput.send([noteOff, note, 0]);
+          }, 90);
+        }
+      });
+    }
+
+    function toggleArmStream() {
+      if (isArmedForStream) {
+        isArmedForStream = false;
+        updateArmUI();
+        updateSyncBadge("ARM Geannuleerd", "#94a3b8");
+        return;
+      }
+
+      const inputVal = prompt(`Welke track wil je opnemen in de Elektron? (1 t/m ${tracks.length})`, "1");
+      if (!inputVal) return;
+      const idx = parseInt(inputVal) - 1;
+      if (isNaN(idx) || idx < 0 || idx >= tracks.length) {
+        alert("Ongeldig tracknummer.");
+        return;
+      }
+
+      armedTrackIdx = idx;
+      isArmedForStream = true;
+      armedOneShotCompleted = false;
+      updateArmUI();
+      updateSyncBadge(`ARM TRK ${idx + 1}: Druk nu RECORD + PLAY op de Elektron!`, "#ef4444");
+    }
+
+    function updateArmUI() {
+      const btn = document.getElementById('btnArmRec');
+      if (isArmedForStream) {
+        btn.textContent = `ARMED (T${armedTrackIdx + 1}) - WACHT OP ELEKTRON`;
+        btn.style.background = "#ef4444";
+      } else {
+        btn.textContent = "ARM TRK RECORD";
+        btn.style.background = "#7f1d1d";
+      }
+    }
+
+    function updateSyncBadge(text, color) {
+      const b = document.getElementById('syncStatusBadge');
+      if (b) {
+        b.textContent = text;
+        b.style.color = color;
+      }
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>

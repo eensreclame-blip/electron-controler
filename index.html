@@ -404,7 +404,7 @@
     .tracks-container { display: flex; flex-direction: column; gap: 10px; }
     .track-row {
       display: grid;
-      grid-template-columns: 190px 1fr 270px;
+      grid-template-columns: 190px 1fr 330px;
       gap: 14px;
       align-items: center;
       background: #848782;
@@ -1071,9 +1071,10 @@
         actions.innerHTML = `
           <button title="Shift Pattern Links" onclick="shiftTrackPattern(${tIdx}, -1)">◀</button>
           <button title="Shift Pattern Rechts" onclick="shiftTrackPattern(${tIdx}, 1)">▶</button>
-          <button title="Randomize Note Pitch" onclick="randomizeTrackPitch(${tIdx})">🎲 Pitch</button>
+          <button title="Random Pattern (Steps/Trigs)" onclick="randomizeTrackPattern(${tIdx})">🎲 Pat</button>
+          <button title="Randomize Note Pitch" onclick="randomizeTrackPitch(${tIdx})">🎵 Pitch</button>
           <button class="cc-edit-btn" onclick="openCCModal(${tIdx})" title="Open Sound CC Editor">CC Edit</button>
-          <button title="Randomize Sound CC" onclick="randomizeTrackCC(${tIdx})">Rnd</button>
+          <button title="Randomize Sound CC" onclick="randomizeTrackCC(${tIdx})">Rnd CC</button>
           <button title="Clear Steps" onclick="clearTrack(${tIdx})">Clr</button>
         `;
 
@@ -1147,6 +1148,29 @@
         const rndPitchCC = 48 + Math.floor(Math.random() * 32);
         trk.ccValues[16] = rndPitchCC;
         sendCC(trk.channel, 16, rndPitchCC);
+      }
+      renderTracks();
+    }
+
+    // RANDOMIZE PATTERN (STEPS / TRIGS) PER TRACK
+    function randomizeTrackPattern(trkIdx) {
+      const trk = tracks[trkIdx];
+      // Muzikale dichtheid afgestemd op de rol
+      let density = 0.35;
+      if (trk.role === 'Kick') density = 0.25;
+      else if (trk.role === 'HiHat') density = 0.55;
+      else if (trk.role === 'Snare') density = 0.2;
+      else if (trk.role === 'Perc') density = 0.3;
+
+      for (let s = 0; s < 16; s++) {
+        // Kick altijd op tel 1 voor muzikaal ankerpunt
+        if (s === 0 && trk.role === 'Kick') {
+          trk.steps[s] = 1;
+        } else {
+          trk.steps[s] = Math.random() < density ? 1 : 0;
+        }
+        // Random velocity variatie voor menselijke dynamiek
+        trk.velocity[s] = 70 + Math.floor(Math.random() * 57);
       }
       renderTracks();
     }

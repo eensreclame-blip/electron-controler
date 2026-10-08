@@ -439,16 +439,17 @@
     .track-controls select { padding: 4px 6px; font-size: 11px; }
     .track-controls button { padding: 4px 8px; font-size: 11px; }
 
-    /* MODEL:CYCLES ROUNDED CHUNKY STEP KEYS (T1-T16) */
+    /* MODEL:CYCLES / DIGITAKT SQUARE HARDWARE TRIG KEYS (1 t/m 16) */
     .step-grid {
       display: grid;
-      grid-template-columns: repeat(16, 1fr);
+      grid-template-columns: repeat(16, minmax(0, 1fr));
       gap: 6px;
       background: #737670;
-      padding: 8px;
+      padding: 8px 10px;
       border-radius: 8px;
       border: 1px solid #5d605a;
-      box-shadow: inset 0 2px 5px rgba(0,0,0,0.35);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
+      align-items: center;
     }
     body[data-device="digitakt"] .step-grid, body[data-device="a4"] .step-grid {
       background: #0a0b0e;
@@ -456,32 +457,54 @@
       box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
     }
     .step {
-      height: 40px;
-      background: linear-gradient(180deg, #bcc0b9 0%, #9fa29c 100%);
-      border-radius: 5px;
-      border: 1px solid #8c908a;
-      border-bottom: 3px solid #5a5d57;
+      aspect-ratio: 1 / 1;
+      height: auto;
+      min-height: 38px;
+      background: linear-gradient(180deg, #d3d7cf 0%, #aeb2aa 100%);
+      border-radius: 6px;
+      border: 1px solid #9aa096;
+      border-bottom: 3px solid #6b7066;
       cursor: pointer;
       position: relative;
       transition: all 0.06s ease;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.6);
+      box-shadow: 0 2px 3px rgba(0,0,0,0.22), inset 0 1px 1px rgba(255,255,255,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: #3f433d;
+      user-select: none;
     }
     body[data-device="digitakt"] .step, body[data-device="a4"] .step {
-      background: linear-gradient(180deg, #232733 0%, #181a22 100%);
-      border-color: #323746;
-      border-bottom-color: #0f1015;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.07);
+      background: linear-gradient(180deg, #2b303c 0%, #171920 100%);
+      border-color: #3b4354;
+      border-bottom-color: #0d0f14;
+      box-shadow: 0 2px 3px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+      color: #94a3b8;
     }
     /* Model:Cycles Bar Markers (1, 5, 9, 13) */
     .step:nth-child(4n+1) {
-      border-top: 3px solid #e2e8f0;
+      border-top: 3px solid #ffffff;
+      color: #1b1d19;
+    }
+    body[data-device="digitakt"] .step:nth-child(4n+1), body[data-device="a4"] .step:nth-child(4n+1) {
+      border-top: 3px solid #64748b;
+      color: #f1f5f9;
     }
     .step:hover {
-      background: linear-gradient(180deg, #c7cbc4 0%, #aaada7 100%);
+      background: linear-gradient(180deg, #e0e4dc 0%, #bcc0b8 100%);
+      color: #000;
+    }
+    body[data-device="digitakt"] .step:hover, body[data-device="a4"] .step:hover {
+      background: linear-gradient(180deg, #373e4d 0%, #20242e 100%);
+      color: #fff;
     }
     .step:active {
       transform: translateY(1px);
       border-bottom-width: 1px;
+      box-shadow: inset 0 2px 3px rgba(0,0,0,0.3);
     }
 
     /* ILLUMINATED ACTIVE LED TRIG (Soft Neon Glow behind translucent button) */
@@ -1038,6 +1061,7 @@
           const stepBtn = document.createElement('div');
           stepBtn.className = `step ${t.steps[s] ? 'active' : ''}`;
           stepBtn.id = `step-${tIdx}-${s}`;
+          stepBtn.textContent = s + 1;
           stepBtn.onclick = () => toggleStep(tIdx, s);
           grid.appendChild(stepBtn);
         }

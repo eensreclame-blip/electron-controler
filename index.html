@@ -144,23 +144,25 @@
       font-family: 'Inter', sans-serif;
       font-size: 19px;
       font-weight: 900;
-      letter-spacing: 2px;
       color: var(--text);
       display: flex;
       align-items: center;
-      gap: 12px;
-      text-transform: uppercase;
+      gap: 10px;
     }
-    .logo span.brand-dot {
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      background: #5b8fb9; /* Model:Cycles Blue Level/Data Knob color */
-      border-radius: 50%;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.5);
+    .elektron-svg-logo {
+      height: 22px;
+      width: auto;
+      color: var(--text);
+      display: block;
+      filter: drop-shadow(0 1px 0 rgba(255,255,255,0.25));
     }
-    body[data-device="digitakt"] .logo span.brand-dot { background: #10b981; }
-    body[data-device="a4"] .logo span.brand-dot { background: #ec4899; }
+    .logo-sub {
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      letter-spacing: 2px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
 
     .badge {
       font-family: 'Share Tech Mono', monospace;
@@ -653,8 +655,15 @@
   <div class="elektron-device">
     <header>
       <div class="logo">
-        <span class="brand-dot"></span>
-        ELEKTRON // LAB ULTRA
+        <svg class="elektron-svg-logo" viewBox="0 0 110 24" height="22" fill="currentColor">
+          <!-- ELEKTRON ICONIC SLANTED LETTERMARK -->
+          <g transform="skewX(-16)">
+            <!-- [e] mark with center horizontal gap -->
+            <path d="M4 3h16v6h-10v4h10v8H4V3zm6 4h4v-2h-4v2zm0 10h4v-2h-4v2z" fill-rule="evenodd"/>
+            <text x="24" y="19" font-family="'Inter', sans-serif" font-weight="900" font-size="19" letter-spacing="2.5">ELEKTRON</text>
+          </g>
+        </svg>
+        <span class="logo-sub">// LAB ULTRA</span>
         <span class="badge" id="deviceBadge">MODEL:CYCLES (6 TRK)</span>
       </div>
 

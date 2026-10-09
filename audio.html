@@ -408,44 +408,46 @@
     <!-- TOOLS GRID (THUMBNAILS) -->
     <div class="tools-grid">
 
-      <!-- AUDIO TOOL 1: FIELD RECORDER (ACTIVE) -->
+      <!-- AUDIO TOOL 1: FIELD DRONE & 4-LOOP CAPTURE (ACTIVE) -->
       <a href="audio-field-recorder.html" class="tool-card">
         <div>
           <div class="card-top">
-            <span class="card-tag live">DIRECT CAPTURE</span>
+            <span class="card-tag live">4-VOICE DRONE</span>
             <span class="card-channel-num">01</span>
           </div>
           <div class="card-screen">
             <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect width="320" height="100" fill="#ffffff"/>
-              <!-- Tape Cassette / Spools preview -->
-              <circle cx="100" cy="45" r="22" stroke="#0f172a" stroke-width="2" fill="#f1f5f9"/>
-              <circle cx="100" cy="45" r="7" fill="#0f172a"/>
-              <circle cx="220" cy="45" r="22" stroke="#0f172a" stroke-width="2" fill="#f1f5f9"/>
-              <circle cx="220" cy="45" r="7" fill="#0f172a"/>
-              <line x1="100" y1="23" x2="220" y2="23" stroke="#0284c7" stroke-width="2"/>
-              <!-- REC LED & VU Bars -->
-              <circle cx="25" cy="25" r="4" fill="#ef4444"/>
-              <text x="35" y="28" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#ef4444">REC 48kHz</text>
-              <rect x="25" y="42" width="40" height="6" rx="1" fill="#10b981"/>
-              <rect x="25" y="52" width="48" height="6" rx="1" fill="#0284c7"/>
-              <text x="15" y="90" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#0f172a">TP-7 TAPE ENGINE // MIC & LINE IN</text>
+              <!-- 4 Loop Waveform Bands -->
+              <rect x="20" y="25" width="65" height="45" fill="rgba(2, 132, 199, 0.2)" stroke="#0284c7" stroke-width="1.5"/>
+              <rect x="85" y="25" width="75" height="45" fill="rgba(245, 158, 11, 0.2)" stroke="#f59e0b" stroke-width="1.5"/>
+              <rect x="160" y="25" width="70" height="45" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="1.5"/>
+              <rect x="230" y="25" width="70" height="45" fill="rgba(168, 85, 247, 0.2)" stroke="#a855f7" stroke-width="1.5"/>
+              <!-- Waveform Path inside -->
+              <path d="M 20 48 Q 50 20, 85 48 T 160 48 T 230 48 T 300 48" stroke="#0f172a" stroke-width="2" fill="none"/>
+              <!-- Loop Labels -->
+              <text x="25" y="38" font-family="Share Tech Mono" font-size="9" font-weight="bold" fill="#0284c7">L1</text>
+              <text x="90" y="38" font-family="Share Tech Mono" font-size="9" font-weight="bold" fill="#f59e0b">L2</text>
+              <text x="165" y="38" font-family="Share Tech Mono" font-size="9" font-weight="bold" fill="#10b981">L3</text>
+              <text x="235" y="38" font-family="Share Tech Mono" font-size="9" font-weight="bold" fill="#a855f7">L4</text>
+              <!-- Info Footer -->
+              <text x="15" y="88" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#0f172a">AUDIO IMPORT // 4-VOICE DRONE LOOPER</text>
             </svg>
           </div>
           <div class="card-info">
-            <h3>Field Recorder & Direct Tape Capture</h3>
-            <p>Draagbare audio en sample recorder met directe microfoon/line-in capture, analoge tape drive, low-cut filter, varispeed pitch en WAV export.</p>
+            <h3>Field Drone & 4-Loop Tape Capture</h3>
+            <p>Voeg elk audiobestand in (of neem direct op) en stel 4 onafhankelijke loop regions in met eigen varispeed pitch, direction (FWD/REV/PONG), pan en tape drone filters.</p>
           </div>
           <div class="card-specs">
-            <span class="spec-pill">MIC / LINE IN</span>
-            <span class="spec-pill">TAPE DRIVE</span>
+            <span class="spec-pill">AUDIO IMPORT</span>
+            <span class="spec-pill">4 INDIE LOOPS</span>
             <span class="spec-pill">VARISPEED</span>
-            <span class="spec-pill">VU METERS</span>
-            <span class="spec-pill">WAV EXPORT</span>
+            <span class="spec-pill">FWD/REV/P-PONG</span>
+            <span class="spec-pill">TAPE DRONE FX</span>
           </div>
         </div>
         <div class="card-launch-btn">
-          <span>OPEN FIELD RECORDER</span> <span>➔</span>
+          <span>OPEN FIELD DRONE</span> <span>➔</span>
         </div>
       </a>
 

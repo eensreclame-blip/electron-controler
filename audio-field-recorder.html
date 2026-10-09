@@ -534,16 +534,17 @@
 
     .transport-buttons {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
+      flex-wrap: wrap;
     }
 
     .hw-btn {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 800;
       letter-spacing: 1px;
-      padding: 10px 16px;
+      padding: 9px 14px;
       border-radius: 5px;
       cursor: pointer;
       display: flex;
@@ -601,11 +602,22 @@
       border-bottom-color: #1a1c1f;
       color: #cbd5e1;
       font-size: 11px;
-      padding: 8px 12px;
+      padding: 8px 11px;
     }
     .hw-btn.btn-macro:hover {
       background: #5b6069;
       color: #fff;
+    }
+    .hw-btn.btn-harm {
+      background: linear-gradient(180deg, #4f46e5 0%, #3730a3 100%);
+      border-color: #312e81;
+      border-bottom-color: #1e1b4b;
+      color: #fff;
+      box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+    }
+    .hw-btn.btn-harm:hover {
+      background: linear-gradient(180deg, #6366f1 0%, #4338ca 100%);
+      box-shadow: 0 0 14px rgba(99, 102, 241, 0.8);
     }
 
     /* 4-VOICE LOOPER MATRIX GRID */
@@ -1022,14 +1034,15 @@
       </div>
 
       <div class="transport-buttons">
+        <!-- DYNAMIC RANDOM HARMONIZE BUTTON -->
+        <button class="hw-btn btn-harm" onclick="macroHarmonize()">
+          <span>🎲 🎵</span> <span>RANDOM HARMONIZE</span>
+        </button>
         <button class="hw-btn btn-macro" onclick="macroSliceToTransients()">
           <span>⚡</span> <span>SLICE 4 TRANSIENTS</span>
         </button>
-        <button class="hw-btn btn-macro" onclick="macroHarmonize()">
-          <span>🎵</span> <span>HARMONIZE 5THS/OCT</span>
-        </button>
         <button class="hw-btn btn-macro" onclick="macroRandomizeLoops()">
-          <span>🎲</span> <span>RANDOMIZE LOOPS</span>
+          <span>🎲</span> <span>RANDOM LOOPS</span>
         </button>
         <button class="hw-btn btn-macro" onclick="macroSmoothCrossfades(500)">
           <span>🌊</span> <span>SMOOTH X-FADE</span>
@@ -1417,7 +1430,30 @@
 
     // Transient Detection & Magnetic Snapping
     let isSnapToTransients = true;
-    let detectedTransients = []; // Array of fractions [0.0 to 1.0]
+    let detectedTransients = [];
+
+    // Curated Musical Harmonization Palettes
+    const HARMONY_PRESETS = [
+      { name: "MAJOR 7TH / AMBIENT GLOW", intervals: [0, 4, 7, 11] },
+      { name: "MINOR 9TH / CINEMATIC CLOUD", intervals: [-12, 0, 3, 14] },
+      { name: "LYDIAN DREAM (#11 SHIMMER)", intervals: [0, 6, 7, 12] },
+      { name: "SUS2 / SUS4 SPACE STACK", intervals: [-12, 2, 7, 12] },
+      { name: "DORIAN VIBE / BERLIN TECH", intervals: [-12, 0, 3, 10] },
+      { name: "OPEN 5THS & 4THS POWER DRONE", intervals: [-12, -5, 0, 7] },
+      { name: "PENTATONIC FLOAT", intervals: [0, 7, 9, 16] },
+      { name: "PHRYGIAN DARK AMBIENT", intervals: [-12, 0, 1, 7] },
+      { name: "SUB ROOT OCTAVE DETUNE", intervals: [-24, -12, 0, 12] },
+      { name: "JAPANESE INSEN MYSTIC", intervals: [0, 1, 7, 10] },
+      { name: "ADD9 LUSH PAD", intervals: [-12, 0, 2, 7] },
+      { name: "WHOLE TONE ASTRAL FLOAT", intervals: [0, 4, 8, 10] },
+      { name: "WARM MAJOR 9TH CHORD", intervals: [0, 4, 11, 14] },
+      { name: "DEEP 4THS QUARTAL CHORD", intervals: [-12, -7, 0, 5] },
+      { name: "DIMINISHED 7TH TENSION", intervals: [0, 3, 6, 9] },
+      { name: "AUGMENTED TRIAD + OCTAVE", intervals: [-12, 0, 4, 8] },
+      { name: "OCTAVE SUB BASS WALL", intervals: [-24, -12, 0, 0] },
+      { name: "FIFTHS & NINTHS AMBIENCE", intervals: [0, 7, 14, 21] }
+    ];
+    let lastHarmonyIndex = -1;
 
     // 4 Independent Loop Voices Configuration with Dedicated Crossfades
     const voices = [
@@ -1546,19 +1582,16 @@
         masterAnalyser = audioCtx.createAnalyser();
         masterAnalyser.fftSize = 512;
 
-        // Tape Saturation Waveshaper
         masterDrive = audioCtx.createWaveShaper();
         updateDriveCurve(35);
 
-        // Tape Delay Node
         delayNode = audioCtx.createDelay();
-        delayNode.delayTime.value = 0.38; // 380ms ambient tape delay
+        delayNode.delayTime.value = 0.38;
         delayFeedback = audioCtx.createGain();
         delayFeedback.gain.value = 0.35;
         delayNode.connect(delayFeedback);
         delayFeedback.connect(delayNode);
 
-        // Spatial Drone Reverb
         reverbConvolver = audioCtx.createConvolver();
         reverbConvolver.buffer = createReverbImpulse(audioCtx, 3.5, 3.0);
         reverbGain = audioCtx.createGain();
@@ -1566,7 +1599,6 @@
         dryGain = audioCtx.createGain();
         dryGain.gain.value = 0.85;
 
-        // Routing
         masterDrive.connect(dryGain);
         masterDrive.connect(reverbConvolver);
         reverbConvolver.connect(reverbGain);
@@ -1610,7 +1642,6 @@
       const numBlocks = Math.floor(data.length / blockSize);
       const energies = new Float32Array(numBlocks);
 
-      // 1. Calculate Block Energy
       let totalEnergy = 0;
       for (let i = 0; i < numBlocks; i++) {
         let sum = 0;
@@ -1626,17 +1657,15 @@
 
       const avgEnergy = totalEnergy / numBlocks;
       const threshold = Math.max(0.012, avgEnergy * 1.25);
-      const minGapBlocks = Math.floor((sampleRate * 0.075) / blockSize); // min 75ms distance
+      const minGapBlocks = Math.floor((sampleRate * 0.075) / blockSize);
       let lastBlock = -minGapBlocks;
 
       const trans = [0.0];
 
-      // 2. Detect sudden positive slope onset peaks + Zero-Crossing
       for (let i = 1; i < numBlocks - 1; i++) {
         const diff = energies[i] - energies[i - 1];
         if (diff > threshold && (i - lastBlock) >= minGapBlocks) {
           const sampleIdx = i * blockSize;
-          // Find precise zero crossing
           let bestIdx = sampleIdx;
           for (let s = Math.max(0, sampleIdx - 128); s < Math.min(data.length - 1, sampleIdx + 64); s++) {
             if ((data[s] <= 0 && data[s+1] >= 0) || (data[s] >= 0 && data[s+1] <= 0)) {
@@ -1700,7 +1729,6 @@
         return;
       }
 
-      // Distribute detected transients over 4 voices
       const t = detectedTransients;
       const count = t.length;
       
@@ -1789,14 +1817,14 @@
       engineStatus.textContent = `SYNTHESIZING PRESET: ${type.toUpperCase()}...`;
 
       const sampleRate = audioCtx.sampleRate;
-      const duration = 12.0; // 12 seconds seamless source buffer
+      const duration = 12.0;
       const length = sampleRate * duration;
       const buffer = audioCtx.createBuffer(2, length, sampleRate);
       const chL = buffer.getChannelData(0);
       const chR = buffer.getChannelData(1);
 
       if (type === 'subdrone') {
-        const rootFreq = 54.0; // Deep A1 sub drone
+        const rootFreq = 54.0;
         for (let i = 0; i < length; i++) {
           const t = i / sampleRate;
           const osc1 = Math.sin(2 * Math.PI * rootFreq * t);
@@ -1837,13 +1865,12 @@
         }
         loadedFileLabel.textContent = `PRESET_MODULAR_TAPE_110Hz.wav (12.0s)`;
       } else {
-        // Ethereal Pad Texture
         for (let i = 0; i < length; i++) {
           const t = i / sampleRate;
-          const chord1 = Math.sin(2 * Math.PI * 220.0 * t); // A3
-          const chord2 = Math.sin(2 * Math.PI * 277.18 * t) * 0.8; // C#4
-          const chord3 = Math.sin(2 * Math.PI * 329.63 * t) * 0.8; // E4
-          const chord4 = Math.sin(2 * Math.PI * 440.0 * t) * 0.5; // A4
+          const chord1 = Math.sin(2 * Math.PI * 220.0 * t);
+          const chord2 = Math.sin(2 * Math.PI * 277.18 * t) * 0.8;
+          const chord3 = Math.sin(2 * Math.PI * 329.63 * t) * 0.8;
+          const chord4 = Math.sin(2 * Math.PI * 440.0 * t) * 0.5;
           const mod = Math.sin(2 * Math.PI * 0.15 * t) * 0.3;
           chL[i] = (chord1 + chord2 + chord3) * 0.2 + mod;
           chR[i] = (chord2 + chord3 + chord4) * 0.2 - mod;
@@ -2169,20 +2196,29 @@
     }
 
     // ==========================================
-    // MACROS & GENERATIVE DRONE CHORDS
+    // DYNAMIC RANDOM HARMONIZER MACRO
     // ==========================================
-
     function macroHarmonize() {
-      voices[0].pitchSt = 0;
-      voices[1].pitchSt = 7;
-      voices[2].pitchSt = 12;
-      voices[3].pitchSt = -12;
+      // Pick a random preset different from previous one
+      let rIdx = Math.floor(Math.random() * HARMONY_PRESETS.length);
+      if (rIdx === lastHarmonyIndex && HARMONY_PRESETS.length > 1) {
+        rIdx = (rIdx + 1) % HARMONY_PRESETS.length;
+      }
+      lastHarmonyIndex = rIdx;
+
+      const p = HARMONY_PRESETS[rIdx];
+      // Randomly choose subtle root offset (-7 to +7 st) occasionally
+      const rootOffset = (Math.random() > 0.6) ? [-7, -5, 0, 2, 5, 7][Math.floor(Math.random() * 6)] : 0;
 
       for (let i = 0; i < 4; i++) {
-        document.getElementById(`pitchL${i+1}`).value = voices[i].pitchSt;
+        const pitch = Math.max(-24, Math.min(24, p.intervals[i] + rootOffset));
+        voices[i].pitchSt = pitch;
+        document.getElementById(`pitchL${i+1}`).value = pitch;
         updateVoiceParam(i);
       }
-      engineStatus.textContent = 'MACRO: HARMONIC 5THS & OCTAVES APPLIED';
+
+      const chordFormatted = p.intervals.map(x => (x >= 0 ? `+${x}` : `${x}`)).join(', ');
+      engineStatus.textContent = `HARMONIE: ${p.name} [${chordFormatted} st]`;
     }
 
     function macroRandomizeLoops() {
@@ -2280,7 +2316,7 @@
           canvasCtx.fillRect(tx - 1, 0, 2, 6);
           canvasCtx.fillRect(tx - 1, h - 6, 2, 6);
         });
-        canvasCtx.setLineDash([]); // Reset line dash
+        canvasCtx.setLineDash([]);
       }
 
       // Draw Base Waveform
@@ -2334,14 +2370,12 @@
           const xfadeFrac = (v.xfadeMs / 1000) / masterAudioBuffer.duration;
           const xfadePx = Math.min(width * 0.45, xfadeFrac * w);
           if (xfadePx > 2) {
-            // Gradient start
             const gradStart = canvasCtx.createLinearGradient(x1, 0, x1 + xfadePx, 0);
             gradStart.addColorStop(0, 'rgba(255, 255, 255, 0.35)');
             gradStart.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
             canvasCtx.fillStyle = gradStart;
             canvasCtx.fillRect(x1, 0, xfadePx, h);
 
-            // Gradient end
             const gradEnd = canvasCtx.createLinearGradient(x2 - xfadePx, 0, x2, 0);
             gradEnd.addColorStop(0, 'rgba(255, 255, 255, 0.0)');
             gradEnd.addColorStop(1, 'rgba(255, 255, 255, 0.35)');
@@ -2633,20 +2667,20 @@
       function setUint16(data) { out.setUint16(pos, data, true); pos += 2; }
       function setUint32(data) { out.setUint32(pos, data, true); pos += 4; }
 
-      setUint32(0x46464952); // "RIFF"
+      setUint32(0x46464952);
       setUint32(length - 8);
-      setUint32(0x45564157); // "WAVE"
+      setUint32(0x45564157);
 
-      setUint32(0x20746d66); // "fmt "
+      setUint32(0x20746d66);
       setUint32(16);
-      setUint16(1); // PCM
+      setUint16(1);
       setUint16(numOfChan);
       setUint32(buffer.sampleRate);
       setUint32(buffer.sampleRate * 2 * numOfChan);
       setUint16(numOfChan * 2);
       setUint16(16);
 
-      setUint32(0x61746164); // "data"
+      setUint32(0x61746164);
       setUint32(length - pos - 4);
 
       for (let i = 0; i < buffer.numberOfChannels; i++) {

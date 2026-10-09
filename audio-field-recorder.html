@@ -23,6 +23,7 @@
       --play-glow: rgba(16, 185, 129, 0.75);
       --snap-amber: #f59e0b;
       --snap-glow: rgba(245, 158, 11, 0.75);
+      --tascam-red: #dc2626;
       --oled-bg: #090b10;
       --oled-text: #38bdf8;
       
@@ -321,7 +322,7 @@
       border: 3px solid #1a1c20;
       border-radius: 8px;
       padding: 14px 18px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       box-shadow: 
         inset 0 0 12px rgba(0,0,0,0.1),
         0 2px 6px rgba(0,0,0,0.2),
@@ -517,6 +518,144 @@
       width: 0%;
       background: linear-gradient(90deg, #10b981 0%, #0284c7 65%, #ef4444 95%);
       transition: width 0.05s ease;
+    }
+
+    /* ========================================================= */
+    /* VINTAGE TASCAM MASTER TAPE PITCH CONTROLLER BAY */
+    /* ========================================================= */
+    .tascam-varispeed-bay {
+      background: linear-gradient(180deg, #1e2127 0%, #111317 100%);
+      border: 3px solid #0a0b0e;
+      border-radius: 8px;
+      padding: 12px 18px;
+      margin-bottom: 18px;
+      box-shadow: 
+        inset 0 2px 6px rgba(0,0,0,0.8),
+        0 3px 8px rgba(0,0,0,0.3),
+        0 0 0 1px #5a5d57;
+      display: grid;
+      grid-template-columns: 240px 1fr 120px;
+      gap: 20px;
+      align-items: center;
+      position: relative;
+    }
+    .tascam-badge-area {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .tascam-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #f8fafc;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tascam-strip {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      background: var(--tascam-red);
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(220, 38, 38, 0.7);
+    }
+    .tascam-sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9.5px;
+      color: #94a3b8;
+      letter-spacing: 1px;
+    }
+
+    .tascam-slider-area {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .tascam-scale-ruler {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9px;
+      font-weight: 800;
+      color: #64748b;
+      padding: 0 4px;
+    }
+    .tascam-scale-ruler span.center-fix {
+      color: var(--accent);
+      font-weight: 900;
+    }
+    .tascam-pitch-slider {
+      width: 100%;
+      height: 14px;
+      appearance: none;
+      background: #08090c;
+      border: 2px solid #282c35;
+      border-radius: 6px;
+      outline: none;
+      cursor: ew-resize;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.9);
+    }
+    .tascam-pitch-slider::-webkit-slider-thumb {
+      appearance: none;
+      width: 32px;
+      height: 28px;
+      border-radius: 4px;
+      background: linear-gradient(180deg, #e2e8f0 0%, #94a3b8 50%, #475569 100%);
+      border: 1px solid #f8fafc;
+      border-bottom: 3px solid #1e293b;
+      cursor: ew-resize;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+      position: relative;
+    }
+    .tascam-pitch-slider::-webkit-slider-thumb::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 2px; height: 16px;
+      background: var(--tascam-red);
+      transform: translate(-50%, -50%);
+    }
+
+    .tascam-readout-box {
+      background: #090b10;
+      border: 1px solid #282c35;
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      text-align: center;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.7);
+    }
+    .tascam-speed-display {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 15px;
+      font-weight: 900;
+      color: #38bdf8;
+      letter-spacing: 1px;
+    }
+    .tascam-reset-btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9px;
+      font-weight: 800;
+      background: #1e222a;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      padding: 3px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.1s ease;
+    }
+    .tascam-reset-btn:hover {
+      background: var(--tascam-red);
+      color: #fff;
+      border-color: #991b1b;
     }
 
     /* MASTER HARDWARE TRANSPORT CONTROLS */
@@ -1015,6 +1154,43 @@
       </div>
     </div>
 
+    <!-- VINTAGE TASCAM MASTER PITCH / VARISPEED CONTROLLER BAY -->
+    <div class="tascam-varispeed-bay">
+      <div class="tascam-badge-area">
+        <div class="tascam-title">
+          <span class="tascam-strip"></span>
+          <span>TASCAM // MASTER PITCH</span>
+        </div>
+        <div class="tascam-sub">PORTASTUDIO CAPSTAN MOTOR VARISPEED</div>
+      </div>
+
+      <div class="tascam-slider-area">
+        <div class="tascam-scale-ruler">
+          <span>-100% (0.5x)</span>
+          <span>-50%</span>
+          <span class="center-fix">● FIX (1.00x)</span>
+          <span>+50%</span>
+          <span>+100% (2.0x)</span>
+        </div>
+        <input 
+          type="range" 
+          id="masterTapeSpeedSlider" 
+          class="tascam-pitch-slider" 
+          min="0.25" 
+          max="2.00" 
+          step="0.01" 
+          value="1.00" 
+          oninput="updateMasterTapeSpeed(this.value)"
+          ondblclick="resetMasterTapeSpeed()"
+        >
+      </div>
+
+      <div class="tascam-readout-box">
+        <div class="tascam-speed-display" id="tascamSpeedVal">1.00x</div>
+        <button class="tascam-reset-btn" onclick="resetMasterTapeSpeed()">FIX (0%)</button>
+      </div>
+    </div>
+
     <!-- MASTER HARDWARE TRANSPORT CONTROLS -->
     <div class="transport-bar">
       <div class="transport-buttons">
@@ -1428,6 +1604,9 @@
     let isDronePlaying = false;
     let takes = [];
 
+    // Master Tascam Tape Varispeed Motor
+    let masterTapeSpeed = 1.00;
+
     // Transient Detection & Magnetic Snapping
     let isSnapToTransients = true;
     let detectedTransients = [];
@@ -1629,6 +1808,39 @@
       }
       masterDrive.curve = curve;
       masterDrive.oversample = '4x';
+    }
+
+    // ==========================================
+    // TASCAM MASTER TAPE PITCH CONTROL
+    // ==========================================
+    function updateMasterTapeSpeed(val) {
+      masterTapeSpeed = parseFloat(val);
+      const semitoneOffset = Math.round(12 * Math.log2(masterTapeSpeed) * 10) / 10;
+      const sign = semitoneOffset >= 0 ? '+' : '';
+      const percentDiff = Math.round((masterTapeSpeed - 1.0) * 100);
+      const percentSign = percentDiff >= 0 ? '+' : '';
+
+      document.getElementById('tascamSpeedVal').textContent = `${masterTapeSpeed.toFixed(2)}x (${percentSign}${percentDiff}%)`;
+      engineStatus.textContent = `TASCAM MASTER PITCH: ${masterTapeSpeed.toFixed(2)}x // ${sign}${semitoneOffset} st`;
+
+      // Update Tape Spools rotation speed in real-time
+      const reelDuration = Math.max(0.2, (1.2 / masterTapeSpeed)).toFixed(2);
+      leftReel.style.animationDuration = `${reelDuration}s`;
+      rightReel.style.animationDuration = `${reelDuration}s`;
+
+      // Update all active playback rates in real-time
+      voices.forEach((v) => {
+        if (v.sourceNode && v.sourceNode.playbackRate) {
+          const baseRate = Math.pow(2, v.pitchSt / 12);
+          v.sourceNode.playbackRate.setValueAtTime(baseRate * masterTapeSpeed, audioCtx.currentTime);
+        }
+      });
+    }
+
+    function resetMasterTapeSpeed() {
+      document.getElementById('masterTapeSpeedSlider').value = "1.00";
+      updateMasterTapeSpeed(1.00);
+      engineStatus.textContent = 'TASCAM MASTER PITCH RESET // 1.00x (FIX)';
     }
 
     // ==========================================
@@ -1981,7 +2193,7 @@
       droneMasterBtn.innerHTML = '<span>■</span> <span>PAUZE DRONE ENGINE</span>';
       leftReel.classList.add('spinning');
       rightReel.classList.add('spinning');
-      engineStatus.textContent = '4-VOICE FIELD DRONE // RUNNING (SNAP & X-FADE ACTIVE)';
+      engineStatus.textContent = '4-VOICE FIELD DRONE // RUNNING (TASCAM VARISPEED ACTIVE)';
 
       voices.forEach((v, idx) => {
         if (v.isPlaying && !v.isMuted) {
@@ -2034,8 +2246,9 @@
       src.loopStart = 0;
       src.loopEnd = crossfadedSlice.duration;
 
-      const rate = Math.pow(2, v.pitchSt / 12);
-      src.playbackRate.value = rate;
+      // Effective Rate = Voice Pitch * Master Tascam Varispeed
+      const voiceBaseRate = Math.pow(2, v.pitchSt / 12);
+      src.playbackRate.value = voiceBaseRate * masterTapeSpeed;
 
       const filter = audioCtx.createBiquadFilter();
       filter.type = 'lowpass';
@@ -2199,7 +2412,6 @@
     // DYNAMIC RANDOM HARMONIZER MACRO
     // ==========================================
     function macroHarmonize() {
-      // Pick a random preset different from previous one
       let rIdx = Math.floor(Math.random() * HARMONY_PRESETS.length);
       if (rIdx === lastHarmonyIndex && HARMONY_PRESETS.length > 1) {
         rIdx = (rIdx + 1) % HARMONY_PRESETS.length;
@@ -2207,7 +2419,6 @@
       lastHarmonyIndex = rIdx;
 
       const p = HARMONY_PRESETS[rIdx];
-      // Randomly choose subtle root offset (-7 to +7 st) occasionally
       const rootOffset = (Math.random() > 0.6) ? [-7, -5, 0, 2, 5, 7][Math.floor(Math.random() * 6)] : 0;
 
       for (let i = 0; i < 4; i++) {
@@ -2623,7 +2834,9 @@
         src.loop = true;
         src.loopStart = 0;
         src.loopEnd = crossfadedSlice.duration;
-        src.playbackRate.value = Math.pow(2, v.pitchSt / 12);
+        // Master Tascam Tape Speed multiplied in offline render
+        const baseRate = Math.pow(2, v.pitchSt / 12);
+        src.playbackRate.value = baseRate * masterTapeSpeed;
 
         const filter = offlineCtx.createBiquadFilter();
         filter.type = 'lowpass';

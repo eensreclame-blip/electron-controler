@@ -21,6 +21,8 @@
       --rec-glow: rgba(239, 68, 68, 0.75);
       --play-green: #10b981;
       --play-glow: rgba(16, 185, 129, 0.75);
+      --snap-amber: #f59e0b;
+      --snap-glow: rgba(245, 158, 11, 0.75);
       --oled-bg: #090b10;
       --oled-text: #38bdf8;
       
@@ -579,6 +581,20 @@
       color: #fff;
       box-shadow: 0 0 16px var(--rec-glow);
     }
+    .hw-btn.btn-snap {
+      background: #2b2e33;
+      border-color: #1a1c1f;
+      border-bottom-color: #0d0e10;
+      color: #cbd5e1;
+    }
+    .hw-btn.btn-snap.active {
+      background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+      color: #000;
+      font-weight: 900;
+      border-color: #b45309;
+      border-bottom-color: #78350f;
+      box-shadow: 0 0 14px var(--snap-glow);
+    }
     .hw-btn.btn-macro {
       background: #474b52;
       border-color: #2b2e33;
@@ -970,7 +986,7 @@
         <!-- Interactive 4-Loop Waveform Display -->
         <div class="waveform-box" id="waveformContainer">
           <canvas id="waveCanvas"></canvas>
-          <div class="wave-instructions">KLIK OP GOLF EN SLEEP OM EEN LOOP IN TE STELLEN (L1-L4)</div>
+          <div class="wave-instructions" id="waveHelpTxt">⚡ SNAP TO TRANSIENTS ACTIEF: SLEEP OM NAADLOOS AAN TRANSIËNTEN TE SNAPPEN</div>
         </div>
 
         <!-- Stereo VU Meters -->
@@ -999,23 +1015,27 @@
         <button class="hw-btn" id="stopBtn" onclick="stopAll()">
           <span>■</span> <span>STOP ALL</span>
         </button>
+        <!-- TRANSIENT SNAP TOGGLE -->
+        <button class="hw-btn btn-snap active" id="snapToggleBtn" onclick="toggleSnapToTransients()">
+          <span>⚡</span> <span>SNAP TRANSIENTS: ON</span>
+        </button>
       </div>
 
       <div class="transport-buttons">
+        <button class="hw-btn btn-macro" onclick="macroSliceToTransients()">
+          <span>⚡</span> <span>SLICE 4 TRANSIENTS</span>
+        </button>
         <button class="hw-btn btn-macro" onclick="macroHarmonize()">
           <span>🎵</span> <span>HARMONIZE 5THS/OCT</span>
         </button>
         <button class="hw-btn btn-macro" onclick="macroRandomizeLoops()">
-          <span>🎲</span> <span>RANDOMIZE 4 LOOPS</span>
-        </button>
-        <button class="hw-btn btn-macro" onclick="macroSpreadLoops()">
-          <span>↔</span> <span>SPREAD EVENLY</span>
+          <span>🎲</span> <span>RANDOMIZE LOOPS</span>
         </button>
         <button class="hw-btn btn-macro" onclick="macroSmoothCrossfades(500)">
-          <span>🌊</span> <span>SMOOTH X-FADES (500ms)</span>
+          <span>🌊</span> <span>SMOOTH X-FADE</span>
         </button>
         <button class="hw-btn" style="background: var(--accent); color: #fff;" onclick="exportDroneWav()">
-          <span>💾</span> <span>EXPORT DRONE WAV</span>
+          <span>💾</span> <span>EXPORT WAV</span>
         </button>
       </div>
     </div>
@@ -1026,7 +1046,7 @@
         <span>🎛</span> <span>4-VOICE LOOP CHANNELS MATRIX // DIRECT REGION SETTING</span>
       </div>
       <div style="font-size: 11px; color: #475569; font-weight: 700;">
-        START/EIND, EQUAL-POWER CROSSFADE, VARISPEED PITCH, DIRECTION & FILTERS
+        START/EIND (SNAP AAN TRANSIËNTEN), EQUAL-POWER CROSSFADE, VARISPEED PITCH, DIRECTION & FILTERS
       </div>
     </div>
 
@@ -1051,8 +1071,8 @@
             <span class="param-val" id="lblRangeL1">0% - 25%</span>
           </div>
           <div class="loop-range-inputs">
-            <input type="range" id="startL1" min="0" max="95" step="0.5" value="0" oninput="updateVoiceParam(0)">
-            <input type="range" id="endL1" min="5" max="100" step="0.5" value="25" oninput="updateVoiceParam(0)">
+            <input type="range" id="startL1" min="0" max="95" step="0.2" value="0" oninput="handleRangeInput(0, 'start', this.value)">
+            <input type="range" id="endL1" min="5" max="100" step="0.2" value="25" oninput="handleRangeInput(0, 'end', this.value)">
           </div>
         </div>
 
@@ -1122,8 +1142,8 @@
             <span class="param-val" id="lblRangeL2">20% - 55%</span>
           </div>
           <div class="loop-range-inputs">
-            <input type="range" id="startL2" min="0" max="95" step="0.5" value="20" oninput="updateVoiceParam(1)">
-            <input type="range" id="endL2" min="5" max="100" step="0.5" value="55" oninput="updateVoiceParam(1)">
+            <input type="range" id="startL2" min="0" max="95" step="0.2" value="20" oninput="handleRangeInput(1, 'start', this.value)">
+            <input type="range" id="endL2" min="5" max="100" step="0.2" value="55" oninput="handleRangeInput(1, 'end', this.value)">
           </div>
         </div>
 
@@ -1193,8 +1213,8 @@
             <span class="param-val" id="lblRangeL3">40% - 75%</span>
           </div>
           <div class="loop-range-inputs">
-            <input type="range" id="startL3" min="0" max="95" step="0.5" value="40" oninput="updateVoiceParam(2)">
-            <input type="range" id="endL3" min="5" max="100" step="0.5" value="75" oninput="updateVoiceParam(2)">
+            <input type="range" id="startL3" min="0" max="95" step="0.2" value="40" oninput="handleRangeInput(2, 'start', this.value)">
+            <input type="range" id="endL3" min="5" max="100" step="0.2" value="75" oninput="handleRangeInput(2, 'end', this.value)">
           </div>
         </div>
 
@@ -1264,8 +1284,8 @@
             <span class="param-val" id="lblRangeL4">60% - 95%</span>
           </div>
           <div class="loop-range-inputs">
-            <input type="range" id="startL4" min="0" max="95" step="0.5" value="60" oninput="updateVoiceParam(3)">
-            <input type="range" id="endL4" min="5" max="100" step="0.5" value="95" oninput="updateVoiceParam(3)">
+            <input type="range" id="startL4" min="0" max="95" step="0.2" value="60" oninput="handleRangeInput(3, 'start', this.value)">
+            <input type="range" id="endL4" min="5" max="100" step="0.2" value="95" oninput="handleRangeInput(3, 'end', this.value)">
           </div>
         </div>
 
@@ -1395,6 +1415,10 @@
     let isDronePlaying = false;
     let takes = [];
 
+    // Transient Detection & Magnetic Snapping
+    let isSnapToTransients = true;
+    let detectedTransients = []; // Array of fractions [0.0 to 1.0]
+
     // 4 Independent Loop Voices Configuration with Dedicated Crossfades
     const voices = [
       {
@@ -1485,6 +1509,7 @@
     const recLed = document.getElementById('recLed');
     const recBtn = document.getElementById('recBtn');
     const droneMasterBtn = document.getElementById('droneMasterBtn');
+    const snapToggleBtn = document.getElementById('snapToggleBtn');
     const engineStatus = document.getElementById('engineStatus');
     const timecodeDisplay = document.getElementById('timecodeDisplay');
     const leftReel = document.getElementById('leftReel');
@@ -1575,6 +1600,135 @@
     }
 
     // ==========================================
+    // TRANSIENT DETECTION ALGORITHM
+    // ==========================================
+    function analyzeBufferTransients(buffer) {
+      if (!buffer) return [0.0, 1.0];
+      const data = buffer.getChannelData(0);
+      const sampleRate = buffer.sampleRate;
+      const blockSize = 512;
+      const numBlocks = Math.floor(data.length / blockSize);
+      const energies = new Float32Array(numBlocks);
+
+      // 1. Calculate Block Energy
+      let totalEnergy = 0;
+      for (let i = 0; i < numBlocks; i++) {
+        let sum = 0;
+        const offset = i * blockSize;
+        for (let j = 0; j < blockSize; j++) {
+          const val = data[offset + j];
+          sum += val * val;
+        }
+        const rms = Math.sqrt(sum / blockSize);
+        energies[i] = rms;
+        totalEnergy += rms;
+      }
+
+      const avgEnergy = totalEnergy / numBlocks;
+      const threshold = Math.max(0.012, avgEnergy * 1.25);
+      const minGapBlocks = Math.floor((sampleRate * 0.075) / blockSize); // min 75ms distance
+      let lastBlock = -minGapBlocks;
+
+      const trans = [0.0];
+
+      // 2. Detect sudden positive slope onset peaks + Zero-Crossing
+      for (let i = 1; i < numBlocks - 1; i++) {
+        const diff = energies[i] - energies[i - 1];
+        if (diff > threshold && (i - lastBlock) >= minGapBlocks) {
+          const sampleIdx = i * blockSize;
+          // Find precise zero crossing
+          let bestIdx = sampleIdx;
+          for (let s = Math.max(0, sampleIdx - 128); s < Math.min(data.length - 1, sampleIdx + 64); s++) {
+            if ((data[s] <= 0 && data[s+1] >= 0) || (data[s] >= 0 && data[s+1] <= 0)) {
+              bestIdx = s;
+              break;
+            }
+          }
+          trans.push(bestIdx / data.length);
+          lastBlock = i;
+        }
+      }
+      trans.push(1.0);
+      return trans;
+    }
+
+    function snapToNearestTransient(pct, tolerance = 0.035) {
+      if (!isSnapToTransients || detectedTransients.length === 0) return pct;
+      let closest = pct;
+      let minDist = 999;
+      for (let i = 0; i < detectedTransients.length; i++) {
+        const dist = Math.abs(detectedTransients[i] - pct);
+        if (dist < minDist) {
+          minDist = dist;
+          closest = detectedTransients[i];
+        }
+      }
+      return minDist <= tolerance ? closest : pct;
+    }
+
+    function toggleSnapToTransients() {
+      isSnapToTransients = !isSnapToTransients;
+      snapToggleBtn.classList.toggle('active', isSnapToTransients);
+      snapToggleBtn.innerHTML = `<span>⚡</span> <span>SNAP TRANSIENTS: ${isSnapToTransients ? 'ON' : 'OFF'}</span>`;
+      
+      const help = document.getElementById('waveHelpTxt');
+      if (isSnapToTransients) {
+        help.textContent = '⚡ SNAP TO TRANSIENTS ACTIEF: SLEEP OM NAADLOOS AAN TRANSIËNTEN TE SNAPPEN';
+        engineStatus.textContent = 'TRANSIENT SNAPPING: ACTIVATED ⚡';
+      } else {
+        help.textContent = 'VRIJE SELECTIE // SNAP UITGESCHAKELD';
+        engineStatus.textContent = 'TRANSIENT SNAPPING: OFF';
+      }
+      drawWaveform();
+    }
+
+    function handleRangeInput(idx, type, val) {
+      let rawPct = parseFloat(val) / 100;
+      let snappedPct = snapToNearestTransient(rawPct);
+
+      if (type === 'start') {
+        document.getElementById(`startL${idx+1}`).value = (snappedPct * 100).toFixed(1);
+      } else {
+        document.getElementById(`endL${idx+1}`).value = (snappedPct * 100).toFixed(1);
+      }
+      updateVoiceParam(idx);
+    }
+
+    function macroSliceToTransients() {
+      if (!masterAudioBuffer || detectedTransients.length < 2) {
+        alert("Laad eerst een audiobestand met transiënten!");
+        return;
+      }
+
+      // Distribute detected transients over 4 voices
+      const t = detectedTransients;
+      const count = t.length;
+      
+      if (count >= 5) {
+        const q1 = Math.floor(count * 0.25);
+        const q2 = Math.floor(count * 0.50);
+        const q3 = Math.floor(count * 0.75);
+
+        voices[0].startPct = t[0];       voices[0].endPct = t[q1];
+        voices[1].startPct = t[q1];      voices[1].endPct = t[q2];
+        voices[2].startPct = t[q2];      voices[2].endPct = t[q3];
+        voices[3].startPct = t[q3];      voices[3].endPct = t[count - 1];
+      } else {
+        voices[0].startPct = t[0];       voices[0].endPct = t[1] || 0.25;
+        voices[1].startPct = t[1] || 0.25; voices[1].endPct = t[2] || 0.50;
+        voices[2].startPct = t[2] || 0.50; voices[2].endPct = t[3] || 0.75;
+        voices[3].startPct = t[3] || 0.75; voices[3].endPct = 1.0;
+      }
+
+      for (let i = 0; i < 4; i++) {
+        document.getElementById(`startL${i+1}`).value = (voices[i].startPct * 100).toFixed(1);
+        document.getElementById(`endL${i+1}`).value = (voices[i].endPct * 100).toFixed(1);
+        updateVoiceParam(i);
+      }
+      engineStatus.textContent = `⚡ 4 VOICES AUTOMATISCH GESNAPT AAN ${detectedTransients.length} TRANSIËNTEN`;
+    }
+
+    // ==========================================
     // AUDIO FILE LOADING & IMPORTING
     // ==========================================
 
@@ -1604,8 +1758,9 @@
         const arrayBuffer = await file.arrayBuffer();
         masterAudioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
         
-        loadedFileLabel.textContent = `${file.name.substring(0, 24)} (${masterAudioBuffer.duration.toFixed(1)}s)`;
-        engineStatus.textContent = `BUFFER GELADEN // 4-VOICE DRONE KLAAR`;
+        detectedTransients = analyzeBufferTransients(masterAudioBuffer);
+        loadedFileLabel.textContent = `${file.name.substring(0, 20)} (${masterAudioBuffer.duration.toFixed(1)}s // ${detectedTransients.length} onsets)`;
+        engineStatus.textContent = `BUFFER GELADEN // ${detectedTransients.length} TRANSIËNTEN GEDETECTEERD ⚡`;
         
         takes.unshift({
           id: takes.length + 1,
@@ -1697,7 +1852,8 @@
       }
 
       masterAudioBuffer = buffer;
-      engineStatus.textContent = `PRESET ACTIVE // 4-VOICE DRONE KLAAR`;
+      detectedTransients = analyzeBufferTransients(masterAudioBuffer);
+      engineStatus.textContent = `PRESET ACTIVE // ${detectedTransients.length} TRANSIËNTEN KLAAR`;
       drawWaveform();
       if (isDronePlaying) restartAllVoices();
     }
@@ -1705,14 +1861,12 @@
     // ==========================================
     // SEAMLESS CROSSFADE BUFFER SYNTHESIS
     // ==========================================
-    // Generates a perfectly crossfaded, 100% click-free loop slice
     function createCrossfadedLoopBuffer(origBuffer, startSec, endSec, xfadeMs, direction = 'fwd') {
       const sampleRate = origBuffer.sampleRate;
       let startSample = Math.floor(startSec * sampleRate);
       let endSample = Math.min(origBuffer.length, Math.floor(endSec * sampleRate));
       let rawLength = Math.max(256, endSample - startSample);
 
-      // Extract slice channels
       const channels = origBuffer.numberOfChannels;
       let rawSlice = [];
       for (let ch = 0; ch < channels; ch++) {
@@ -1722,11 +1876,9 @@
           slice[i] = fullData[startSample + i];
         }
 
-        // Handle reverse
         if (direction === 'rev') {
           slice.reverse();
         } else if (direction === 'pingpong') {
-          // Ping-Pong: Forward slice concatenated with reversed slice
           const ppSlice = new Float32Array(rawLength * 2);
           for (let i = 0; i < rawLength; i++) {
             ppSlice[i] = slice[i];
@@ -1742,12 +1894,10 @@
         rawLength = rawLength * 2;
       }
 
-      // Calculate crossfade samples (capped at 45% of slice length)
       let xfadeSamples = Math.floor((xfadeMs / 1000) * sampleRate);
       xfadeSamples = Math.min(xfadeSamples, Math.floor(rawLength * 0.45));
 
       if (xfadeSamples <= 2) {
-        // No crossfade, return direct buffer
         const directBuf = audioCtx.createBuffer(channels, rawLength, sampleRate);
         for (let ch = 0; ch < channels; ch++) {
           directBuf.getChannelData(ch).set(rawSlice[ch]);
@@ -1755,7 +1905,6 @@
         return directBuf;
       }
 
-      // Equal-power crossfaded length = rawLength - xfadeSamples
       const finalLength = rawLength - xfadeSamples;
       const xfadedBuf = audioCtx.createBuffer(channels, finalLength, sampleRate);
 
@@ -1763,10 +1912,8 @@
         const srcData = rawSlice[ch];
         const outData = xfadedBuf.getChannelData(ch);
 
-        // 1. Crossfade region: overlap end tail with start head
         for (let i = 0; i < xfadeSamples; i++) {
           const ratio = i / xfadeSamples;
-          // Equal power crossfade curve
           const fadeIn = Math.sin(ratio * Math.PI * 0.5);
           const fadeOut = Math.cos(ratio * Math.PI * 0.5);
 
@@ -1775,7 +1922,6 @@
           outData[i] = (startVal * fadeIn) + (endVal * fadeOut);
         }
 
-        // 2. Middle region: pure unadulterated source
         for (let i = xfadeSamples; i < finalLength; i++) {
           outData[i] = srcData[i];
         }
@@ -1808,7 +1954,7 @@
       droneMasterBtn.innerHTML = '<span>■</span> <span>PAUZE DRONE ENGINE</span>';
       leftReel.classList.add('spinning');
       rightReel.classList.add('spinning');
-      engineStatus.textContent = '4-VOICE FIELD DRONE // RUNNING (CROSSFADE ACTIVE)';
+      engineStatus.textContent = '4-VOICE FIELD DRONE // RUNNING (SNAP & X-FADE ACTIVE)';
 
       voices.forEach((v, idx) => {
         if (v.isPlaying && !v.isMuted) {
@@ -1837,7 +1983,6 @@
       stopAllDroneVoices();
     }
 
-    // Voice Loop Triggering with Dynamic Crossfade Buffer
     function startVoiceLoop(idx) {
       if (!audioCtx || !masterAudioBuffer) return;
       const v = voices[idx];
@@ -1848,7 +1993,6 @@
       let endSec = v.endPct * dur;
       if (endSec <= startSec) endSec = startSec + 0.1;
 
-      // Synthesize seamless crossfade loop buffer
       const crossfadedSlice = createCrossfadedLoopBuffer(
         masterAudioBuffer,
         startSec,
@@ -1863,11 +2007,9 @@
       src.loopStart = 0;
       src.loopEnd = crossfadedSlice.duration;
 
-      // Pitch calculation (semitones to playback rate: 2^(st/12))
       const rate = Math.pow(2, v.pitchSt / 12);
       src.playbackRate.value = rate;
 
-      // Voice Channel Routing: Source -> Filter -> Pan -> Gain -> MasterDrive
       const filter = audioCtx.createBiquadFilter();
       filter.type = 'lowpass';
       filter.frequency.value = v.filterCutoff;
@@ -1931,8 +2073,8 @@
       const panVal = parseFloat(document.getElementById(`panL${i}`).value);
       const filtVal = parseFloat(document.getElementById(`filtL${i}`).value);
 
-      v.startPct = Math.min(startVal, endVal - 0.02);
-      v.endPct = Math.max(endVal, v.startPct + 0.02);
+      v.startPct = Math.min(startVal, endVal - 0.01);
+      v.endPct = Math.max(endVal, v.startPct + 0.01);
       v.xfadeMs = xfadeVal;
       v.pitchSt = pitchVal;
       v.vol = volVal;
@@ -1940,7 +2082,7 @@
       v.filterCutoff = filtVal;
 
       // Update UI Labels
-      document.getElementById(`lblRangeL${i}`).textContent = `${Math.round(v.startPct*100)}% - ${Math.round(v.endPct*100)}%`;
+      document.getElementById(`lblRangeL${i}`).textContent = `${(v.startPct*100).toFixed(1)}% - ${(v.endPct*100).toFixed(1)}%`;
       document.getElementById(`lblXfadeL${i}`).textContent = xfadeVal === 0 ? 'OFF (0ms)' : `${xfadeVal} ms`;
       
       const pitchRate = Math.pow(2, pitchVal / 12).toFixed(2);
@@ -1953,12 +2095,10 @@
 
       document.getElementById(`lblFiltL${i}`).textContent = filtVal >= 11500 ? 'OFF' : `${Math.round(filtVal)} Hz`;
 
-      // Apply Realtime to WebAudio nodes
       if (v.panNode && v.panNode.pan) v.panNode.pan.value = v.pan;
       if (v.gainNode && !v.isMuted) v.gainNode.gain.value = v.vol;
       if (v.filterNode) v.filterNode.frequency.value = v.filterCutoff;
 
-      // If loop boundary, crossfade or pitch changed, restart loop node smoothly
       if (isDronePlaying && v.isPlaying && !v.isMuted) {
         startVoiceLoop(idx);
       }
@@ -2048,28 +2188,21 @@
     function macroRandomizeLoops() {
       voices.forEach((v, idx) => {
         const span = 0.15 + Math.random() * 0.35;
-        const start = Math.random() * (1.0 - span);
+        let start = Math.random() * (1.0 - span);
+        let end = start + span;
+
+        if (isSnapToTransients) {
+          start = snapToNearestTransient(start);
+          end = snapToNearestTransient(end);
+        }
+
         v.startPct = start;
-        v.endPct = start + span;
-        document.getElementById(`startL${idx+1}`).value = Math.round(start * 100);
-        document.getElementById(`endL${idx+1}`).value = Math.round((start + span) * 100);
+        v.endPct = Math.max(end, start + 0.02);
+        document.getElementById(`startL${idx+1}`).value = (v.startPct * 100).toFixed(1);
+        document.getElementById(`endL${idx+1}`).value = (v.endPct * 100).toFixed(1);
         updateVoiceParam(idx);
       });
-      engineStatus.textContent = 'MACRO: 4 GENERATIVE LOOP REGIONS SET';
-    }
-
-    function macroSpreadLoops() {
-      voices[0].startPct = 0.0;  voices[0].endPct = 0.25;
-      voices[1].startPct = 0.25; voices[1].endPct = 0.50;
-      voices[2].startPct = 0.50; voices[2].endPct = 0.75;
-      voices[3].startPct = 0.75; voices[3].endPct = 1.0;
-
-      for (let i = 0; i < 4; i++) {
-        document.getElementById(`startL${i+1}`).value = Math.round(voices[i].startPct * 100);
-        document.getElementById(`endL${i+1}`).value = Math.round(voices[i].endPct * 100);
-        updateVoiceParam(i);
-      }
-      engineStatus.textContent = 'MACRO: 4 LOOPS EVENLY DISTRIBUTED';
+      engineStatus.textContent = 'MACRO: 4 GENERATIVE LOOP REGIONS SET (SNAPPED)';
     }
 
     function macroSmoothCrossfades(ms = 500) {
@@ -2127,6 +2260,27 @@
         canvasCtx.textAlign = 'center';
         canvasCtx.fillText('GEEN AUDIO BUFFER // SLEEP AUDIO HIER OF KIES PRESET', w / 2, h / 2 + 4);
         return;
+      }
+
+      // Draw Transients Markers (Vertical Tick Lines & Glowing Top/Bottom Markers)
+      if (detectedTransients.length > 0) {
+        canvasCtx.strokeStyle = isSnapToTransients ? 'rgba(245, 158, 11, 0.45)' : 'rgba(100, 116, 139, 0.25)';
+        canvasCtx.setLineDash([3, 4]);
+        canvasCtx.lineWidth = 1;
+
+        detectedTransients.forEach((tPct) => {
+          const tx = tPct * w;
+          canvasCtx.beginPath();
+          canvasCtx.moveTo(tx, 0);
+          canvasCtx.lineTo(tx, h);
+          canvasCtx.stroke();
+
+          // Top and bottom tick indicators
+          canvasCtx.fillStyle = isSnapToTransients ? '#f59e0b' : '#64748b';
+          canvasCtx.fillRect(tx - 1, 0, 2, 6);
+          canvasCtx.fillRect(tx - 1, h - 6, 2, 6);
+        });
+        canvasCtx.setLineDash([]); // Reset line dash
       }
 
       // Draw Base Waveform
@@ -2198,15 +2352,15 @@
 
         // Loop ID Tag
         canvasCtx.fillStyle = voiceColors[idx];
-        canvasCtx.fillRect(x1, 0, 36, 14);
+        canvasCtx.fillRect(x1, 0, 42, 14);
         canvasCtx.fillStyle = '#ffffff';
         canvasCtx.font = 'bold 9px Share Tech Mono, monospace';
         canvasCtx.textAlign = 'center';
-        canvasCtx.fillText(`L${idx+1} 🌊`, x1 + 18, 10);
+        canvasCtx.fillText(`L${idx+1} ⚡🌊`, x1 + 21, 10);
       });
     }
 
-    // Click & Drag on Waveform to Set Loop Points for Active Voice
+    // Click & Drag on Waveform to Set Loop Points for Active Voice (with Magnetic Snap)
     let isDraggingWave = false;
     let dragStartX = 0;
 
@@ -2214,23 +2368,25 @@
       if (!masterAudioBuffer) return;
       isDraggingWave = true;
       const rect = waveCanvas.getBoundingClientRect();
-      dragStartX = (e.clientX - rect.left) / rect.width;
+      const rawX = (e.clientX - rect.left) / rect.width;
+      dragStartX = snapToNearestTransient(rawX);
     });
 
     waveCanvas.addEventListener('mousemove', (e) => {
       if (!isDraggingWave || !masterAudioBuffer) return;
       const rect = waveCanvas.getBoundingClientRect();
-      const currentX = (e.clientX - rect.left) / rect.width;
+      const currentRawX = (e.clientX - rect.left) / rect.width;
+      const currentX = snapToNearestTransient(currentRawX);
 
       const start = Math.max(0, Math.min(dragStartX, currentX));
       const end = Math.min(1.0, Math.max(dragStartX, currentX));
 
-      if (end - start > 0.02) {
+      if (end - start > 0.01) {
         const v = voices[activeVoiceIndex];
         v.startPct = start;
         v.endPct = end;
-        document.getElementById(`startL${activeVoiceIndex+1}`).value = Math.round(start * 100);
-        document.getElementById(`endL${activeVoiceIndex+1}`).value = Math.round(end * 100);
+        document.getElementById(`startL${activeVoiceIndex+1}`).value = (start * 100).toFixed(1);
+        document.getElementById(`endL${activeVoiceIndex+1}`).value = (end * 100).toFixed(1);
         updateVoiceParam(activeVoiceIndex);
       }
     });
@@ -2259,7 +2415,6 @@
           if (deviation > peak) peak = deviation;
         }
 
-        // Update VU Meters
         const vuPercent = Math.min(100, Math.round((peak / 128) * 100 * 1.6));
         vuL.style.width = vuPercent + '%';
         vuR.style.width = Math.max(0, vuPercent - (Math.random() * 4)) + '%';
@@ -2297,6 +2452,8 @@
           const arrayBuffer = await recordedBlob.arrayBuffer();
           masterAudioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
           
+          detectedTransients = analyzeBufferTransients(masterAudioBuffer);
+
           const takeObj = {
             id: takes.length + 1,
             name: `MIC_CAPTURE_TAKE_${takes.length + 1}.wav`,
@@ -2306,7 +2463,7 @@
             blob: recordedBlob
           };
           takes.unshift(takeObj);
-          loadedFileLabel.textContent = `${takeObj.name} (${takeObj.duration})`;
+          loadedFileLabel.textContent = `${takeObj.name} (${takeObj.duration} // ${detectedTransients.length} onsets)`;
           renderTakes();
           drawWaveform();
         };
@@ -2351,7 +2508,6 @@
       timecodeDisplay.textContent = `${mins}:${secs}.${cs}`;
     }
 
-    // Render Takes Table
     function renderTakes() {
       const list = document.getElementById('takesList');
       document.getElementById('takesCount').textContent = `${takes.length} TAKES / SAMPLES SAVED`;
@@ -2377,10 +2533,11 @@
 
     function loadTake(idx) {
       masterAudioBuffer = takes[idx].buffer;
-      loadedFileLabel.textContent = `${takes[idx].name} (${takes[idx].duration})`;
+      detectedTransients = analyzeBufferTransients(masterAudioBuffer);
+      loadedFileLabel.textContent = `${takes[idx].name} (${takes[idx].duration} // ${detectedTransients.length} onsets)`;
       drawWaveform();
       if (isDronePlaying) restartAllVoices();
-      engineStatus.textContent = `TAKE #${takes[idx].id} LOADED INTO 4-VOICE ENGINE`;
+      engineStatus.textContent = `TAKE #${takes[idx].id} LOADED // ${detectedTransients.length} TRANSIËNTEN`;
     }
 
     // ==========================================
@@ -2394,7 +2551,7 @@
 
       engineStatus.textContent = 'RENDERING 4-VOICE DRONE MIXDOWN (15 SEC)...';
       const sampleRate = 48000;
-      const renderDuration = 15.0; // Render a 15-second seamless drone loop
+      const renderDuration = 15.0;
       const offlineCtx = new OfflineAudioContext(2, sampleRate * renderDuration, sampleRate);
 
       const offMasterGain = offlineCtx.createGain();
@@ -2412,7 +2569,6 @@
       offReverbGain.connect(offMasterGain);
       offMasterGain.connect(offlineCtx.destination);
 
-      // Render all active voices with true equal-power crossfades
       voices.forEach((v) => {
         if (!v.isPlaying || v.isMuted) return;
 
@@ -2465,7 +2621,6 @@
       engineStatus.textContent = 'DRONE WAV EXPORTED // SUCCES';
     }
 
-    // Helper: AudioBuffer to 16-bit PCM WAV Blob
     function bufferToWaveBlob(buffer) {
       const numOfChan = buffer.numberOfChannels;
       const length = buffer.length * numOfChan * 2 + 44;
@@ -2478,22 +2633,21 @@
       function setUint16(data) { out.setUint16(pos, data, true); pos += 2; }
       function setUint32(data) { out.setUint32(pos, data, true); pos += 4; }
 
-      // WAV Header
       setUint32(0x46464952); // "RIFF"
-      setUint32(length - 8); // file length - 8
+      setUint32(length - 8);
       setUint32(0x45564157); // "WAVE"
 
-      setUint32(0x20746d66); // "fmt " chunk
-      setUint32(16); // length = 16
-      setUint16(1); // PCM (uncompressed)
+      setUint32(0x20746d66); // "fmt "
+      setUint32(16);
+      setUint16(1); // PCM
       setUint16(numOfChan);
       setUint32(buffer.sampleRate);
-      setUint32(buffer.sampleRate * 2 * numOfChan); // byte rate
-      setUint16(numOfChan * 2); // block align
-      setUint16(16); // bits per sample
+      setUint32(buffer.sampleRate * 2 * numOfChan);
+      setUint16(numOfChan * 2);
+      setUint16(16);
 
-      setUint32(0x61746164); // "data" - chunk
-      setUint32(length - pos - 4); // chunk length
+      setUint32(0x61746164); // "data"
+      setUint32(length - pos - 4);
 
       for (let i = 0; i < buffer.numberOfChannels; i++) {
         channels.push(buffer.getChannelData(i));

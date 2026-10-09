@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "lectron",
+  "name": "electron-controler",
   "compatibility_date": "2026-10-06",
   "observability": {
     "enabled": true

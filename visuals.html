@@ -3,28 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ELEKTRON // VISUALS</title>
+  <title>ELEKTRON // VISUALS WORKSTATION</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;700;800;900&display=swap');
 
     :root {
-      --chassis-bg: #90938f;
-      --chassis-surface: #9ea19c;
-      --chassis-recess: #828580;
-      --panel-border: #747772;
-      --text: #26282b;
-      --text-muted: #55595f;
-      --text-dim: #73787f;
-      --accent: #ff7538;
-      --accent-glow: rgba(255, 117, 56, 0.65);
-      --oled-bg: #ffffff;
-      --oled-text: #0f172a;
+      --chassis-bg: #14161a; /* Dark Matte Stealth Metal DIGITAKT style */
+      --chassis-surface: #1e222a;
+      --chassis-recess: #0c0d10;
+      --panel-border: #232732;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent: #10b981; /* Emerald Green LED Glow */
+      --accent-glow: rgba(16, 185, 129, 0.65);
+      --oled-bg: #08090d;
+      --oled-text: #34d399;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
 
     body {
-      background: radial-gradient(circle at 50% 20%, #1f2126 0%, #0d0e11 100%);
+      background: radial-gradient(circle at 50% 20%, #15181f 0%, #08090c 100%);
       color: var(--text);
       min-height: 100vh;
       padding: 16px 16px 36px 16px;
@@ -33,7 +33,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* TOP GLOBAL NAVIGATION BAR (BOVEN HET APPARAAT) */
+    /* TOP GLOBAL NAVIGATION BAR */
     .top-nav-bar {
       max-width: 1400px;
       margin: 0 auto 14px auto;
@@ -98,108 +98,266 @@
       max-width: 1400px;
       margin: 0 auto;
       background: var(--chassis-bg);
-      border: 3px solid #6b6e68;
-      border-radius: 20px;
-      padding: 24px 28px;
+      border-radius: 12px;
+      border: 4px solid var(--panel-border);
       box-shadow: 
-        0 40px 80px rgba(0,0,0,0.85),
-        inset 0 2px 2px rgba(255,255,255,0.45),
-        inset 0 -4px 8px rgba(0,0,0,0.4);
+        0 20px 50px rgba(0,0,0,0.95),
+        0 4px 12px rgba(0,0,0,0.7),
+        inset 0 1px 2px rgba(255,255,255,0.1),
+        inset 0 -2px 4px rgba(0,0,0,0.8);
+      padding: 24px 28px 32px 28px;
       position: relative;
     }
 
+    /* HEADER */
     header {
       display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      align-items: center;
       justify-content: space-between;
-      padding-bottom: 18px;
-      border-bottom: 2px solid rgba(0, 0, 0, 0.18);
-      margin-bottom: 24px;
+      align-items: center;
+      margin-bottom: 22px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--panel-border);
     }
-
     .logo {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
+      color: #f1f5f9;
     }
-
     .elektron-svg-logo {
       height: 24px;
       width: auto;
-      color: var(--text);
-      display: block;
-      filter: drop-shadow(0 1px 0 rgba(255,255,255,0.25));
+      fill: #f1f5f9;
     }
-
     .badge {
       font-family: 'Share Tech Mono', monospace;
       font-size: 11px;
-      background: #e2e4df;
-      border: 1px solid #777a74;
-      padding: 3px 8px;
-      border-radius: 3px;
-      color: #1a1c20;
-      letter-spacing: 0.8px;
       font-weight: 700;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.15);
-    }
-
-    /* OLED SCREEN PANEL */
-    .oled-screen {
-      background: #ffffff;
-      border: 3px solid #1a1c20;
-      border-radius: 8px;
-      padding: 50px 24px;
-      min-height: 420px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      box-shadow: 
-        inset 0 0 10px rgba(0,0,0,0.1),
-        0 2px 6px rgba(0,0,0,0.2),
-        0 0 0 2px #737670;
-      text-align: center;
-    }
-
-    .oled-screen h2 {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 22px;
       letter-spacing: 2px;
-      color: #0f172a;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      color: #cbd5e1;
+      background: #0f1115;
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid #2d3340;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.6);
     }
-
-    .oled-screen p {
+    .hub-title {
       font-family: 'Share Tech Mono', monospace;
       font-size: 13px;
-      color: #64748b;
-      letter-spacing: 1px;
-      max-width: 520px;
-      line-height: 1.6;
+      letter-spacing: 2px;
+      font-weight: 800;
+      color: #94a3b8;
+      text-transform: uppercase;
     }
 
-    .footer-bar {
+    /* HUB BANNER */
+    .hub-intro {
+      background: #090a0d;
+      border: 2px solid #222632;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      box-shadow: 
+        inset 0 3px 10px rgba(0,0,0,0.9),
+        0 1px 0 rgba(255,255,255,0.05);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 24px;
-      font-size: 11px;
-      color: var(--text-muted);
-      border-top: 1px solid #757873;
-      padding-top: 12px;
+    }
+    .hub-intro-text h2 {
       font-family: 'Share Tech Mono', monospace;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #f8fafc;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hub-intro-text p {
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .hub-stats {
+      display: flex;
+      gap: 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .stat-pill {
+      background: #151821;
+      border: 1px solid #2a3142;
+      padding: 6px 12px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .stat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent-glow);
+    }
+
+    /* TOOL CARDS GRID */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 20px;
+    }
+
+    /* INDIVIDUAL TOOL CARD */
+    .tool-card {
+      background: #161920;
+      border: 2px solid #232732;
+      border-radius: 8px;
+      box-shadow: 
+        inset 0 2px 4px rgba(0,0,0,0.6),
+        0 4px 10px rgba(0,0,0,0.4);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+    .tool-card:hover {
+      transform: translateY(-3px);
+      border-color: #3b4254;
+      box-shadow: 
+        inset 0 1px 2px rgba(255,255,255,0.08),
+        0 10px 24px rgba(0,0,0,0.7);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .card-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .card-tag.live {
+      background: var(--accent);
+      color: #000;
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+    .card-tag.lab {
+      background: #0b0c10;
+      color: #94a3b8;
+      border: 1px solid #232732;
+    }
+
+    .card-channel-num {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      font-weight: 800;
+      color: #64748b;
+    }
+
+    /* CARD SCREEN (OLED PREVIEW) */
+    .card-screen {
+      background: #090a0d;
+      border: 2px solid #222632;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 14px;
+      height: 130px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    }
+    .card-screen svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .card-info h3 {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #f1f5f9;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .card-info p {
+      color: #94a3b8;
+      font-size: 11.5px;
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+
+    .card-specs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .spec-pill {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 700;
+      background: #0f1117;
+      color: #cbd5e1;
+      padding: 3px 7px;
+      border-radius: 3px;
+      border: 1px solid #252b3b;
+    }
+
+    /* LAUNCH BUTTON */
+    .card-launch-btn {
+      background: linear-gradient(180deg, #282d38 0%, #151820 100%);
+      border: 1px solid #232732;
+      border-bottom: 2px solid #0d0f14;
+      color: #f8fafc;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      padding: 10px 14px;
+      border-radius: 5px;
+      text-align: center;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 3px 5px rgba(0,0,0,0.5);
+      transition: all 0.1s ease;
+    }
+    .tool-card:hover .card-launch-btn {
+      background: var(--accent);
+      color: #000000;
+      border-color: #059669;
+      border-bottom-color: #047857;
+      box-shadow: 0 0 12px var(--accent-glow);
     }
   </style>
 </head>
 <body>
-  <!-- TOP NAVIGATION BAR (BOVEN DE TOOL) -->
+  <!-- TOP NAVIGATION BAR -->
   <nav class="top-nav-bar">
     <div class="top-nav-brand">
       <span>⚙</span> ELEKTRON // SUITE
@@ -227,18 +385,177 @@
           <path id="o" d="M222.299,35.004L196.799,35.004L200.999,14.004L226.499,14.005L222.299,35.004ZM215.999,16.504L210.499,16.504L207.299,32.504L212.799,32.504L215.999,16.504Z"/>
           <path id="n" d="M229.501,14.004L255.001,14.005L250.801,35.004L240.801,35.004L244.501,16.504L239.001,16.504L235.301,35.004L225.301,35.004L229.501,14.004Z"/>
         </svg>
-        <span class="badge">VISUALS ENGINE</span>
+        <span class="badge">VISUALS HUB</span>
+      </div>
+      <div class="hub-title">
+        VJ & GENERATIVE GRAPHICS // 4 MODULES
       </div>
     </header>
 
-    <div class="oled-screen">
-      <h2>✨ // VISUALS ENGINE</h2>
-      <p>Lege visuals workspace voor MIDI-reactive graphics, GLSL shaders, canvas animaties of TouchDesigner integratie.</p>
+    <!-- HUB INTRO BANNER -->
+    <div class="hub-intro">
+      <div class="hub-intro-text">
+        <h2><span>🔮</span> GENERATIVE VISUALS & VJ BRIDGE RACK</h2>
+        <p>Real-time WebGL oscilloscopen, GPU shaders en TouchDesigner/OSC netwerk bridges.</p>
+      </div>
+      <div class="hub-stats">
+        <div class="stat-pill"><span class="stat-dot"></span> WEBGL 2.0 / GPU</div>
+        <div class="stat-pill">60 FPS REALTIME</div>
+      </div>
     </div>
 
-    <div class="footer-bar">
-      <div>Elektron Hardware Environment</div>
-      <div>Module: Visuals</div>
+    <!-- TOOLS GRID (THUMBNAILS) -->
+    <div class="tools-grid">
+
+      <!-- VISUALS TOOL 1: 3D OSCILLOSCOPE -->
+      <div class="tool-card">
+        <div>
+          <div class="card-top">
+            <span class="card-tag live">WEBGL 3D</span>
+            <span class="card-channel-num">01</span>
+          </div>
+          <div class="card-screen">
+            <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="100" fill="#090a0d"/>
+              <!-- 3D Neon Wireframe Wave -->
+              <path d="M 20 50 Q 80 10, 160 50 T 300 50" stroke="#10b981" stroke-width="2.5" fill="none"/>
+              <path d="M 20 60 Q 80 20, 160 60 T 300 60" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 2" fill="none"/>
+              <path d="M 20 70 Q 80 30, 160 70 T 300 70" stroke="#047857" stroke-width="1" stroke-dasharray="2 4" fill="none"/>
+              <text x="15" y="25" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#34d399">3D LISSAJOUS // MIDI NOTE REACTIVE</text>
+            </svg>
+          </div>
+          <div class="card-info">
+            <h3>MIDI Reactive 3D Oscilloscope</h3>
+            <p>Real-time 3D vector-graphics oscilloscope die live reageert op noot-triggers, velocity en pitch bends met neon vector-glow effecten.</p>
+          </div>
+          <div class="card-specs">
+            <span class="spec-pill">WEBGL 2</span>
+            <span class="spec-pill">3D ROTATION</span>
+            <span class="spec-pill">GLOW BLOOM</span>
+            <span class="spec-pill">PITCH TRACK</span>
+          </div>
+        </div>
+        <div class="card-launch-btn">
+          <span>START 3D SCOPE</span> <span>➔</span>
+        </div>
+      </div>
+
+      <!-- VISUALS TOOL 2: TOUCHDESIGNER BRIDGE -->
+      <div class="tool-card">
+        <div>
+          <div class="card-top">
+            <span class="card-tag lab">VJ BRIDGE</span>
+            <span class="card-channel-num">02</span>
+          </div>
+          <div class="card-screen">
+            <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="100" fill="#090a0d"/>
+              <!-- TouchDesigner Node Connection Diagram -->
+              <rect x="30" y="30" width="70" height="40" rx="4" fill="#151821" stroke="#34d399" stroke-width="1.5"/>
+              <text x="65" y="54" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#34d399" text-anchor="middle">WEB MIDI</text>
+              <line x1="100" y1="50" x2="160" y2="50" stroke="#10b981" stroke-width="2" stroke-dasharray="4 2"/>
+              <rect x="160" y="25" width="130" height="50" rx="4" fill="#151821" stroke="#38bdf8" stroke-width="1.5"/>
+              <text x="225" y="48" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#38bdf8" text-anchor="middle">TOUCHDESIGNER</text>
+              <text x="225" y="62" font-family="Share Tech Mono" font-size="9" fill="#94a3b8" text-anchor="middle">OSC: 127.0.0.1:9000</text>
+            </svg>
+          </div>
+          <div class="card-info">
+            <h3>TouchDesigner / OSC Web Bridge</h3>
+            <p>Stuur realtime sequencer triggers, CC modal waarden en clock pulses direct door naar TouchDesigner of Resolume via WebSocket & OSC.</p>
+          </div>
+          <div class="card-specs">
+            <span class="spec-pill">OSC GATEWAY</span>
+            <span class="spec-pill">WEBSOCKET</span>
+            <span class="spec-pill">TOUCHDESIGNER</span>
+            <span class="spec-pill">RESOLUME</span>
+          </div>
+        </div>
+        <div class="card-launch-btn">
+          <span>CONNECT OSC BRIDGE</span> <span>➔</span>
+        </div>
+      </div>
+
+      <!-- VISUALS TOOL 3: GLSL SHADER SYNTH -->
+      <div class="tool-card">
+        <div>
+          <div class="card-top">
+            <span class="card-tag lab">GPU SHADER</span>
+            <span class="card-channel-num">03</span>
+          </div>
+          <div class="card-screen">
+            <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="100" fill="#090a0d"/>
+              <!-- Raymarching tunnel rings -->
+              <ellipse cx="160" cy="50" rx="120" ry="38" stroke="#10b981" stroke-width="1.5" opacity="0.3"/>
+              <ellipse cx="160" cy="50" rx="80" ry="25" stroke="#10b981" stroke-width="2" opacity="0.6"/>
+              <ellipse cx="160" cy="50" rx="40" ry="12" stroke="#34d399" stroke-width="2.5" opacity="0.9"/>
+              <circle cx="160" cy="50" r="4" fill="#34d399"/>
+              <text x="15" y="88" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#34d399">GLSL FRAGMENT // RAYMARCHING TUNNEL</text>
+            </svg>
+          </div>
+          <div class="card-info">
+            <h3>Generative GLSL Shader Synth</h3>
+            <p>GPU-accelerated fragment shader visualizer met tunnels, fractals en abstracte geometrische patronen gemoduleerd door MIDI parameters.</p>
+          </div>
+          <div class="card-specs">
+            <span class="spec-pill">GLSL 100</span>
+            <span class="spec-pill">RAYMARCHING</span>
+            <span class="spec-pill">CC UNIFORMS</span>
+            <span class="spec-pill">AUDIO-IN MOD</span>
+          </div>
+        </div>
+        <div class="card-launch-btn">
+          <span>LAUNCH SHADER SYNTH</span> <span>➔</span>
+        </div>
+      </div>
+
+      <!-- VISUALS TOOL 4: OLED MATRIX DISPLAY -->
+      <div class="tool-card">
+        <div>
+          <div class="card-top">
+            <span class="card-tag lab">PIXEL LAB</span>
+            <span class="card-channel-num">04</span>
+          </div>
+          <div class="card-screen">
+            <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="100" fill="#090a0d"/>
+              <!-- Pixelated OLED Grid Graphic -->
+              <g fill="#10b981">
+                <rect x="40" y="30" width="8" height="8" rx="1"/>
+                <rect x="52" y="30" width="8" height="8" rx="1"/>
+                <rect x="64" y="30" width="8" height="8" rx="1"/>
+                <rect x="76" y="30" width="8" height="8" rx="1"/>
+                <rect x="88" y="30" width="8" height="8" rx="1"/>
+                
+                <rect x="40" y="42" width="8" height="8" rx="1"/>
+                <rect x="88" y="42" width="8" height="8" rx="1"/>
+                
+                <rect x="40" y="54" width="8" height="8" rx="1"/>
+                <rect x="52" y="54" width="8" height="8" rx="1"/>
+                <rect x="64" y="54" width="8" height="8" rx="1"/>
+                <rect x="76" y="54" width="8" height="8" rx="1"/>
+                <rect x="88" y="54" width="8" height="8" rx="1"/>
+              </g>
+              <text x="120" y="50" font-family="Share Tech Mono" font-size="14" font-weight="bold" fill="#34d399">128x64 OLED</text>
+              <text x="120" y="66" font-family="Share Tech Mono" font-size="10" fill="#94a3b8">HARDWARE DISPLAY EMULATION</text>
+            </svg>
+          </div>
+          <div class="card-info">
+            <h3>OLED Pixel Display Matrix</h3>
+            <p>128x64 monochroom pixel art en OLED display generator voor custom animaties, waveform displays en hardware telemetry visualisaties.</p>
+          </div>
+          <div class="card-specs">
+            <span class="spec-pill">128x64 MONO</span>
+            <span class="spec-pill">PIXEL ART</span>
+            <span class="spec-pill">BITMAP FONT</span>
+            <span class="spec-pill">CUSTOM SPRITES</span>
+          </div>
+        </div>
+        <div class="card-launch-btn">
+          <span>OPEN PIXEL LAB</span> <span>➔</span>
+        </div>
+      </div>
+
     </div>
   </div>
 </body>

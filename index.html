@@ -3,92 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ELEKTRON // LAB ULTRA - Modal CC Editor</title>
+  <title>ELEKTRON // MIDI WORKSTATION</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;700;800;900&display=swap');
 
     :root {
-      --chassis-bg: #8f928e;
-      --chassis-surface: #9ea19c;
-      --chassis-recess: #848782;
-      --panel-border: #757873;
-      --text: #26282b;
-      --text-muted: #55595f;
-      --text-dim: #73787f;
-      --accent: #ff8c42; /* Model:Cycles Orange LED Glow */
-      --accent-glow: rgba(255, 140, 66, 0.6);
-      --oled-bg: #ffffff;
-      --oled-text: #1a1c20;
-      --step-off: #7f827e;
-      --step-off-border: #6d706a;
-      --step-on: var(--accent);
-      --danger: #e11d48;
-      --neon-cyan: #0284c7;
-      --neon-purple: #7c3aed;
-    }
-
-    /* MODEL:CYCLES - Matte Industrial Warm Grey */
-    body[data-device="cycles"] { 
       --chassis-bg: #90938f;
       --chassis-surface: #9ea19c;
       --chassis-recess: #828580;
       --panel-border: #747772;
-      --accent: #ff7538; 
+      --text: #26282b;
+      --text-muted: #55595f;
+      --text-dim: #73787f;
+      --accent: #ff7538; /* Model:Cycles Orange LED Glow */
       --accent-glow: rgba(255, 117, 56, 0.65);
-      --oled-bg: #f8fafc;
+      --oled-bg: #ffffff;
       --oled-text: #0f172a;
-      --step-off: #7e817d;
-      --step-off-border: #686a65;
-    }
-
-    /* MODEL:SAMPLES - Matte Industrial Off-White / Concrete */
-    body[data-device="samples"] { 
-      --chassis-bg: #9fa29d;
-      --chassis-surface: #aaada8;
-      --chassis-recess: #8f928d;
-      --panel-border: #80837e;
-      --accent: #0284c7; 
-      --accent-glow: rgba(2, 132, 199, 0.65);
-      --oled-bg: #f8fafc;
-      --oled-text: #0f172a;
-      --step-off: #8d908b;
-      --step-off-border: #777a75;
-    }
-
-    /* DIGITAKT - Dark Matte Stealth Metal */
-    body[data-device="digitakt"] { 
-      --chassis-bg: #14161a;
-      --chassis-surface: #1a1d24;
-      --chassis-recess: #0c0e11;
-      --panel-border: #2c303c;
-      --text: #e2e8f0;
-      --text-muted: #848e9f;
-      --accent: #10b981; 
-      --accent-glow: rgba(16, 185, 129, 0.5);
-      --oled-bg: #030806;
-      --oled-text: #34d399;
-      --step-off: #20242e;
-      --step-off-border: #14171f;
-    }
-
-    /* ANALOG FOUR - Deep Charcoal MKII */
-    body[data-device="a4"] { 
-      --chassis-bg: #18191e;
-      --chassis-surface: #20222a;
-      --chassis-recess: #0f1013;
-      --panel-border: #303340;
-      --text: #e2e8f0;
-      --text-muted: #8892a4;
-      --accent: #ec4899; 
-      --accent-glow: rgba(236, 72, 153, 0.5);
-      --oled-bg: #090306;
-      --oled-text: #f472b6;
-      --step-off: #252834;
-      --step-off-border: #171821;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
-    
+
     body {
       background: radial-gradient(circle at 50% 20%, #1f2126 0%, #0d0e11 100%);
       color: var(--text);
@@ -99,7 +33,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* TOP GLOBAL NAVIGATION BAR (BOVEN HET APPARAAT) */
+    /* TOP GLOBAL NAVIGATION BAR (BOVEN DE TOOL) */
     .top-nav-bar {
       max-width: 1400px;
       margin: 0 auto 14px auto;
@@ -164,562 +98,266 @@
       max-width: 1400px;
       margin: 0 auto;
       background: var(--chassis-bg);
-      border: 3px solid #6b6e68;
-      border-radius: 20px;
-      padding: 24px 28px;
+      border-radius: 12px;
+      border: 4px solid var(--panel-border);
       box-shadow: 
-        0 40px 80px rgba(0,0,0,0.85),
-        inset 0 2px 2px rgba(255,255,255,0.45),
-        inset 0 -4px 8px rgba(0,0,0,0.4);
+        0 20px 50px rgba(0,0,0,0.9),
+        0 4px 12px rgba(0,0,0,0.5),
+        inset 0 1px 2px rgba(255,255,255,0.4),
+        inset 0 -2px 4px rgba(0,0,0,0.4);
+      padding: 24px 28px 32px 28px;
       position: relative;
     }
 
+    /* HEADER */
     header {
       display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      align-items: center;
       justify-content: space-between;
-      padding-bottom: 18px;
-      border-bottom: 2px solid rgba(0, 0, 0, 0.18);
-      margin-bottom: 18px;
+      align-items: center;
+      margin-bottom: 22px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--panel-border);
     }
-
     .logo {
-      font-family: 'Inter', sans-serif;
-      font-size: 19px;
-      font-weight: 900;
-      color: var(--text);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 14px;
+      color: #1a1c20;
     }
     .elektron-svg-logo {
-      height: 22px;
+      height: 24px;
       width: auto;
-      color: var(--text);
-      display: block;
-      filter: drop-shadow(0 1px 0 rgba(255,255,255,0.25));
+      fill: #1a1c20;
     }
-    .logo-sub {
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      letter-spacing: 2px;
-      font-size: 14px;
-      color: var(--text-muted);
-    }
-
     .badge {
       font-family: 'Share Tech Mono', monospace;
       font-size: 11px;
-      background: #e2e4df;
-      border: 1px solid #777a74;
-      padding: 3px 8px;
-      border-radius: 3px;
-      color: #1a1c20;
-      letter-spacing: 0.8px;
       font-weight: 700;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.15);
-    }
-    body[data-device="digitakt"] .badge, body[data-device="a4"] .badge {
-      background: #090a0d;
-      color: var(--accent);
-      border-color: #262a34;
-    }
-
-    /* HARDWARE BUTTONS & KNOBS */
-    .ctrl-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-    .ctrl-row label {
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-
-    select, input {
-      background: #e4e7e1;
-      color: #1a1c20;
-      border: 1px solid #797c76;
-      padding: 6px 10px;
+      letter-spacing: 2px;
+      color: #2b2e34;
+      background: #838681;
+      padding: 4px 10px;
       border-radius: 4px;
-      font-size: 11px;
-      font-weight: 700;
-      outline: none;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.4);
-      transition: all 0.15s;
+      border: 1px solid #70736e;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
     }
-    body[data-device="digitakt"] select, body[data-device="digitakt"] input,
-    body[data-device="a4"] select, body[data-device="a4"] input {
-      background: #0d0f13;
-      color: #e2e8f0;
-      border-color: #2b303c;
-    }
-    select:focus, input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px var(--accent);
-    }
-
-    /* HARDWARE RUBBERIZED SQUIRCLE BUTTONS */
-    button {
-      cursor: pointer;
-      font-size: 11px;
+    .hub-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 2px;
       font-weight: 800;
-      letter-spacing: 0.6px;
+      color: #1a1c20;
       text-transform: uppercase;
-      padding: 7px 13px;
-      border-radius: 6px;
-      background: linear-gradient(180deg, #b8bbb5 0%, #9fa29c 100%);
-      color: #282a2e;
-      border: 1px solid #82857f;
-      border-bottom: 2px solid #5a5d57;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.5);
-      transition: all 0.08s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-    body[data-device="digitakt"] button, body[data-device="a4"] button {
-      background: linear-gradient(180deg, #2b2f3a 0%, #1c1f26 100%);
-      color: #cbd5e1;
-      border-color: #3d4352;
-      border-bottom-color: #14161c;
-    }
-    button:hover {
-      background: linear-gradient(180deg, #c2c5bf 0%, #a8aba5 100%);
-      color: #111;
-    }
-    body[data-device="digitakt"] button:hover, body[data-device="a4"] button:hover {
-      background: linear-gradient(180deg, #353a47 0%, #242831 100%);
-      color: #fff;
-    }
-    button:active {
-      transform: translateY(1px);
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-      border-bottom-width: 1px;
     }
 
-    /* PLAY / TRANSPORT LED BUTTON */
-    button.primary {
-      background: linear-gradient(180deg, #ffa756 0%, #ea580c 100%);
-      color: #fff;
-      border: 1px solid #ff8c42;
-      border-bottom: 2px solid #9a3412;
-      box-shadow: 0 2px 8px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.4);
-      text-shadow: 0 1px 1px rgba(0,0,0,0.4);
-    }
-    body[data-device="samples"] button.primary {
-      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
-      border-color: #06b6d4;
-      border-bottom-color: #0369a1;
-    }
-    body[data-device="digitakt"] button.primary {
-      background: linear-gradient(180deg, #34d399 0%, #059669 100%);
-      border-color: #10b981;
-      border-bottom-color: #047857;
-    }
-    body[data-device="a4"] button.primary {
-      background: linear-gradient(180deg, #f472b6 0%, #db2777 100%);
-      border-color: #ec4899;
-      border-bottom-color: #9d174d;
-    }
-    button.primary:hover {
-      filter: brightness(1.1);
-    }
-
-    button.chaos {
-      background: linear-gradient(180deg, #8b5cf6 0%, #6d28d9 100%);
-      color: #fff;
-      border-color: #7c3aed;
-      border-bottom-color: #4c1d95;
-      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
-    }
-
-    button.rec {
-      background: linear-gradient(180deg, #b91c1c 0%, #881337 100%);
-      color: #fee2e2;
-      border-color: #e11d48;
-      border-bottom-color: #4c0519;
-    }
-    button.rec.armed {
-      background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
-      color: #fff;
-      box-shadow: 0 0 14px rgba(239, 68, 68, 0.8);
-      animation: recPulse 0.8s infinite alternate;
-    }
-    @keyframes recPulse {
-      0% { opacity: 0.85; }
-      100% { opacity: 1; box-shadow: 0 0 16px rgba(239, 68, 68, 0.95); }
-    }
-
-    /* DEVICE SELECTOR TABS */
-    .device-tabs {
-      display: flex;
-      gap: 3px;
-      background: #7a7d77;
-      padding: 3px;
-      border-radius: 7px;
-      border: 1px solid #636660;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-    }
-    body[data-device="digitakt"] .device-tabs, body[data-device="a4"] .device-tabs {
-      background: #090a0d;
-      border-color: #232732;
-    }
-    .tab-btn {
-      background: transparent;
-      border: none;
-      color: #2a2c30;
-      padding: 6px 14px;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.8px;
-      border-radius: 5px;
-      box-shadow: none;
-    }
-    body[data-device="digitakt"] .tab-btn, body[data-device="a4"] .tab-btn {
-      color: var(--text-muted);
-    }
-    .tab-btn:hover { background: rgba(255,255,255,0.25); color: #000; }
-    .tab-btn.active {
-      background: #ffffff;
-      color: #000;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.25);
-    }
-    body[data-device="digitakt"] .tab-btn.active, body[data-device="a4"] .tab-btn.active {
-      background: var(--accent);
-      color: #000;
-      box-shadow: 0 0 10px var(--accent-glow);
-    }
-
-    /* MODEL:CYCLES OLED SCREEN PANEL */
-    .matrix-panel {
+    /* HUB BANNER */
+    .hub-intro {
       background: #ffffff;
       border: 3px solid #1a1c20;
       border-radius: 8px;
-      padding: 16px 18px;
-      margin-bottom: 18px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
       box-shadow: 
         inset 0 0 10px rgba(0,0,0,0.1),
         0 2px 6px rgba(0,0,0,0.2),
         0 0 0 2px #737670;
-      position: relative;
-    }
-    body[data-device="digitakt"] .matrix-panel, body[data-device="a4"] .matrix-panel {
-      background: #08090d;
-      border-color: #232732;
-      box-shadow: inset 0 3px 10px rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.05);
-    }
-    .matrix-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
-      border-bottom: 2px solid #e2e8f0;
-      padding-bottom: 10px;
     }
-    body[data-device="digitakt"] .matrix-header, body[data-device="a4"] .matrix-header {
-      border-bottom-color: #1a1d26;
-    }
-    .matrix-header h3 {
+    .hub-intro-text h2 {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 15px;
-      text-transform: uppercase;
+      font-size: 16px;
+      font-weight: 800;
       letter-spacing: 1.5px;
       color: #0f172a;
+      text-transform: uppercase;
+      margin-bottom: 4px;
       display: flex;
       align-items: center;
       gap: 8px;
-      font-weight: 900;
     }
-    body[data-device="digitakt"] .matrix-header h3, body[data-device="a4"] .matrix-header h3 {
-      color: var(--oled-text);
-      text-shadow: 0 0 8px var(--oled-glow);
+    .hub-intro-text p {
+      color: #475569;
+      font-size: 12px;
+      font-weight: 500;
     }
-    .matrix-header h3::before {
-      content: "▶";
-      font-size: 9px;
-    }
-
-    /* ELEKTRON STATUS BADGE */
-    #syncStatusBadge {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px !important;
-      padding: 5px 8px !important;
-      background: #e2e5df !important;
-      border: 1px solid #787b74;
-      border-radius: 4px;
-      color: #1a1c20 !important;
-      letter-spacing: 0.5px;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.15);
-    }
-    body[data-device="digitakt"] #syncStatusBadge, body[data-device="a4"] #syncStatusBadge {
-      background: #090b0e !important;
-      border-color: #252a36;
-      color: var(--oled-text) !important;
-      text-shadow: 0 0 5px var(--oled-glow);
-    }
-
-    /* TRACK ROWS */
-    .tracks-container { display: flex; flex-direction: column; gap: 10px; }
-    .track-row {
-      display: grid;
-      grid-template-columns: 190px 1fr 330px;
+    .hub-stats {
+      display: flex;
       gap: 14px;
-      align-items: center;
-      background: #848782;
-      border: 1px solid #6b6e68;
-      border-radius: 8px;
-      padding: 10px 14px;
-      box-shadow: 
-        inset 0 1px 1px rgba(255,255,255,0.35),
-        0 2px 4px rgba(0,0,0,0.18);
-    }
-    body[data-device="digitakt"] .track-row, body[data-device="a4"] .track-row {
-      background: linear-gradient(180deg, #161820 0%, #121318 100%);
-      border-color: #262b37;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
-    }
-    
-    .track-meta { display: flex; flex-direction: column; gap: 6px; }
-    .track-title {
-      font-family: 'Share Tech Mono', monospace;
-      font-weight: 800;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-      color: #1a1c20;
-      letter-spacing: 0.5px;
-    }
-    body[data-device="digitakt"] .track-title, body[data-device="a4"] .track-title {
-      color: #f1f5f9;
-    }
-    .track-controls { display: flex; gap: 6px; align-items: center; }
-    .track-controls select { padding: 4px 6px; font-size: 11px; }
-    .track-controls button { padding: 4px 8px; font-size: 11px; }
-
-    /* MODEL:CYCLES / DIGITAKT SQUARE HARDWARE TRIG KEYS (1 t/m 16) */
-    .step-grid {
-      display: grid;
-      grid-template-columns: repeat(16, minmax(0, 1fr));
-      gap: 6px;
-      background: #737670;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #5d605a;
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
-      align-items: center;
-    }
-    body[data-device="digitakt"] .step-grid, body[data-device="a4"] .step-grid {
-      background: #0a0b0e;
-      border-color: #1e222c;
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
-    }
-    .step {
-      aspect-ratio: 1 / 1;
-      height: auto;
-      min-height: 38px;
-      background: linear-gradient(180deg, #d3d7cf 0%, #aeb2aa 100%);
-      border-radius: 6px;
-      border: 1px solid #9aa096;
-      border-bottom: 3px solid #6b7066;
-      cursor: pointer;
-      position: relative;
-      transition: all 0.06s ease;
-      box-shadow: 0 2px 3px rgba(0,0,0,0.22), inset 0 1px 1px rgba(255,255,255,0.8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
       font-family: 'Share Tech Mono', monospace;
       font-size: 11px;
       font-weight: 700;
-      color: #3f433d;
-      user-select: none;
+      color: #0f172a;
     }
-    body[data-device="digitakt"] .step, body[data-device="a4"] .step {
-      background: linear-gradient(180deg, #2b303c 0%, #171920 100%);
-      border-color: #3b4354;
-      border-bottom-color: #0d0f14;
-      box-shadow: 0 2px 3px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
-      color: #94a3b8;
-    }
-    /* Model:Cycles Bar Markers (1, 5, 9, 13) */
-    .step:nth-child(4n+1) {
-      border-top: 3px solid #ffffff;
-      color: #1b1d19;
-    }
-    body[data-device="digitakt"] .step:nth-child(4n+1), body[data-device="a4"] .step:nth-child(4n+1) {
-      border-top: 3px solid #64748b;
-      color: #f1f5f9;
-    }
-    .step:hover {
-      background: linear-gradient(180deg, #e0e4dc 0%, #bcc0b8 100%);
-      color: #000;
-    }
-    body[data-device="digitakt"] .step:hover, body[data-device="a4"] .step:hover {
-      background: linear-gradient(180deg, #373e4d 0%, #20242e 100%);
-      color: #fff;
-    }
-    .step:active {
-      transform: translateY(1px);
-      border-bottom-width: 1px;
-      box-shadow: inset 0 2px 3px rgba(0,0,0,0.3);
-    }
-
-    /* ILLUMINATED ACTIVE LED TRIG (Soft Neon Glow behind translucent button) */
-    .step.active {
-      background: radial-gradient(circle at 50% 40%, #ffad66 0%, #ea580c 70%, #9a3412 100%) !important;
-      border-color: #ff8c42 !important;
-      border-bottom: 2px solid #7c2d12 !important;
-      box-shadow: 0 0 14px var(--accent-glow), inset 0 1px 3px rgba(255,255,255,0.8) !important;
-    }
-    body[data-device="samples"] .step.active {
-      background: radial-gradient(circle at 50% 40%, #7dd3fc 0%, #0284c7 70%, #0369a1 100%) !important;
-      border-color: #38bdf8 !important;
-      border-bottom: 2px solid #075985 !important;
-      box-shadow: 0 0 14px var(--accent-glow), inset 0 1px 3px rgba(255,255,255,0.8) !important;
-    }
-    body[data-device="digitakt"] .step.active {
-      background: radial-gradient(circle at 50% 40%, #6ee7b7 0%, #10b981 70%, #047857 100%) !important;
-      border-color: #34d399 !important;
-      border-bottom: 2px solid #064e3b !important;
-      box-shadow: 0 0 12px var(--accent-glow), inset 0 1px 2px rgba(255,255,255,0.6) !important;
-    }
-    body[data-device="a4"] .step.active {
-      background: radial-gradient(circle at 50% 40%, #f472b6 0%, #ec4899 70%, #be185d 100%) !important;
-      border-color: #f472b6 !important;
-      border-bottom: 2px solid #831843 !important;
-      box-shadow: 0 0 12px var(--accent-glow), inset 0 1px 2px rgba(255,255,255,0.6) !important;
-    }
-
-    /* PLAYHEAD CURSOR */
-    .step.current {
-      border: 2px solid #ffffff !important;
-      transform: scale(1.08);
-      z-index: 5;
-      box-shadow: 0 0 16px rgba(255,255,255,0.95), inset 0 0 6px #fff !important;
-    }
-    .step.chaos-trig {
-      background: radial-gradient(circle at 50% 40%, #c084fc 0%, #7c3aed 70%, #5b21b6 100%) !important;
-      border-color: #a855f7 !important;
-      box-shadow: 0 0 14px rgba(168, 85, 247, 0.7) !important;
-    }
-
-    .track-actions { display: flex; gap: 5px; justify-content: flex-end; }
-    .track-actions button { padding: 5px 8px; font-size: 10px; }
-    button.cc-edit-btn {
-      background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%);
-      border-color: #3b82f6;
-      border-bottom-color: #1d4ed8;
-      color: #fff;
-      text-shadow: 0 1px 1px rgba(0,0,0,0.3);
-    }
-    button.cc-edit-btn:hover {
-      background: linear-gradient(180deg, #93c5fd 0%, #3b82f6 100%);
-    }
-
-    .footer-bar {
+    .stat-pill {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 6px 12px;
+      border-radius: 4px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-top: 18px;
-      font-size: 11px;
-      color: var(--text-muted);
-      border-top: 1px solid #1f232d;
-      padding-top: 12px;
-      font-family: 'Share Tech Mono', monospace;
+      gap: 6px;
+    }
+    .stat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent-glow);
     }
 
-    /* MODAL STYLES (HARDWARE POPUP) */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(4, 5, 8, 0.82);
-      backdrop-filter: blur(4px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal-card {
-      background: #14161c;
-      border: 2px solid var(--accent);
-      border-radius: 8px;
-      width: 540px;
-      max-width: 95vw;
-      padding: 18px 22px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.95), 0 0 20px var(--accent-glow);
-    }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 2px solid #232732;
-      padding-bottom: 10px;
-      margin-bottom: 16px;
-    }
-    .modal-header h3 {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 15px;
-      color: var(--accent);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-    .modal-close {
-      background: transparent;
-      border: none;
-      font-size: 20px;
-      color: var(--text-muted);
-      cursor: pointer;
-      box-shadow: none;
-    }
-    .modal-close:hover { color: #fff; }
-
-    .cc-slider-grid {
+    /* TOOL CARDS GRID */
+    .tools-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 18px;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 20px;
     }
-    .cc-slider-item {
+
+    /* INDIVIDUAL TOOL CARD (THUMBNAIL) */
+    .tool-card {
+      background: #848782;
+      border: 2px solid #6e716c;
+      border-radius: 8px;
+      box-shadow: 
+        inset 0 2px 4px rgba(0,0,0,0.35),
+        0 3px 8px rgba(0,0,0,0.2);
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      background: #0b0c10;
-      padding: 10px 12px;
-      border-radius: 5px;
-      border: 1px solid #222632;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
-    }
-    .cc-slider-item .label-line {
-      display: flex;
       justify-content: space-between;
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-    .cc-slider-item .label-line strong {
-      color: var(--text);
-      font-family: 'Share Tech Mono', monospace;
-    }
-    .cc-slider-item input[type="range"] {
-      width: 100%;
-      accent-color: var(--accent);
+      position: relative;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
       cursor: pointer;
-      margin-top: 4px;
+    }
+    .tool-card:hover {
+      transform: translateY(-3px);
+      border-color: #3b3e39;
+      box-shadow: 
+        inset 0 1px 2px rgba(255,255,255,0.2),
+        0 8px 20px rgba(0,0,0,0.4);
     }
 
-    .modal-footer {
+    .card-top {
       display: flex;
       justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .card-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .card-tag.live {
+      background: var(--accent);
+      color: #000;
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+    .card-tag.lab {
+      background: #2b2e34;
+      color: #cbd5e1;
+      border: 1px solid #475569;
+    }
+
+    .card-channel-num {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      font-weight: 800;
+      color: #1a1c20;
+    }
+
+    /* CARD THUMBNAIL SCREEN (OLED PREVIEW) */
+    .card-screen {
+      background: #ffffff;
+      border: 2px solid #1a1c20;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 14px;
+      height: 130px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      border-top: 1px solid #232732;
-      padding-top: 12px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.15);
+    }
+    .card-screen svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .card-info h3 {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #111827;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .card-info p {
+      color: #4b5563;
+      font-size: 11.5px;
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+
+    .card-specs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .spec-pill {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 700;
+      background: #737671;
+      color: #111827;
+      padding: 3px 7px;
+      border-radius: 3px;
+      border: 1px solid #636661;
+    }
+
+    /* LAUNCH BUTTON */
+    .card-launch-btn {
+      background: linear-gradient(180deg, #33373d 0%, #1a1c20 100%);
+      border: 1px solid #111317;
+      border-bottom: 2px solid #08090b;
+      color: #f8fafc;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      padding: 10px 14px;
+      border-radius: 5px;
+      text-align: center;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 3px 5px rgba(0,0,0,0.4);
+      transition: all 0.1s ease;
+    }
+    .tool-card:hover .card-launch-btn {
+      background: var(--accent);
+      color: #000000;
+      border-color: #d96024;
+      border-bottom-color: #8c3207;
+      box-shadow: 0 0 12px var(--accent-glow);
     }
   </style>
 </head>
-<body data-device="cycles">
+<body>
   <!-- TOP NAVIGATION BAR (BOVEN DE TOOL) -->
   <nav class="top-nav-bar">
     <div class="top-nav-brand">
@@ -748,952 +386,259 @@
           <path id="o" d="M222.299,35.004L196.799,35.004L200.999,14.004L226.499,14.005L222.299,35.004ZM215.999,16.504L210.499,16.504L207.299,32.504L212.799,32.504L215.999,16.504Z"/>
           <path id="n" d="M229.501,14.004L255.001,14.005L250.801,35.004L240.801,35.004L244.501,16.504L239.001,16.504L235.301,35.004L225.301,35.004L229.501,14.004Z"/>
         </svg>
-        <span class="badge" id="deviceBadge">MODEL:CYCLES (6 TRK)</span>
+        <span class="badge">MIDI HUB</span>
       </div>
+      <div class="hub-title">
+        TOOLS DIRECTORY // 5 MODULES
+      </div>
+    </header>
 
-    <div class="device-tabs">
-      <button class="tab-btn active" onclick="setDevice('cycles')">CYCLES</button>
-      <button class="tab-btn" onclick="setDevice('samples')">SAMPLES</button>
-      <button class="tab-btn" onclick="setDevice('digitakt')">DIGITAKT</button>
-      <button class="tab-btn" onclick="setDevice('a4')">ANALOG FOUR</button>
-    </div>
-
-    <div class="ctrl-row">
-      <label>MIDI In (Clock):</label>
-      <select id="midiInSelect"><option value="">Zoeken naar In poorten...</option></select>
-      <label>MIDI Out:</label>
-      <select id="midiOutSelect"><option value="">Zoeken naar Out poorten...</option></select>
-      <button id="btnPlay" class="primary" onclick="togglePlay()">LOCAL PLAY</button>
-      <input type="number" id="bpmInput" value="128" min="40" max="240" style="width: 55px;" onchange="updateBPM()"> BPM
-      <button id="btnArmRec" class="rec" onclick="toggleArmStream()">ARM TRK RECORD</button>
-      <span id="syncStatusBadge" style="font-size:10px; padding:3px 6px; background:#1e293b; border-radius:4px; color:#94a3b8;">SLAVE: Wacht op Elektron...</span>
-    </div>
-  </header>
-
-  <!-- GROOVE MATRIX EXTENDED PANEL -->
-  <div class="matrix-panel">
-    <div class="matrix-header">
-      <h3>Polyend Groove Matrix & Genre Engine</h3>
-      <div class="ctrl-row">
-        <label>Scale:</label>
-        <select id="scaleRoot">
-          <option value="0">C</option><option value="1">C#</option><option value="2">D</option><option value="3">D#</option>
-          <option value="4">E</option><option value="5">F</option><option value="6">F#</option><option value="7">G</option>
-          <option value="8">G#</option><option value="9">A</option><option value="10">A#</option><option value="11">B</option>
-        </select>
-        <select id="scaleType">
-          <option value="minor">Natural Minor</option>
-          <option value="dorian">Dorian</option>
-          <option value="phrygian">Phrygian</option>
-          <option value="harmonicMinor">Harmonic Minor</option>
-          <option value="major">Major</option>
-          <option value="pentatonicMinor">Pentatonic Minor</option>
-          <option value="blues">Blues</option>
-        </select>
+    <!-- HUB INTRO BANNER -->
+    <div class="hub-intro">
+      <div class="hub-intro-text">
+        <h2><span>⚡</span> MIDI CONTROL & SEQUENCING RACK</h2>
+        <p>Selecteer een MIDI tool om te starten met hardware sequencing, parameter locks, polyritmiek of akkoorden.</p>
+      </div>
+      <div class="hub-stats">
+        <div class="stat-pill"><span class="stat-dot"></span> WEB-MIDI READY</div>
+        <div class="stat-pill">CH 1-16</div>
       </div>
     </div>
 
-    <div class="ctrl-row" style="margin-bottom: 10px;">
-      <label>Genre / Stijl Preset:</label>
-      <select id="genreSelect" style="min-width: 170px;">
-        <option value="techno">Techno (Four-to-floor / Industrial)</option>
-        <option value="house">House / Deep House</option>
-        <option value="dnb">Drum & Bass (174 BPM Syncopated)</option>
-        <option value="jungle">Jungle / Breakbeat</option>
-        <option value="boombap">Hip-Hop / Boom-Bap</option>
-        <option value="trap">Trap / Drill (Rolling Hihats)</option>
-        <option value="electro">Detroit Electro / 808 Beat</option>
-        <option value="dub">Dub Techno (Deep & Sparse)</option>
-        <option value="idm">IDM / Glitch Polyrhythm</option>
-        <option value="ambient">Ambient / Minimal Texture</option>
-      </select>
-      <button class="primary" onclick="generateGenreGroove()">Generate Style Pattern</button>
-      <button onclick="mutateAll()">Mutate Matrix</button>
-      <button onclick="generateAllEuclidean()">Euclidean Grid</button>
-      <button class="chaos" onclick="triggerTotalChaos()">⚡ TOTAL CHAOS RANDOMIZE</button>
-    </div>
+    <!-- TOOLS GRID (THUMBNAILS) -->
+    <div class="tools-grid">
 
-    <div class="ctrl-row" style="margin-top: 6px;">
-      <label>Parameter Sweetspots:</label>
-      <select id="sweetspotMode">
-        <option value="safe">SAFE (Muzikale Sweetspots per Machine)</option>
-        <option value="wild">WILD (Volledige Vrijheid CC 0-127)</option>
-      </select>
-      <button onclick="randomizeAllCC()">Randomize CC All Tracks</button>
+      <!-- TOOL 1: 6-TRACK SEQUENCER (ACTIVE) -->
+      <a href="midi-sequencer.html" class="tool-card">
+        <div>
+          <div class="card-top">
+            <span class="card-tag live">ACTIVE ENGINE</span>
+            <span class="card-channel-num">01</span>
+          </div>
+          <div class="card-screen">
+            <!-- Mini preview SVG of the 6-track 16-step sequencer -->
+            <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="100" fill="#ffffff"/>
+              <!-- 6 Tracks preview rows -->
+              <g fill="#1a1c20" opacity="0.85">
+                <!-- Row 1 -->
+                <rect x="10" y="8" width="18" height="8" rx="2" fill="#ff7538"/>
+                <rect x="32" y="8" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="54" y="8" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="76" y="8" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="102" y="8" width="18" height="8" rx="2" fill="#ff7538"/>
+                <rect x="124" y="8" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="146" y="8" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="168" y="8" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="194" y="8" width="18" height="8" rx="2" fill="#ff7538"/>
+                <rect x="216" y="8" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="238" y="8" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="260" y="8" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="286" y="8" width="18" height="8" rx="2" fill="#ff7538"/>
+                <!-- Row 2 -->
+                <rect x="10" y="24" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="32" y="24" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="54" y="24" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="76" y="24" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="102" y="24" width="18" height="8" rx="2" fill="#ff7538"/>
+                <rect x="124" y="24" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="146" y="24" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="168" y="24" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="194" y="24" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="216" y="24" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="238" y="24" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="260" y="24" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="286" y="24" width="18" height="8" rx="2" fill="#ff7538"/>
+                <!-- Row 3 -->
+                <rect x="10" y="40" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="32" y="40" width="18" height="8" rx="2" fill="#ff7538"/>
+                <rect x="54" y="40" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="76" y="40" width="18" height="8" rx="2" fill="#ff7538"/>
+                <rect x="102" y="40" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="124" y="40" width="18" height="8" rx="2" fill="#ff7538"/>
+                <rect x="146" y="40" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="168" y="40" width="18" height="8" rx="2" fill="#ff7538"/>
+                <rect x="194" y="40" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="216" y="40" width="18" height="8" rx="2" fill="#ff7538"/>
+                <rect x="238" y="40" width="18" height="8" rx="2" fill="#cbd5e1"/>
+                <rect x="260" y="40" width="18" height="8" rx="2" fill="#ff7538"/>
+                <rect x="286" y="40" width="18" height="8" rx="2" fill="#cbd5e1"/>
+              </g>
+              <text x="10" y="80" font-family="Share Tech Mono" font-size="11" font-weight="bold" fill="#0f172a">ELEKTRON 6-TRK // PATTERN SHIFT // CC MODAL</text>
+            </svg>
+          </div>
+          <div class="card-info">
+            <h3>6-Track CC Sequencer & Matrix</h3>
+            <p>Complete 16-step polyritmische sequencer met parameter locks, pattern shift (← / →), random note generator en Model:Cycles/Digitakt/Samples presets.</p>
+          </div>
+          <div class="card-specs">
+            <span class="spec-pill">6 TRACKS</span>
+            <span class="spec-pill">16 STEPS</span>
+            <span class="spec-pill">CC LOCKS</span>
+            <span class="spec-pill">PATTERN SHIFT</span>
+            <span class="spec-pill">RANDOM PITCH</span>
+          </div>
+        </div>
+        <div class="card-launch-btn">
+          <span>OPEN SEQUENCER</span> <span>➔</span>
+        </div>
+      </a>
+
+      <!-- TOOL 2: EUCLIDEAN RHYTHM GENERATOR -->
+      <a href="midi-sequencer.html" class="tool-card">
+        <div>
+          <div class="card-top">
+            <span class="card-tag lab">EUCLID LAB</span>
+            <span class="card-channel-num">02</span>
+          </div>
+          <div class="card-screen">
+            <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="100" fill="#ffffff"/>
+              <!-- Circular Euclidean Diagram -->
+              <circle cx="160" cy="50" r="36" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4"/>
+              <polygon points="160,18 194,58 135,76 126,35" fill="rgba(255, 117, 56, 0.2)" stroke="#ff7538" stroke-width="2"/>
+              <circle cx="160" cy="18" r="5" fill="#ff7538"/>
+              <circle cx="194" cy="58" r="5" fill="#ff7538"/>
+              <circle cx="135" cy="76" r="5" fill="#ff7538"/>
+              <circle cx="126" cy="35" r="5" fill="#ff7538"/>
+              <circle cx="160" cy="86" r="3" fill="#cbd5e1"/>
+              <circle cx="196" cy="50" r="3" fill="#cbd5e1"/>
+              <circle cx="124" cy="50" r="3" fill="#cbd5e1"/>
+              <text x="15" y="85" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#0f172a">E(4, 16) POLYMETER</text>
+            </svg>
+          </div>
+          <div class="card-info">
+            <h3>Euclidean Rhythm Generator</h3>
+            <p>Wiskundige ritmegenerator gebaseerd op het algoritme van Euclides voor hypnotiserende polyritmes en asymmetrische percussie patronen.</p>
+          </div>
+          <div class="card-specs">
+            <span class="spec-pill">ALGORITHMIC</span>
+            <span class="spec-pill">POLYMETER</span>
+            <span class="spec-pill">ROTATION</span>
+            <span class="spec-pill">LIVE SYNC</span>
+          </div>
+        </div>
+        <div class="card-launch-btn">
+          <span>START EUCLIDEAN LAB</span> <span>➔</span>
+        </div>
+      </a>
+
+      <!-- TOOL 3: CC LFO & MODULATION MATRIX -->
+      <a href="midi-sequencer.html" class="tool-card">
+        <div>
+          <div class="card-top">
+            <span class="card-tag lab">MOD MATRIX</span>
+            <span class="card-channel-num">03</span>
+          </div>
+          <div class="card-screen">
+            <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="100" fill="#ffffff"/>
+              <!-- LFO Waveform Preview -->
+              <path d="M 10 50 Q 50 10, 90 50 T 170 50 T 250 50 T 310 50" stroke="#ff7538" stroke-width="3" fill="none"/>
+              <path d="M 10 70 L 60 30 L 110 70 L 160 30 L 210 70 L 260 30 L 310 70" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="3 3" fill="none"/>
+              <text x="15" y="90" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#0f172a">4x MULTI-WAVE LFO // CC STREAM</text>
+            </svg>
+          </div>
+          <div class="card-info">
+            <h3>CC LFO & Modulation Matrix</h3>
+            <p>4 onafhankelijke LFO-oscillators die realtime MIDI CC berichten uitsturen (Sine, Saw, Random S&H) voor continue beweging in je hardware synths.</p>
+          </div>
+          <div class="card-specs">
+            <span class="spec-pill">4 LFOs</span>
+            <span class="spec-pill">FREE / SYNCED</span>
+            <span class="spec-pill">CUSTOM CC MAP</span>
+            <span class="spec-pill">S&H NOISE</span>
+          </div>
+        </div>
+        <div class="card-launch-btn">
+          <span>OPEN MOD MATRIX</span> <span>➔</span>
+        </div>
+      </a>
+
+      <!-- TOOL 4: CHORD & SCALE ARPEGGIATOR -->
+      <a href="midi-sequencer.html" class="tool-card">
+        <div>
+          <div class="card-top">
+            <span class="card-tag lab">HARMONY</span>
+            <span class="card-channel-num">04</span>
+          </div>
+          <div class="card-screen">
+            <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="100" fill="#ffffff"/>
+              <!-- Keyboard & Arp steps -->
+              <rect x="20" y="20" width="18" height="50" fill="#1e293b" rx="2"/>
+              <rect x="42" y="20" width="18" height="50" fill="#ff7538" rx="2"/>
+              <rect x="64" y="20" width="18" height="50" fill="#1e293b" rx="2"/>
+              <rect x="86" y="20" width="18" height="50" fill="#ff7538" rx="2"/>
+              <rect x="108" y="20" width="18" height="50" fill="#1e293b" rx="2"/>
+              <rect x="130" y="20" width="18" height="50" fill="#ff7538" rx="2"/>
+              <path d="M 170 65 L 200 45 L 230 25 L 260 45 L 290 65" stroke="#ff7538" stroke-width="2.5" fill="none"/>
+              <circle cx="170" cy="65" r="4" fill="#0f172a"/>
+              <circle cx="200" cy="45" r="4" fill="#0f172a"/>
+              <circle cx="230" cy="25" r="4" fill="#ff7538"/>
+              <circle cx="260" cy="45" r="4" fill="#0f172a"/>
+              <circle cx="290" cy="65" r="4" fill="#0f172a"/>
+              <text x="170" y="88" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#0f172a">DORIAN / MINOR 7TH</text>
+            </svg>
+          </div>
+          <div class="card-info">
+            <h3>Chord & Scale Arpeggiator</h3>
+            <p>Harmonische akkoorden-engine met toonladder-vergrendeling (Aeolian, Dorian, Phrygian), strumming timing en adaptieve arpeggiatie patronen.</p>
+          </div>
+          <div class="card-specs">
+            <span class="spec-pill">SCALE LOCK</span>
+            <span class="spec-pill">VOICING LAB</span>
+            <span class="spec-pill">STRUM OFFSET</span>
+            <span class="spec-pill">OCTAVE JUMP</span>
+          </div>
+        </div>
+        <div class="card-launch-btn">
+          <span>LAUNCH ARPEGGIATOR</span> <span>➔</span>
+        </div>
+      </a>
+
+      <!-- TOOL 5: MICRO-TIMING & HUMANIZER -->
+      <a href="midi-sequencer.html" class="tool-card">
+        <div>
+          <div class="card-top">
+            <span class="card-tag lab">GROOVE</span>
+            <span class="card-channel-num">05</span>
+          </div>
+          <div class="card-screen">
+            <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="100" fill="#ffffff"/>
+              <!-- Swing & Nudge Bars -->
+              <line x1="20" y1="50" x2="300" y2="50" stroke="#cbd5e1" stroke-width="2"/>
+              <line x1="40" y1="25" x2="40" y2="75" stroke="#94a3b8" stroke-width="2"/>
+              <line x1="100" y1="25" x2="100" y2="75" stroke="#94a3b8" stroke-width="2"/>
+              <line x1="160" y1="25" x2="160" y2="75" stroke="#94a3b8" stroke-width="2"/>
+              <line x1="220" y1="25" x2="220" y2="75" stroke="#94a3b8" stroke-width="2"/>
+              <line x1="280" y1="25" x2="280" y2="75" stroke="#94a3b8" stroke-width="2"/>
+              <!-- Shifted Nudge Indicators -->
+              <rect x="46" y="32" width="12" height="36" rx="2" fill="#ff7538"/>
+              <rect x="108" y="38" width="12" height="24" rx="2" fill="#0284c7"/>
+              <rect x="156" y="30" width="12" height="40" rx="2" fill="#ff7538"/>
+              <rect x="227" y="35" width="12" height="30" rx="2" fill="#0284c7"/>
+              <text x="20" y="90" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#0f172a">SWING 58% // NUDGE -38ms TO +24ms</text>
+            </svg>
+          </div>
+          <div class="card-info">
+            <h3>Micro-Timing & Humanizer</h3>
+            <p>Geef sequenties een organische 'groove' met micro-step nudging per trigger, MPC-achtige swing templates en dynamische velocity humanization.</p>
+          </div>
+          <div class="card-specs">
+            <span class="spec-pill">MICRO-NUDGE</span>
+            <span class="spec-pill">MPC SWING</span>
+            <span class="spec-pill">VELOCITY JITTER</span>
+            <span class="spec-pill">GROOVE PROFILES</span>
+          </div>
+        </div>
+        <div class="card-launch-btn">
+          <span>OPEN GROOVE LAB</span> <span>➔</span>
+        </div>
+      </a>
+
     </div>
   </div>
-
-  <!-- TRACKS DISPLAY -->
-  <div class="tracks-container" id="tracksContainer"></div>
-
-  <div class="footer-bar">
-    <div>Gekoppeld apparaat: <strong id="activeDeviceLabel">Elektron Model:Cycles</strong> | MIDI Transport: Start/Stop & 16-Step Grid</div>
-    <div>Rotterdam Lab v3.5 | Modal CC Editor</div>
-  </div>
-  </div> <!-- /elektron-device -->
-
-  <!-- CC MODAL EDITOR -->
-  <div class="modal-overlay" id="ccModalOverlay" onclick="handleModalOverlayClick(event)">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 id="modalTitle">Track 1: Kick - CC Editor</h3>
-        <button class="modal-close" onclick="closeCCModal()">&times;</button>
-      </div>
-
-      <div class="cc-slider-grid" id="modalSliderContainer">
-        <!-- Sliders dynamically populated based on active device -->
-      </div>
-
-      <div class="modal-footer">
-        <button onclick="randomizeCurrentModalCC()">Randomize Deze Track CC</button>
-        <button class="primary" onclick="closeCCModal()">Klaar</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // --- APP STATE & CONFIG ---
-    let currentDevice = 'cycles';
-    let midiAccess = null;
-    let midiOutput = null;
-    let midiInput = null;
-    let isPlaying = false;
-    let isHardwareSlaveRunning = false;
-    let isArmedForStream = false;
-    let armedTrackIdx = 0;
-    let armedOneShotCompleted = false;
-    let currentStep = 0;
-    let midiTickCount = 0;
-    let clockInterval = null;
-    let bpm = 128;
-    let activeModalTrackIdx = 0;
-
-    const DEVICE_CONFIGS = {
-      cycles: { 
-        name: 'MODEL:CYCLES', 
-        tracks: 6, 
-        defaultRoles: ['Kick','Snare','HiHat','Perc','Tone','Chord'],
-        ccDefs: [
-          { cc: 16, label: 'Pitch / Tune', def: 64 },
-          { cc: 17, label: 'Decay', def: 64 },
-          { cc: 18, label: 'Color', def: 64 },
-          { cc: 19, label: 'Shape', def: 64 },
-          { cc: 20, label: 'Sweep', def: 32 },
-          { cc: 21, label: 'Contour', def: 64 },
-          { cc: 66, label: 'Punch (0 of 127)', def: 0 },
-          { cc: 12, label: 'Track Level', def: 100 }
-        ]
-      },
-      samples: { 
-        name: 'MODEL:SAMPLES', 
-        tracks: 6, 
-        defaultRoles: ['Kick','Snare','HiHat','Perc','Sample','Lead'],
-        ccDefs: [
-          { cc: 16, label: 'Pitch (Speed)', def: 64 },
-          { cc: 17, label: 'Decay', def: 64 },
-          { cc: 18, label: 'Sample Start', def: 0 },
-          { cc: 19, label: 'Sample Length', def: 127 },
-          { cc: 20, label: 'Cutoff', def: 127 },
-          { cc: 21, label: 'Resonance', def: 0 },
-          { cc: 12, label: 'Track Level', def: 100 }
-        ]
-      },
-      digitakt: { 
-        name: 'DIGITAKT', 
-        tracks: 8, 
-        defaultRoles: ['Kick','Snare','Clap','HiHat','Perc','Tom','Bass','Synth'],
-        ccDefs: [
-          { cc: 16, label: 'Tune', def: 64 },
-          { cc: 19, label: 'Sample Start', def: 0 },
-          { cc: 20, label: 'Sample Length', def: 127 },
-          { cc: 74, label: 'Filter Cutoff', def: 127 },
-          { cc: 75, label: 'Filter Resonance', def: 0 },
-          { cc: 78, label: 'Overdrive', def: 0 },
-          { cc: 79, label: 'Bit Reduction', def: 0 },
-          { cc: 95, label: 'Sample Level', def: 100 }
-        ]
-      },
-      a4: { 
-        name: 'ANALOG FOUR MKII', 
-        tracks: 4, 
-        defaultRoles: ['Bass','Lead','Perc/Pluck','Pad/FX'],
-        ccDefs: [
-          { cc: 16, label: 'Osc 1 Pitch', def: 64 },
-          { cc: 20, label: 'Osc 2 Pitch', def: 64 },
-          { cc: 74, label: 'Ladder Cutoff', def: 64 },
-          { cc: 75, label: 'Ladder Res', def: 20 },
-          { cc: 76, label: 'Multi-Filter Cutoff', def: 100 },
-          { cc: 78, label: 'Overdrive', def: 10 },
-          { cc: 7,  label: 'Track Volume', def: 100 }
-        ]
-      }
-    };
-
-    let tracks = [];
-
-    // SCALE DEFINITIONS
-    const SCALES = {
-      minor: [0, 2, 3, 5, 7, 8, 10],
-      dorian: [0, 2, 3, 5, 7, 9, 10],
-      phrygian: [0, 1, 3, 5, 7, 8, 10],
-      harmonicMinor: [0, 2, 3, 5, 7, 8, 11],
-      major: [0, 2, 4, 5, 7, 9, 11],
-      pentatonicMinor: [0, 3, 5, 7, 10],
-      blues: [0, 3, 5, 6, 7, 10]
-    };
-
-    // EXTENDED GENRE PATTERNS
-    const GENRE_PATTERNS = {
-      techno: {
-        Kick:  [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
-        Snare: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
-        HiHat: [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0],
-        Perc:  [0,1,0,0, 0,1,0,1, 0,0,1,0, 0,1,0,0],
-        Bass:  [0,0,1,1, 0,0,1,0, 0,0,1,1, 0,1,0,0],
-        Melody:[1,0,0,1, 0,0,1,0, 0,1,0,0, 1,0,0,0]
-      },
-      house: {
-        Kick:  [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
-        Snare: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
-        HiHat: [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0],
-        Perc:  [0,0,0,1, 0,1,0,0, 0,0,1,0, 0,1,0,1],
-        Bass:  [1,0,0,1, 0,0,1,0, 0,1,0,0, 0,0,1,0],
-        Melody:[0,0,1,0, 0,0,0,1, 0,1,0,0, 1,0,0,0]
-      },
-      dnb: {
-        Kick:  [1,0,0,0, 0,0,0,0, 0,0,1,0, 0,0,0,0],
-        Snare: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
-        HiHat: [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
-        Perc:  [0,0,1,0, 0,1,0,0, 0,1,0,0, 0,0,1,0],
-        Bass:  [1,0,0,0, 0,0,1,0, 0,0,1,1, 0,0,0,0],
-        Melody:[0,0,0,1, 0,0,0,0, 1,0,0,0, 0,1,0,0]
-      },
-      jungle: {
-        Kick:  [1,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0],
-        Snare: [0,0,0,0, 1,0,0,1, 0,1,0,0, 1,0,0,0],
-        HiHat: [1,0,1,1, 1,1,0,1, 1,0,1,1, 1,1,1,0],
-        Perc:  [0,1,0,0, 1,0,0,0, 0,0,1,0, 0,1,0,1],
-        Bass:  [1,0,0,0, 0,0,0,1, 0,0,1,0, 0,0,0,0],
-        Melody:[0,0,1,0, 0,0,0,0, 0,1,0,0, 0,0,1,0]
-      },
-      boombap: {
-        Kick:  [1,0,0,0, 0,0,0,0, 0,0,1,0, 0,1,0,0],
-        Snare: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
-        HiHat: [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0],
-        Perc:  [0,0,0,1, 0,0,1,0, 0,0,0,0, 0,1,0,0],
-        Bass:  [1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,0,0],
-        Melody:[1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]
-      },
-      trap: {
-        Kick:  [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,1,0],
-        Snare: [0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
-        HiHat: [1,1,1,1, 1,1,1,0, 1,1,1,1, 1,1,0,1],
-        Perc:  [0,0,1,0, 0,0,0,1, 0,0,1,0, 0,1,0,0],
-        Bass:  [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,1,0],
-        Melody:[0,0,0,1, 0,0,1,0, 0,0,0,1, 0,1,0,0]
-      },
-      electro: {
-        Kick:  [1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,0,0],
-        Snare: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,1],
-        HiHat: [1,0,1,1, 1,0,1,1, 1,0,1,1, 1,0,1,1],
-        Perc:  [0,1,0,0, 0,0,1,0, 0,1,0,0, 1,0,0,0],
-        Bass:  [1,0,1,0, 0,1,0,0, 1,0,1,0, 0,0,1,0],
-        Melody:[0,0,1,0, 1,0,0,1, 0,0,1,0, 1,0,0,0]
-      },
-      dub: {
-        Kick:  [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
-        Snare: [0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
-        HiHat: [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0],
-        Perc:  [0,0,0,0, 0,1,0,0, 0,0,0,0, 0,0,1,0],
-        Bass:  [1,0,0,0, 0,0,1,0, 0,0,0,0, 0,1,0,0],
-        Melody:[0,0,0,1, 0,0,0,0, 0,0,1,0, 0,0,0,0]
-      },
-      idm: {
-        Kick:  [1,0,0,1, 0,0,0,1, 0,1,0,0, 0,0,1,0],
-        Snare: [0,0,0,0, 1,0,1,0, 0,0,0,1, 1,0,0,0],
-        HiHat: [1,1,0,1, 0,1,1,0, 1,0,1,1, 0,1,1,1],
-        Perc:  [0,1,1,0, 1,0,0,1, 0,1,0,0, 1,1,0,1],
-        Bass:  [1,0,0,0, 0,1,0,0, 0,0,1,0, 1,0,0,0],
-        Melody:[0,1,0,1, 0,0,1,0, 1,0,0,1, 0,1,0,0]
-      },
-      ambient: {
-        Kick:  [1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
-        Snare: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
-        HiHat: [0,0,0,0, 0,0,1,0, 0,0,0,0, 0,0,0,0],
-        Perc:  [0,0,0,1, 0,0,0,0, 0,0,0,1, 0,0,0,0],
-        Bass:  [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
-        Melody:[0,0,1,0, 0,0,0,0, 1,0,0,0, 0,0,1,0]
-      }
-    };
-
-    function getEuclidean(pulses, steps, rotate = 0) {
-      if (pulses >= steps) return Array(steps).fill(1);
-      if (pulses <= 0) return Array(steps).fill(0);
-      let pattern = [];
-      let counts = [];
-      let remainders = [];
-      let divisor = steps - pulses;
-      remainders.push(pulses);
-      let level = 0;
-      while (true) {
-        counts.push(Math.floor(divisor / remainders[level]));
-        let rem = divisor % remainders[level];
-        remainders.push(rem);
-        divisor = remainders[level];
-        level++;
-        if (rem <= 1) break;
-      }
-      counts.push(divisor);
-      function build(lvl) {
-        if (lvl > level) return [0];
-        if (lvl === -1) return [1];
-        let sub = [];
-        for (let i = 0; i < counts[lvl]; i++) sub = sub.concat(build(lvl - 1));
-        if (remainders[lvl] !== 0) sub = sub.concat(build(lvl - 2));
-        return sub;
-      }
-      let raw = build(level);
-      let rotated = Array(steps).fill(0);
-      for (let i = 0; i < steps; i++) {
-        rotated[(i + rotate) % steps] = raw[i] ? 1 : 0;
-      }
-      return rotated;
-    }
-
-    function init() {
-      setupMIDI();
-      setDevice('cycles');
-    }
-
-    function setDevice(deviceKey) {
-      currentDevice = deviceKey;
-      document.body.setAttribute('data-device', deviceKey);
-      
-      const config = DEVICE_CONFIGS[deviceKey];
-      document.getElementById('deviceBadge').textContent = `${config.name} (${config.tracks} TRK)`;
-      document.getElementById('activeDeviceLabel').textContent = config.name;
-
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.toLowerCase().includes(deviceKey));
-      });
-
-      tracks = [];
-      for (let i = 0; i < config.tracks; i++) {
-        const role = config.defaultRoles[i] || 'Perc';
-        const ccMap = {};
-        config.ccDefs.forEach(d => {
-          ccMap[d.cc] = d.def;
-        });
-
-        tracks.push({
-          id: i,
-          channel: i + 1,
-          role: role,
-          steps: Array(16).fill(0),
-          notes: Array(16).fill(60),
-          velocity: Array(16).fill(100),
-          mute: false,
-          ccValues: ccMap
-        });
-      }
-      renderTracks();
-    }
-
-    function renderTracks() {
-      const container = document.getElementById('tracksContainer');
-      container.innerHTML = '';
-
-      tracks.forEach((t, tIdx) => {
-        const row = document.createElement('div');
-        row.className = 'track-row';
-
-        const meta = document.createElement('div');
-        meta.className = 'track-meta';
-        meta.innerHTML = `
-          <div class="track-title">
-            <span>T${tIdx + 1}: ${t.role}</span>
-            <span style="color:var(--text-muted); font-size:10px;">CH ${t.channel}</span>
-          </div>
-          <div class="track-controls">
-            <select onchange="updateRole(${tIdx}, this.value)">
-              <option value="Kick" ${t.role === 'Kick' ? 'selected':''}>Kick</option>
-              <option value="Snare" ${t.role === 'Snare' ? 'selected':''}>Snare</option>
-              <option value="HiHat" ${t.role === 'HiHat' ? 'selected':''}>HiHat</option>
-              <option value="Perc" ${t.role === 'Perc' ? 'selected':''}>Perc</option>
-              <option value="Bass" ${t.role === 'Bass' ? 'selected':''}>Bass</option>
-              <option value="Melody" ${t.role === 'Melody' || t.role === 'Lead' || t.role === 'Tone' || t.role === 'Chord' ? 'selected':''}>Melody/Chord</option>
-            </select>
-            <button style="${t.mute ? 'background:#ef4444; color:#fff':''}" onclick="toggleMute(${tIdx})">M</button>
-          </div>
-        `;
-
-        const grid = document.createElement('div');
-        grid.className = 'step-grid';
-        grid.id = `grid-trk-${tIdx}`;
-
-        for (let s = 0; s < 16; s++) {
-          const stepBtn = document.createElement('div');
-          stepBtn.className = `step ${t.steps[s] ? 'active' : ''}`;
-          stepBtn.id = `step-${tIdx}-${s}`;
-          stepBtn.textContent = s + 1;
-          stepBtn.onclick = () => toggleStep(tIdx, s);
-          grid.appendChild(stepBtn);
-        }
-
-        const actions = document.createElement('div');
-        actions.className = 'track-actions';
-        actions.innerHTML = `
-          <button title="Shift Pattern Links" onclick="shiftTrackPattern(${tIdx}, -1)">◀</button>
-          <button title="Shift Pattern Rechts" onclick="shiftTrackPattern(${tIdx}, 1)">▶</button>
-          <button title="Random Pattern (Steps/Trigs)" onclick="randomizeTrackPattern(${tIdx})">🎲 Pat</button>
-          <button title="Randomize Note Pitch" onclick="randomizeTrackPitch(${tIdx})">🎵 Pitch</button>
-          <button class="cc-edit-btn" onclick="openCCModal(${tIdx})" title="Open Sound CC Editor">CC Edit</button>
-          <button title="Randomize Sound CC" onclick="randomizeTrackCC(${tIdx})">Rnd CC</button>
-          <button title="Clear Steps" onclick="clearTrack(${tIdx})">Clr</button>
-        `;
-
-        row.appendChild(meta);
-        row.appendChild(grid);
-        row.appendChild(actions);
-        container.appendChild(row);
-      });
-    }
-
-    function toggleStep(trkIdx, stepIdx) {
-      tracks[trkIdx].steps[stepIdx] = tracks[trkIdx].steps[stepIdx] ? 0 : 1;
-      const el = document.getElementById(`step-${trkIdx}-${stepIdx}`);
-      el.classList.toggle('active', tracks[trkIdx].steps[stepIdx] === 1);
-      el.classList.remove('chaos-trig');
-    }
-
-    function toggleMute(trkIdx) {
-      tracks[trkIdx].mute = !tracks[trkIdx].mute;
-      renderTracks();
-    }
-
-    function updateRole(trkIdx, role) {
-      tracks[trkIdx].role = role;
-    }
-
-    function clearTrack(trkIdx) {
-      tracks[trkIdx].steps.fill(0);
-      renderTracks();
-    }
-
-    // SHIFT PATTERN (CIRCULAR ROTATE LINKS / RECHTS)
-    function shiftTrackPattern(trkIdx, dir) {
-      const trk = tracks[trkIdx];
-      if (dir === 1) {
-        // Shift naar rechts (stap 16 wordt stap 1)
-        const lastStep = trk.steps.pop();
-        trk.steps.unshift(lastStep);
-        const lastNote = trk.notes.pop();
-        trk.notes.unshift(lastNote);
-        const lastVel = trk.velocity.pop();
-        trk.velocity.unshift(lastVel);
-      } else if (dir === -1) {
-        // Shift naar links (stap 1 wordt stap 16)
-        const firstStep = trk.steps.shift();
-        trk.steps.push(firstStep);
-        const firstNote = trk.notes.shift();
-        trk.notes.push(firstNote);
-        const firstVel = trk.velocity.shift();
-        trk.velocity.push(firstVel);
-      }
-      renderTracks();
-    }
-
-    // RANDOMIZE NOTE PITCH (VOLGENS GESELECTEERDE TOONSOORT)
-    function randomizeTrackPitch(trkIdx) {
-      const trk = tracks[trkIdx];
-      const root = parseInt(document.getElementById('scaleRoot').value) || 0;
-      const scaleName = document.getElementById('scaleType').value || 'minor';
-      const scale = SCALES[scaleName] || SCALES.minor;
-
-      // Genereer voor elke step een muzikale noot binnen de toonladder
-      for (let s = 0; s < 16; s++) {
-        const deg = scale[Math.floor(Math.random() * scale.length)];
-        const octaveOffset = (trk.role === 'Bass' ? -1 : (trk.role === 'Melody' || trk.role === 'Chord' ? Math.floor(Math.random() * 2) : 0));
-        trk.notes[s] = Math.max(24, Math.min(84, 48 + root + deg + (octaveOffset * 12)));
-      }
-
-      // Als het apparaat Model:Cycles is, stuur direct de Pitch CC (CC 16) met random subtiele variatie
-      if (currentDevice === 'cycles' && trk.ccValues) {
-        const rndPitchCC = 48 + Math.floor(Math.random() * 32);
-        trk.ccValues[16] = rndPitchCC;
-        sendCC(trk.channel, 16, rndPitchCC);
-      }
-      renderTracks();
-    }
-
-    // RANDOMIZE PATTERN (STEPS / TRIGS) PER TRACK
-    function randomizeTrackPattern(trkIdx) {
-      const trk = tracks[trkIdx];
-      // Muzikale dichtheid afgestemd op de rol
-      let density = 0.35;
-      if (trk.role === 'Kick') density = 0.25;
-      else if (trk.role === 'HiHat') density = 0.55;
-      else if (trk.role === 'Snare') density = 0.2;
-      else if (trk.role === 'Perc') density = 0.3;
-
-      for (let s = 0; s < 16; s++) {
-        // Kick altijd op tel 1 voor muzikaal ankerpunt
-        if (s === 0 && trk.role === 'Kick') {
-          trk.steps[s] = 1;
-        } else {
-          trk.steps[s] = Math.random() < density ? 1 : 0;
-        }
-        // Random velocity variatie voor menselijke dynamiek
-        trk.velocity[s] = 70 + Math.floor(Math.random() * 57);
-      }
-      renderTracks();
-    }
-
-    // --- CC MODAL FUNCTIONS ---
-    function openCCModal(tIdx) {
-      activeModalTrackIdx = tIdx;
-      const trk = tracks[tIdx];
-      const cfg = DEVICE_CONFIGS[currentDevice];
-      
-      document.getElementById('modalTitle').textContent = `T${tIdx + 1} (${trk.role}) - CC Editor [${cfg.name}]`;
-      const container = document.getElementById('modalSliderContainer');
-      container.innerHTML = '';
-
-      cfg.ccDefs.forEach(def => {
-        const currentVal = (trk.ccValues && trk.ccValues[def.cc] !== undefined) ? trk.ccValues[def.cc] : def.def;
-        const item = document.createElement('div');
-        item.className = 'cc-slider-item';
-        item.innerHTML = `
-          <div class="label-line">
-            <span><strong>${def.label}</strong> (CC ${def.cc})</span>
-            <span id="ccValDisplay-${def.cc}">${currentVal}</span>
-          </div>
-          <input type="range" min="0" max="127" value="${currentVal}" 
-                 oninput="onCCSliderChange(${tIdx}, ${def.cc}, this.value)">
-        `;
-        container.appendChild(item);
-      });
-
-      document.getElementById('ccModalOverlay').classList.add('open');
-    }
-
-    function onCCSliderChange(tIdx, cc, val) {
-      val = parseInt(val);
-      tracks[tIdx].ccValues[cc] = val;
-      const display = document.getElementById(`ccValDisplay-${cc}`);
-      if (display) display.textContent = val;
-      sendCC(tracks[tIdx].channel, cc, val);
-    }
-
-    function closeCCModal() {
-      document.getElementById('ccModalOverlay').classList.remove('open');
-    }
-
-    function handleModalOverlayClick(e) {
-      if (e.target.id === 'ccModalOverlay') closeCCModal();
-    }
-
-    function randomizeCurrentModalCC() {
-      randomizeTrackCC(activeModalTrackIdx);
-      openCCModal(activeModalTrackIdx);
-    }
-
-    // --- GENRE PATTERN GENERATOR ---
-    function generateGenreGroove() {
-      const genre = document.getElementById('genreSelect').value;
-      const template = GENRE_PATTERNS[genre] || GENRE_PATTERNS.techno;
-      const root = parseInt(document.getElementById('scaleRoot').value);
-      const scaleName = document.getElementById('scaleType').value;
-      const scale = SCALES[scaleName] || SCALES.minor;
-
-      tracks.forEach(trk => {
-        let pattern = template[trk.role] || template.Perc;
-        if (!pattern) pattern = [1,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0];
-        trk.steps = [...pattern];
-
-        for (let s = 0; s < 16; s++) {
-          if (trk.role === 'Bass') {
-            const deg = scale[Math.floor(Math.random() * scale.length)];
-            trk.notes[s] = 36 + root + deg;
-          } else if (trk.role === 'Melody' || trk.role === 'Lead' || trk.role === 'Tone' || trk.role === 'Chord') {
-            const deg = scale[Math.floor(Math.random() * scale.length)];
-            trk.notes[s] = 60 + root + deg;
-          } else {
-            trk.notes[s] = 60;
-          }
-        }
-      });
-      renderTracks();
-    }
-
-    function generateAllEuclidean() {
-      const euclideanPresets = [
-        { p: 4, r: 0 }, { p: 2, r: 4 }, { p: 8, r: 2 }, { p: 5, r: 1 },
-        { p: 3, r: 0 }, { p: 7, r: 3 }, { p: 6, r: 1 }, { p: 5, r: 5 }
-      ];
-
-      tracks.forEach((trk, idx) => {
-        const cfg = euclideanPresets[idx % euclideanPresets.length];
-        trk.steps = getEuclidean(cfg.p, 16, cfg.r);
-      });
-      renderTracks();
-    }
-
-    function mutateTrack(trkIdx) {
-      const trk = tracks[trkIdx];
-      const flips = 1 + Math.floor(Math.random() * 2);
-      for (let i = 0; i < flips; i++) {
-        const s = Math.floor(Math.random() * 16);
-        trk.steps[s] = trk.steps[s] ? 0 : 1;
-      }
-      renderTracks();
-    }
-
-    function mutateAll() {
-      tracks.forEach((_, idx) => mutateTrack(idx));
-    }
-
-    function triggerTotalChaos() {
-      const root = parseInt(document.getElementById('scaleRoot').value);
-      const scaleName = document.getElementById('scaleType').value;
-      const scale = SCALES[scaleName] || SCALES.minor;
-
-      tracks.forEach(trk => {
-        const density = 0.2 + Math.random() * 0.6;
-        for (let s = 0; s < 16; s++) {
-          trk.steps[s] = Math.random() < density ? 1 : 0;
-          const deg = scale[Math.floor(Math.random() * scale.length)];
-          const octave = Math.floor(Math.random() * 3) - 1;
-          trk.notes[s] = Math.max(24, Math.min(84, 48 + root + deg + (octave * 12)));
-          trk.velocity[s] = 40 + Math.floor(Math.random() * 87);
-        }
-      });
-
-      renderTracks();
-
-      tracks.forEach((trk, tIdx) => {
-        for (let s = 0; s < 16; s++) {
-          if (trk.steps[s]) {
-            const el = document.getElementById(`step-${tIdx}-${s}`);
-            if (el) el.classList.add('chaos-trig');
-          }
-        }
-      });
-
-      randomizeAllCC();
-    }
-
-    function randomizeTrackCC(tIdx) {
-      if (!midiOutput) return;
-      const trk = tracks[tIdx];
-      const isSafe = document.getElementById('sweetspotMode').value === 'safe';
-      const ch = trk.channel;
-
-      const setAndSend = (cc, val) => {
-        trk.ccValues[cc] = val;
-        sendCC(ch, cc, val);
-      };
-
-      if (currentDevice === 'cycles') {
-        if (isSafe) {
-          setAndSend(16, 58 + Math.floor(Math.random() * 12));
-          setAndSend(17, trk.role === 'Kick' ? 30 + Math.floor(Math.random() * 40) : 40 + Math.floor(Math.random() * 60));
-          setAndSend(18, 20 + Math.floor(Math.random() * 80));
-          setAndSend(19, 20 + Math.floor(Math.random() * 70));
-          setAndSend(20, trk.role === 'Kick' ? 10 + Math.floor(Math.random() * 40) : 0 + Math.floor(Math.random() * 70));
-          setAndSend(21, 20 + Math.floor(Math.random() * 60));
-          setAndSend(66, Math.random() > 0.5 ? 127 : 0);
-        } else {
-          [16,17,18,19,20,21,66].forEach(cc => setAndSend(cc, Math.floor(Math.random() * 128)));
-        }
-      } else if (currentDevice === 'samples') {
-        if (isSafe) {
-          setAndSend(16, 64);
-          setAndSend(17, 50 + Math.floor(Math.random() * 60));
-          setAndSend(18, 0 + Math.floor(Math.random() * 20));
-          setAndSend(19, 80 + Math.floor(Math.random() * 47));
-          setAndSend(20, 60 + Math.floor(Math.random() * 67));
-          setAndSend(21, 10 + Math.floor(Math.random() * 40));
-        } else {
-          [16,17,18,19,20,21].forEach(cc => setAndSend(cc, Math.floor(Math.random() * 128)));
-        }
-      } else if (currentDevice === 'digitakt') {
-        if (isSafe) {
-          setAndSend(16, 64);
-          setAndSend(74, 50 + Math.floor(Math.random() * 70));
-          setAndSend(75, 10 + Math.floor(Math.random() * 40));
-          setAndSend(78, Math.floor(Math.random() * 30));
-          setAndSend(79, Math.floor(Math.random() * 20));
-        } else {
-          [16,19,20,74,75,78,79].forEach(cc => setAndSend(cc, Math.floor(Math.random() * 128)));
-        }
-      } else if (currentDevice === 'a4') {
-        if (isSafe) {
-          setAndSend(74, 40 + Math.floor(Math.random() * 70));
-          setAndSend(75, 20 + Math.floor(Math.random() * 50));
-          setAndSend(78, Math.floor(Math.random() * 40));
-        } else {
-          [16,74,75,78].forEach(cc => setAndSend(cc, Math.floor(Math.random() * 128)));
-        }
-      }
-    }
-
-    function randomizeAllCC() {
-      tracks.forEach((_, idx) => randomizeTrackCC(idx));
-    }
-
-    function sendCC(channel, ccNumber, value) {
-      if (!midiOutput) return;
-      const status = 0xB0 | ((channel - 1) & 0x0F);
-      midiOutput.send([status, ccNumber & 0x7F, value & 0x7F]);
-    }
-
-    function togglePlay() {
-      if (isPlaying) {
-        stopSequencer();
-      } else {
-        startSequencer();
-      }
-    }
-
-    function startSequencer() {
-      if (clockInterval) clearInterval(clockInterval);
-      isPlaying = true;
-      currentStep = 0;
-      document.getElementById('btnPlay').textContent = 'STOP';
-      document.getElementById('btnPlay').style.background = '#ef4444';
-
-      if (midiOutput) midiOutput.send([0xFA]);
-
-      const stepMs = (60000 / bpm) / 4;
-      clockInterval = setInterval(tick, stepMs);
-    }
-
-    function stopSequencer() {
-      isPlaying = false;
-      if (clockInterval) clearInterval(clockInterval);
-      document.getElementById('btnPlay').textContent = 'LOCAL PLAY';
-      document.getElementById('btnPlay').style.background = 'var(--accent)';
-
-      if (midiOutput) midiOutput.send([0xFC]);
-      document.querySelectorAll('.step.current').forEach(el => el.classList.remove('current'));
-    }
-
-    function updateBPM() {
-      bpm = parseInt(document.getElementById('bpmInput').value) || 128;
-      if (isPlaying) startSequencer();
-    }
-
-    function tick() {
-      document.querySelectorAll('.step.current').forEach(el => el.classList.remove('current'));
-      tracks.forEach((trk, tIdx) => {
-        const stepEl = document.getElementById(`step-${tIdx}-${currentStep}`);
-        if (stepEl) stepEl.classList.add('current');
-
-        if (!trk.mute && trk.steps[currentStep] && midiOutput) {
-          const ch = trk.channel;
-          const note = trk.notes[currentStep] || 60;
-          const vel = trk.velocity[currentStep] || 100;
-          const noteOn = 0x90 | ((ch - 1) & 0x0F);
-          const noteOff = 0x80 | ((ch - 1) & 0x0F);
-
-          midiOutput.send([noteOn, note, vel]);
-          setTimeout(() => {
-            if (midiOutput) midiOutput.send([noteOff, note, 0]);
-          }, 80);
-        }
-      });
-
-      currentStep = (currentStep + 1) % 16;
-    }
-
-    function setupMIDI() {
-      const outSelect = document.getElementById('midiOutSelect');
-      const inSelect = document.getElementById('midiInSelect');
-      if (navigator.requestMIDIAccess) {
-        navigator.requestMIDIAccess({ sysex: false }).then(access => {
-          midiAccess = access;
-          updateMIDIPorts();
-          midiAccess.onstatechange = updateMIDIPorts;
-        }, () => {
-          outSelect.innerHTML = '<option value="">Geen Web MIDI ondersteuning</option>';
-          inSelect.innerHTML = '<option value="">Geen Web MIDI ondersteuning</option>';
-        });
-      } else {
-        outSelect.innerHTML = '<option value="">Web MIDI niet ondersteund</option>';
-        inSelect.innerHTML = '<option value="">Web MIDI niet ondersteund</option>';
-      }
-    }
-
-    function updateMIDIPorts() {
-      const outSelect = document.getElementById('midiOutSelect');
-      const inSelect = document.getElementById('midiInSelect');
-      outSelect.innerHTML = '';
-      inSelect.innerHTML = '';
-
-      const outputs = Array.from(midiAccess.outputs.values());
-      const inputs = Array.from(midiAccess.inputs.values());
-
-      if (outputs.length === 0) {
-        outSelect.innerHTML = '<option value="">Geen Output poorten</option>';
-      } else {
-        outputs.forEach(port => {
-          const opt = document.createElement('option');
-          opt.value = port.id;
-          opt.textContent = port.name;
-          outSelect.appendChild(opt);
-        });
-        const elkOut = outputs.find(p => p.name.toLowerCase().includes('elektron') || p.name.toLowerCase().includes('model'));
-        midiOutput = elkOut || outputs[0];
-        outSelect.value = midiOutput.id;
-      }
-
-      if (inputs.length === 0) {
-        inSelect.innerHTML = '<option value="">Geen Input poorten</option>';
-      } else {
-        inputs.forEach(port => {
-          const opt = document.createElement('option');
-          opt.value = port.id;
-          opt.textContent = port.name;
-          inSelect.appendChild(opt);
-        });
-        const elkIn = inputs.find(p => p.name.toLowerCase().includes('elektron') || p.name.toLowerCase().includes('model'));
-        setInputPort(elkIn || inputs[0]);
-        inSelect.value = (elkIn || inputs[0]).id;
-      }
-
-      outSelect.onchange = () => {
-        midiOutput = midiAccess.outputs.get(outSelect.value);
-      };
-      inSelect.onchange = () => {
-        const port = midiAccess.inputs.get(inSelect.value);
-        setInputPort(port);
-      };
-    }
-
-    function setInputPort(port) {
-      if (midiInput) {
-        midiInput.onmidimessage = null;
-      }
-      midiInput = port;
-      if (midiInput) {
-        midiInput.onmidimessage = handleIncomingMIDI;
-      }
-    }
-
-    // --- MIDI IN SLAVE ENGINE (HARDWARE DRIVEN) ---
-    function handleIncomingMIDI(event) {
-      const status = event.data[0];
-
-      // 0xFA = MIDI START (Elektron drukt op Play)
-      if (status === 0xFA) {
-        isHardwareSlaveRunning = true;
-        currentStep = 0;
-        midiTickCount = 0;
-        armedOneShotCompleted = false;
-        updateSyncBadge("LOCKED: Elektron loopt (Slave Actief)", "#10b981");
-        triggerStepHardwareSync(0);
-        return;
-      }
-
-      // 0xFC = MIDI STOP (Elektron stopt)
-      if (status === 0xFC) {
-        isHardwareSlaveRunning = false;
-        midiTickCount = 0;
-        document.querySelectorAll('.step.current').forEach(el => el.classList.remove('current'));
-        updateSyncBadge(isArmedForStream ? "ARMED: Druk Record+Play op Elektron" : "STANDBY: Wacht op Elektron...", isArmedForStream ? "#f59e0b" : "#94a3b8");
-        return;
-      }
-
-      // 0xF8 = MIDI TIMING CLOCK (24 ticks per kwartnoot, 6 ticks per 16e noot)
-      if (status === 0xF8 && isHardwareSlaveRunning) {
-        midiTickCount++;
-        if (midiTickCount >= 6) {
-          midiTickCount = 0;
-          currentStep = (currentStep + 1) % 16;
-          
-          if (isArmedForStream && currentStep === 0) {
-            armedOneShotCompleted = true;
-            isArmedForStream = false;
-            updateArmUI();
-            updateSyncBadge("Opname 1 bar voltooid!", "#3b82f6");
-          }
-
-          if (!armedOneShotCompleted) {
-            triggerStepHardwareSync(currentStep);
-          }
-        }
-      }
-    }
-
-    function triggerStepHardwareSync(stepIdx) {
-      document.querySelectorAll('.step.current').forEach(el => el.classList.remove('current'));
-
-      tracks.forEach((trk, tIdx) => {
-        const stepEl = document.getElementById(`step-${tIdx}-${stepIdx}`);
-        if (stepEl) stepEl.classList.add('current');
-
-        const shouldPlayTrack = isArmedForStream ? (tIdx === armedTrackIdx) : (!trk.mute);
-
-        if (shouldPlayTrack && trk.steps[stepIdx] && midiOutput) {
-          const ch = trk.channel;
-          const isMelodic = ['Tone', 'Chord', 'Bass', 'Lead', 'Melody', 'Synth'].includes(trk.role);
-          const note = isMelodic ? (trk.notes[stepIdx] || 60) : 60;
-          const vel = trk.velocity[stepIdx] || 100;
-          const noteOn = 0x90 | ((ch - 1) & 0x0F);
-          const noteOff = 0x80 | ((ch - 1) & 0x0F);
-
-          midiOutput.send([noteOn, note, vel]);
-          setTimeout(() => {
-            if (midiOutput) midiOutput.send([noteOff, note, 0]);
-          }, 90);
-        }
-      });
-    }
-
-    function toggleArmStream() {
-      if (isArmedForStream) {
-        isArmedForStream = false;
-        updateArmUI();
-        updateSyncBadge("ARM Geannuleerd", "#94a3b8");
-        return;
-      }
-
-      const inputVal = prompt(`Welke track wil je opnemen in de Elektron? (1 t/m ${tracks.length})`, "1");
-      if (!inputVal) return;
-      const idx = parseInt(inputVal) - 1;
-      if (isNaN(idx) || idx < 0 || idx >= tracks.length) {
-        alert("Ongeldig tracknummer.");
-        return;
-      }
-
-      armedTrackIdx = idx;
-      isArmedForStream = true;
-      armedOneShotCompleted = false;
-      updateArmUI();
-      updateSyncBadge(`ARM TRK ${idx + 1}: Druk nu RECORD + PLAY op de Elektron!`, "#ef4444");
-    }
-
-    function updateArmUI() {
-      const btn = document.getElementById('btnArmRec');
-      if (isArmedForStream) {
-        btn.textContent = `ARMED (T${armedTrackIdx + 1}) - WACHT OP ELEKTRON`;
-        btn.style.background = "#ef4444";
-      } else {
-        btn.textContent = "ARM TRK RECORD";
-        btn.style.background = "#7f1d1d";
-      }
-    }
-
-    function updateSyncBadge(text, color) {
-      const b = document.getElementById('syncStatusBadge');
-      if (b) {
-        b.textContent = text;
-        b.style.color = color;
-      }
-    }
-
-    window.onload = init;
-  </script>
 </body>
 </html>

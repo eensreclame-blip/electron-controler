@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ELEKTRON // AUDIO</title>
+  <title>ELEKTRON // AUDIO WORKSTATION</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;700;800;900&display=swap');
 
     :root {
-      --chassis-bg: #90938f;
-      --chassis-surface: #9ea19c;
-      --chassis-recess: #828580;
-      --panel-border: #747772;
-      --text: #26282b;
-      --text-muted: #55595f;
-      --text-dim: #73787f;
-      --accent: #ff7538;
-      --accent-glow: rgba(255, 117, 56, 0.65);
+      --chassis-bg: #9fa29d; /* Matte Concrete SAMPLES style */
+      --chassis-surface: #aaada8;
+      --chassis-recess: #8f928d;
+      --panel-border: #80837e;
+      --text: #1e293b;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+      --accent: #0284c7; /* Neon Blue Cyan LED */
+      --accent-glow: rgba(2, 132, 199, 0.65);
       --oled-bg: #ffffff;
       --oled-text: #0f172a;
     }
@@ -24,7 +24,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
 
     body {
-      background: radial-gradient(circle at 50% 20%, #1f2126 0%, #0d0e11 100%);
+      background: radial-gradient(circle at 50% 20%, #171d24 0%, #0a0d11 100%);
       color: var(--text);
       min-height: 100vh;
       padding: 16px 16px 36px 16px;
@@ -33,7 +33,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* TOP GLOBAL NAVIGATION BAR (BOVEN HET APPARAAT) */
+    /* TOP GLOBAL NAVIGATION BAR */
     .top-nav-bar {
       max-width: 1400px;
       margin: 0 auto 14px auto;
@@ -98,108 +98,267 @@
       max-width: 1400px;
       margin: 0 auto;
       background: var(--chassis-bg);
-      border: 3px solid #6b6e68;
-      border-radius: 20px;
-      padding: 24px 28px;
+      border-radius: 12px;
+      border: 4px solid var(--panel-border);
       box-shadow: 
-        0 40px 80px rgba(0,0,0,0.85),
-        inset 0 2px 2px rgba(255,255,255,0.45),
-        inset 0 -4px 8px rgba(0,0,0,0.4);
+        0 20px 50px rgba(0,0,0,0.9),
+        0 4px 12px rgba(0,0,0,0.5),
+        inset 0 1px 2px rgba(255,255,255,0.5),
+        inset 0 -2px 4px rgba(0,0,0,0.4);
+      padding: 24px 28px 32px 28px;
       position: relative;
     }
 
+    /* HEADER */
     header {
       display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      align-items: center;
       justify-content: space-between;
-      padding-bottom: 18px;
-      border-bottom: 2px solid rgba(0, 0, 0, 0.18);
-      margin-bottom: 24px;
+      align-items: center;
+      margin-bottom: 22px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--panel-border);
     }
-
     .logo {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
+      color: #1a1c20;
     }
-
     .elektron-svg-logo {
       height: 24px;
       width: auto;
-      color: var(--text);
-      display: block;
-      filter: drop-shadow(0 1px 0 rgba(255,255,255,0.25));
+      fill: #1a1c20;
     }
-
     .badge {
       font-family: 'Share Tech Mono', monospace;
       font-size: 11px;
-      background: #e2e4df;
-      border: 1px solid #777a74;
-      padding: 3px 8px;
-      border-radius: 3px;
-      color: #1a1c20;
-      letter-spacing: 0.8px;
       font-weight: 700;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.15);
+      letter-spacing: 2px;
+      color: #1e293b;
+      background: #8b8e89;
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid #7c7f7a;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
+    }
+    .hub-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 2px;
+      font-weight: 800;
+      color: #1a1c20;
+      text-transform: uppercase;
     }
 
-    /* OLED SCREEN PANEL */
-    .oled-screen {
+    /* HUB BANNER */
+    .hub-intro {
       background: #ffffff;
       border: 3px solid #1a1c20;
       border-radius: 8px;
-      padding: 50px 24px;
-      min-height: 420px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
       box-shadow: 
         inset 0 0 10px rgba(0,0,0,0.1),
         0 2px 6px rgba(0,0,0,0.2),
-        0 0 0 2px #737670;
-      text-align: center;
-    }
-
-    .oled-screen h2 {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 22px;
-      letter-spacing: 2px;
-      color: #0f172a;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .oled-screen p {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 13px;
-      color: #64748b;
-      letter-spacing: 1px;
-      max-width: 520px;
-      line-height: 1.6;
-    }
-
-    .footer-bar {
+        0 0 0 2px #777a75;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 24px;
-      font-size: 11px;
-      color: var(--text-muted);
-      border-top: 1px solid #757873;
-      padding-top: 12px;
+    }
+    .hub-intro-text h2 {
       font-family: 'Share Tech Mono', monospace;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #0f172a;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hub-intro-text p {
+      color: #475569;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .hub-stats {
+      display: flex;
+      gap: 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .stat-pill {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 6px 12px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .stat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent-glow);
+    }
+
+    /* TOOL CARDS GRID */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 20px;
+    }
+
+    /* INDIVIDUAL TOOL CARD */
+    .tool-card {
+      background: #8e918b;
+      border: 2px solid #777a75;
+      border-radius: 8px;
+      box-shadow: 
+        inset 0 2px 4px rgba(0,0,0,0.35),
+        0 3px 8px rgba(0,0,0,0.2);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+    .tool-card:hover {
+      transform: translateY(-3px);
+      border-color: #40443e;
+      box-shadow: 
+        inset 0 1px 2px rgba(255,255,255,0.2),
+        0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .card-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .card-tag.live {
+      background: var(--accent);
+      color: #ffffff;
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+    .card-tag.lab {
+      background: #1e293b;
+      color: #94a3b8;
+      border: 1px solid #334155;
+    }
+
+    .card-channel-num {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      font-weight: 800;
+      color: #1a1c20;
+    }
+
+    /* CARD SCREEN (OLED PREVIEW) */
+    .card-screen {
+      background: #ffffff;
+      border: 2px solid #1a1c20;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 14px;
+      height: 130px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.15);
+    }
+    .card-screen svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .card-info h3 {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #111827;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .card-info p {
+      color: #334155;
+      font-size: 11.5px;
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+
+    .card-specs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .spec-pill {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 700;
+      background: #7a7d77;
+      color: #0f172a;
+      padding: 3px 7px;
+      border-radius: 3px;
+      border: 1px solid #6b6e68;
+    }
+
+    /* LAUNCH BUTTON */
+    .card-launch-btn {
+      background: linear-gradient(180deg, #33373d 0%, #1a1c20 100%);
+      border: 1px solid #111317;
+      border-bottom: 2px solid #08090b;
+      color: #f8fafc;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      padding: 10px 14px;
+      border-radius: 5px;
+      text-align: center;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 3px 5px rgba(0,0,0,0.4);
+      transition: all 0.1s ease;
+    }
+    .tool-card:hover .card-launch-btn {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: #0369a1;
+      border-bottom-color: #075985;
+      box-shadow: 0 0 12px var(--accent-glow);
     }
   </style>
 </head>
 <body>
-  <!-- TOP NAVIGATION BAR (BOVEN DE TOOL) -->
+  <!-- TOP NAVIGATION BAR -->
   <nav class="top-nav-bar">
     <div class="top-nav-brand">
       <span>⚙</span> ELEKTRON // SUITE
@@ -227,18 +386,166 @@
           <path id="o" d="M222.299,35.004L196.799,35.004L200.999,14.004L226.499,14.005L222.299,35.004ZM215.999,16.504L210.499,16.504L207.299,32.504L212.799,32.504L215.999,16.504Z"/>
           <path id="n" d="M229.501,14.004L255.001,14.005L250.801,35.004L240.801,35.004L244.501,16.504L239.001,16.504L235.301,35.004L225.301,35.004L229.501,14.004Z"/>
         </svg>
-        <span class="badge">AUDIO ENGINE</span>
+        <span class="badge">AUDIO HUB</span>
+      </div>
+      <div class="hub-title">
+        SYNTHESIS & SAMPLING // 4 MODULES
       </div>
     </header>
 
-    <div class="oled-screen">
-      <h2>🔊 // AUDIO ENGINE</h2>
-      <p>Lege audio workspace voor sound synthesis, audio stream recording, sample processing of Web Audio routing.</p>
+    <!-- HUB INTRO BANNER -->
+    <div class="hub-intro">
+      <div class="hub-intro-text">
+        <h2><span>🔊</span> AUDIO ENGINE & SOUND DESIGN RACK</h2>
+        <p>Real-time WebAudio synthesis, sample slicing, analog filter emulatie en master FX processors.</p>
+      </div>
+      <div class="hub-stats">
+        <div class="stat-pill"><span class="stat-dot"></span> WEBAUDIO DSP 96kHz</div>
+        <div class="stat-pill">STEREO BUS</div>
+      </div>
     </div>
 
-    <div class="footer-bar">
-      <div>Elektron Hardware Environment</div>
-      <div>Module: Audio</div>
+    <!-- TOOLS GRID (THUMBNAILS) -->
+    <div class="tools-grid">
+
+      <!-- AUDIO TOOL 1: FM DRUM SYNTH -->
+      <div class="tool-card">
+        <div>
+          <div class="card-top">
+            <span class="card-tag live">FM OPERATOR</span>
+            <span class="card-channel-num">01</span>
+          </div>
+          <div class="card-screen">
+            <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="100" fill="#ffffff"/>
+              <!-- FM Operator Nodes -->
+              <circle cx="80" cy="50" r="22" stroke="#0284c7" stroke-width="2.5" fill="rgba(2, 132, 199, 0.1)"/>
+              <text x="80" y="54" font-family="Share Tech Mono" font-size="12" font-weight="bold" fill="#0284c7" text-anchor="middle">OP 1 (MOD)</text>
+              <line x1="102" y1="50" x2="160" y2="50" stroke="#0284c7" stroke-width="2" stroke-dasharray="4 2"/>
+              <polygon points="160,50 152,46 152,54" fill="#0284c7"/>
+              <circle cx="185" cy="50" r="22" stroke="#0f172a" stroke-width="2.5" fill="rgba(15, 23, 42, 0.05)"/>
+              <text x="185" y="54" font-family="Share Tech Mono" font-size="12" font-weight="bold" fill="#0f172a" text-anchor="middle">OP 2 (CAR)</text>
+              <path d="M 220 50 Q 240 25, 260 50 T 300 50" stroke="#0284c7" stroke-width="2.5" fill="none"/>
+              <text x="15" y="90" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#0f172a">CYCLES 2-OP FM ENGINE // METALLIC SWEEP</text>
+            </svg>
+          </div>
+          <div class="card-info">
+            <h3>FM Drum Synth & Percussion</h3>
+            <p>2-Operator frequentie-modulatie percussie-synthesizer met punchy kicks, metallic hi-hats, snappy snares en extreme pitch sweeps.</p>
+          </div>
+          <div class="card-specs">
+            <span class="spec-pill">2-OP FM</span>
+            <span class="spec-pill">6 VOICES</span>
+            <span class="spec-pill">PUNCH & OVERDRIVE</span>
+            <span class="spec-pill">VELOCITY MOD</span>
+          </div>
+        </div>
+        <div class="card-launch-btn">
+          <span>START FM SYNTH</span> <span>➔</span>
+        </div>
+      </div>
+
+      <!-- AUDIO TOOL 2: SAMPLE SLICER -->
+      <div class="tool-card">
+        <div>
+          <div class="card-top">
+            <span class="card-tag lab">SAMPLER</span>
+            <span class="card-channel-num">02</span>
+          </div>
+          <div class="card-screen">
+            <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="100" fill="#ffffff"/>
+              <!-- Waveform with Slices -->
+              <path d="M 10 50 L 30 20 L 50 75 L 70 35 L 90 60 L 110 15 L 130 80 L 150 40 L 170 65 L 190 25 L 210 70 L 230 30 L 250 85 L 270 45 L 290 60 L 310 50" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+              <!-- Slice Markers -->
+              <line x1="85" y1="10" x2="85" y2="90" stroke="#e11d48" stroke-width="2"/>
+              <line x1="160" y1="10" x2="160" y2="90" stroke="#e11d48" stroke-width="2"/>
+              <line x1="240" y1="10" x2="240" y2="90" stroke="#e11d48" stroke-width="2"/>
+              <text x="15" y="25" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#0f172a">TRANSIENT SLICING (8 SLICES)</text>
+            </svg>
+          </div>
+          <div class="card-info">
+            <h3>8-Voice Sample Slicer & Looper</h3>
+            <p>Digitakt-geïnspireerde audio slicer: sleep WAV/MP3 bestanden erin, automatische transient-detectie en realtime slice triggering via MIDI.</p>
+          </div>
+          <div class="card-specs">
+            <span class="spec-pill">AUTO-TRANSIENT</span>
+            <span class="spec-pill">TIME-STRETCH</span>
+            <span class="spec-pill">PITCH TUNE</span>
+            <span class="spec-pill">REVERSE SLICE</span>
+          </div>
+        </div>
+        <div class="card-launch-btn">
+          <span>OPEN SAMPLER</span> <span>➔</span>
+        </div>
+      </div>
+
+      <!-- AUDIO TOOL 3: ANALOG FILTER & DRIVE -->
+      <div class="tool-card">
+        <div>
+          <div class="card-top">
+            <span class="card-tag lab">ANALOG FX</span>
+            <span class="card-channel-num">03</span>
+          </div>
+          <div class="card-screen">
+            <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="100" fill="#ffffff"/>
+              <!-- Resonance Peak Curve -->
+              <path d="M 15 80 L 140 80 Q 180 80, 200 15 Q 215 80, 305 85" stroke="#0284c7" stroke-width="3" fill="none"/>
+              <line x1="200" y1="15" x2="200" y2="85" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 3"/>
+              <text x="20" y="30" font-family="Share Tech Mono" font-size="11" font-weight="bold" fill="#0f172a">24dB LADDER RESONANCE + DRIVE</text>
+            </svg>
+          </div>
+          <div class="card-info">
+            <h3>Analog Filter & Multi-Drive Rack</h3>
+            <p>Analoge multi-mode filter (Lowpass, Highpass, Bandpass) gecombineerd met buis- en tape-verzadiging voor warme hardware harmonischen.</p>
+          </div>
+          <div class="card-specs">
+            <span class="spec-pill">24dB LADDER</span>
+            <span class="spec-pill">ASYMMETRIC DRIVE</span>
+            <span class="spec-pill">SELF-OSCILLATION</span>
+            <span class="spec-pill">KEY-TRACKING</span>
+          </div>
+        </div>
+        <div class="card-launch-btn">
+          <span>OPEN FILTER RACK</span> <span>➔</span>
+        </div>
+      </div>
+
+      <!-- AUDIO TOOL 4: SPATIAL DELAY & REVERB -->
+      <div class="tool-card">
+        <div>
+          <div class="card-top">
+            <span class="card-tag lab">SPATIAL</span>
+            <span class="card-channel-num">04</span>
+          </div>
+          <div class="card-screen">
+            <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="100" fill="#ffffff"/>
+              <!-- Reverb Diffusion & PingPong -->
+              <path d="M 30 50 L 70 30 L 110 65 L 150 35 L 190 60 L 230 40 L 270 55 L 300 50" stroke="#0284c7" stroke-width="2" fill="none"/>
+              <circle cx="70" cy="30" r="4" fill="#0284c7"/>
+              <circle cx="150" cy="35" r="4" fill="#0284c7"/>
+              <circle cx="230" cy="40" r="4" fill="#0284c7"/>
+              <text x="15" y="88" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#0f172a">STEREO TAPE DELAY + INFINITE DECAY HALL</text>
+            </svg>
+          </div>
+          <div class="card-info">
+            <h3>Master Delay & Reverb Processor</h3>
+            <p>Tempo-gesynchroniseerde ping-pong tape delay met lichte wow/flutter modulatie en een diepe, ambient galmkamer met oneindige decay.</p>
+          </div>
+          <div class="card-specs">
+            <span class="spec-pill">PING-PONG</span>
+            <span class="spec-pill">TAPE FLUTTER</span>
+            <span class="spec-pill">DIFFUSE REVERB</span>
+            <span class="spec-pill">FREEZE / HOLD</span>
+          </div>
+        </div>
+        <div class="card-launch-btn">
+          <span>OPEN SPATIAL FX</span> <span>➔</span>
+        </div>
+      </div>
+
     </div>
   </div>
 </body>

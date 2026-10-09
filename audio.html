@@ -408,42 +408,46 @@
     <!-- TOOLS GRID (THUMBNAILS) -->
     <div class="tools-grid">
 
-      <!-- AUDIO TOOL 1: FM DRUM SYNTH -->
-      <div class="tool-card">
+      <!-- AUDIO TOOL 1: FIELD RECORDER (ACTIVE) -->
+      <a href="audio-field-recorder.html" class="tool-card">
         <div>
           <div class="card-top">
-            <span class="card-tag live">FM OPERATOR</span>
+            <span class="card-tag live">DIRECT CAPTURE</span>
             <span class="card-channel-num">01</span>
           </div>
           <div class="card-screen">
             <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect width="320" height="100" fill="#ffffff"/>
-              <!-- FM Operator Nodes -->
-              <circle cx="80" cy="50" r="22" stroke="#0284c7" stroke-width="2.5" fill="rgba(2, 132, 199, 0.1)"/>
-              <text x="80" y="54" font-family="Share Tech Mono" font-size="12" font-weight="bold" fill="#0284c7" text-anchor="middle">OP 1 (MOD)</text>
-              <line x1="102" y1="50" x2="160" y2="50" stroke="#0284c7" stroke-width="2" stroke-dasharray="4 2"/>
-              <polygon points="160,50 152,46 152,54" fill="#0284c7"/>
-              <circle cx="185" cy="50" r="22" stroke="#0f172a" stroke-width="2.5" fill="rgba(15, 23, 42, 0.05)"/>
-              <text x="185" y="54" font-family="Share Tech Mono" font-size="12" font-weight="bold" fill="#0f172a" text-anchor="middle">OP 2 (CAR)</text>
-              <path d="M 220 50 Q 240 25, 260 50 T 300 50" stroke="#0284c7" stroke-width="2.5" fill="none"/>
-              <text x="15" y="90" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#0f172a">CYCLES 2-OP FM ENGINE // METALLIC SWEEP</text>
+              <!-- Tape Cassette / Spools preview -->
+              <circle cx="100" cy="45" r="22" stroke="#0f172a" stroke-width="2" fill="#f1f5f9"/>
+              <circle cx="100" cy="45" r="7" fill="#0f172a"/>
+              <circle cx="220" cy="45" r="22" stroke="#0f172a" stroke-width="2" fill="#f1f5f9"/>
+              <circle cx="220" cy="45" r="7" fill="#0f172a"/>
+              <line x1="100" y1="23" x2="220" y2="23" stroke="#0284c7" stroke-width="2"/>
+              <!-- REC LED & VU Bars -->
+              <circle cx="25" cy="25" r="4" fill="#ef4444"/>
+              <text x="35" y="28" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#ef4444">REC 48kHz</text>
+              <rect x="25" y="42" width="40" height="6" rx="1" fill="#10b981"/>
+              <rect x="25" y="52" width="48" height="6" rx="1" fill="#0284c7"/>
+              <text x="15" y="90" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#0f172a">TP-7 TAPE ENGINE // MIC & LINE IN</text>
             </svg>
           </div>
           <div class="card-info">
-            <h3>FM Drum Synth & Percussion</h3>
-            <p>2-Operator frequentie-modulatie percussie-synthesizer met punchy kicks, metallic hi-hats, snappy snares en extreme pitch sweeps.</p>
+            <h3>Field Recorder & Direct Tape Capture</h3>
+            <p>Draagbare audio en sample recorder met directe microfoon/line-in capture, analoge tape drive, low-cut filter, varispeed pitch en WAV export.</p>
           </div>
           <div class="card-specs">
-            <span class="spec-pill">2-OP FM</span>
-            <span class="spec-pill">6 VOICES</span>
-            <span class="spec-pill">PUNCH & OVERDRIVE</span>
-            <span class="spec-pill">VELOCITY MOD</span>
+            <span class="spec-pill">MIC / LINE IN</span>
+            <span class="spec-pill">TAPE DRIVE</span>
+            <span class="spec-pill">VARISPEED</span>
+            <span class="spec-pill">VU METERS</span>
+            <span class="spec-pill">WAV EXPORT</span>
           </div>
         </div>
         <div class="card-launch-btn">
-          <span>START FM SYNTH</span> <span>➔</span>
+          <span>OPEN FIELD RECORDER</span> <span>➔</span>
         </div>
-      </div>
+      </a>
 
       <!-- AUDIO TOOL 2: SAMPLE SLICER -->
       <div class="tool-card">

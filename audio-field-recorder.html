@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELEKTRON // FIELD RECORDER & TAPE CAPTURE</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;700;800;900&display=swap');
+
+    :root {
+      --chassis-bg: #9fa29d;
+      --chassis-surface: #aaada8;
+      --chassis-recess: #8f928d;
+      --panel-border: #80837e;
+      --text: #1e293b;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+      --accent: #0284c7; 
+      --accent-glow: rgba(2, 132, 199, 0.65);
+      --rec-red: #ef4444;
+      --rec-glow: rgba(239, 68, 68, 0.75);
+      --play-green: #10b981;
+      --play-glow: rgba(16, 185, 129, 0.75);
+      --oled-bg: #ffffff;
+      --oled-text: #0f172a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+
+    body {
+      background: radial-gradient(circle at 50% 20%, #171d24 0%, #0a0d11 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 16px 16px 36px 16px;
+      font-size: 12px;
+      letter-spacing: -0.01em;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* TOP GLOBAL NAVIGATION BAR */
+    .top-nav-bar {
+      max-width: 1200px;
+      margin: 0 auto 14px auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background: #14161a;
+      border: 1px solid #282c35;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    }
+    .top-nav-brand {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--accent);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .top-nav-brand a {
+      color: inherit;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .top-nav-brand a:hover { color: #fff; }
+    .top-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .top-nav-item {
+      text-decoration: none;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #94a3b8;
+      padding: 6px 16px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      text-transform: uppercase;
+    }
+    .top-nav-item:hover {
+      color: #ffffff;
+      background: #1e222a;
+      border-color: #333846;
+    }
+    .top-nav-item.active {
+      color: #000000;
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+    .top-nav-divider {
+      color: #3f4452;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      user-select: none;
+    }
+
+    /* MATTE ELEKTRON CHASSIS WRAPPER */
+    .elektron-device {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--chassis-bg);
+      border-radius: 12px;
+      border: 4px solid var(--panel-border);
+      box-shadow: 
+        0 20px 50px rgba(0,0,0,0.9),
+        0 4px 12px rgba(0,0,0,0.5),
+        inset 0 1px 2px rgba(255,255,255,0.5),
+        inset 0 -2px 4px rgba(0,0,0,0.4);
+      padding: 24px 28px 32px 28px;
+      position: relative;
+    }
+
+    /* HEADER */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid var(--panel-border);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #1a1c20;
+    }
+    .elektron-svg-logo {
+      height: 24px;
+      width: auto;
+      fill: #1a1c20;
+    }
+    .badge {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #1e293b;
+      background: #8b8e89;
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid #7c7f7a;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
+    }
+
+    /* OLED MAIN DISPLAY */
+    .oled-screen {
+      background: #ffffff;
+      border: 3px solid #1a1c20;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 22px;
+      box-shadow: 
+        inset 0 0 10px rgba(0,0,0,0.1),
+        0 2px 6px rgba(0,0,0,0.2),
+        0 0 0 2px #777a75;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .oled-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 8px;
+      font-family: 'Share Tech Mono', monospace;
+    }
+    .oled-title {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #0f172a;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .rec-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #94a3b8;
+    }
+    .rec-indicator.active {
+      background: var(--rec-red);
+      box-shadow: 0 0 8px var(--rec-glow);
+      animation: blink 0.8s infinite alternate;
+    }
+    @keyframes blink {
+      0% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    .oled-timecode {
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: 2px;
+    }
+
+    /* TAPE REEL & WAVEFORM AREA */
+    .tape-visual-area {
+      display: grid;
+      grid-template-columns: 180px 1fr 140px;
+      gap: 16px;
+      align-items: center;
+      min-height: 120px;
+    }
+
+    /* DUAL REEL SPINNER */
+    .reels-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 10px;
+    }
+    .reel {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: 3px solid #0f172a;
+      background: #e2e8f0;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.05s linear;
+    }
+    .reel::before {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #0f172a;
+    }
+    .reel-spoke {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: #64748b;
+    }
+    .reel-spoke:nth-child(2) { transform: rotate(60deg); }
+    .reel-spoke:nth-child(3) { transform: rotate(120deg); }
+    .spinning {
+      animation: spinReel 1.2s infinite linear;
+    }
+    @keyframes spinReel {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* CANVAS WAVEFORM */
+    .waveform-box {
+      background: #0f172a;
+      border-radius: 6px;
+      height: 110px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.6);
+    }
+    #waveCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* STEREO VU METERS */
+    .vu-meter-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-family: 'Share Tech Mono', monospace;
+    }
+    .vu-channel {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .vu-channel span {
+      font-size: 10px;
+      font-weight: 800;
+      color: #334155;
+      width: 12px;
+    }
+    .vu-track {
+      flex: 1;
+      height: 14px;
+      background: #e2e8f0;
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+    .vu-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #10b981 0%, #0284c7 70%, #ef4444 95%);
+      transition: width 0.05s ease;
+    }
+
+    /* HARDWARE CONTROLS BAR */
+    .transport-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #8e918b;
+      border: 2px solid #777a75;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .transport-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .hw-btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      transition: all 0.1s ease;
+      background: linear-gradient(180deg, #383c44 0%, #1e2025 100%);
+      border: 1px solid #14161a;
+      border-bottom: 3px solid #0a0b0d;
+      color: #e2e8f0;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+    }
+    .hw-btn:active {
+      transform: translateY(2px);
+      border-bottom-width: 1px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    }
+    .hw-btn.btn-rec {
+      border-color: #991b1b;
+      border-bottom-color: #450a0a;
+    }
+    .hw-btn.btn-rec.active {
+      background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+      color: #fff;
+      box-shadow: 0 0 16px var(--rec-glow);
+    }
+    .hw-btn.btn-play.active {
+      background: linear-gradient(180deg, #10b981 0%, #047857 100%);
+      color: #fff;
+      box-shadow: 0 0 16px var(--play-glow);
+    }
+    .hw-btn.btn-export {
+      background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+      border-color: #075985;
+      border-bottom-color: #0c4a6e;
+      color: #ffffff;
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    /* HARDWARE KNOBS / CONTROLS GRID */
+    .dsp-controls-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .dsp-card {
+      background: #888b85;
+      border: 2px solid #737670;
+      border-radius: 6px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .dsp-header {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: #1a1c20;
+      text-transform: uppercase;
+    }
+    .dsp-value {
+      color: var(--accent);
+      font-weight: 800;
+    }
+    .dsp-card input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    /* RECORDED TAKES HISTORY TABLE */
+    .takes-panel {
+      background: #ffffff;
+      border: 3px solid #1a1c20;
+      border-radius: 8px;
+      padding: 16px 18px;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
+    }
+    .takes-header {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #0f172a;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .takes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+    .take-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      padding: 8px 14px;
+      border-radius: 5px;
+      font-family: 'Share Tech Mono', monospace;
+    }
+    .take-name {
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .take-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .take-btn {
+      background: #e2e8f0;
+      border: 1px solid #94a3b8;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      transition: all 0.1s ease;
+    }
+    .take-btn:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: #0369a1;
+    }
+  </style>
+</head>
+<body>
+  <!-- TOP NAVIGATION BAR -->
+  <nav class="top-nav-bar">
+    <div class="top-nav-brand">
+      <a href="audio.html">
+        <span>◀</span> <span>AUDIO HUB</span>
+      </a>
+      <span style="color: #475569;">/</span>
+      <span style="color: #f8fafc;">FIELD RECORDER</span>
+    </div>
+    <div class="top-nav-links">
+      <a href="index.html" class="top-nav-item">MIDI</a>
+      <span class="top-nav-divider">|</span>
+      <a href="audio.html" class="top-nav-item active">AUDIO</a>
+      <span class="top-nav-divider">|</span>
+      <a href="visuals.html" class="top-nav-item">VISUALS</a>
+    </div>
+  </nav>
+
+  <div class="elektron-device">
+    <header>
+      <div class="logo">
+        <svg class="elektron-svg-logo" viewBox="0 0 260 40" height="24" fill="currentColor" style="fill-rule:evenodd;">
+          <path id="logo-icon" d="M47,4.965L11,4.974L5,35L41,34.991L47,4.965ZM42.25,8.362L14.393,8.368L9.75,31.603L37.607,31.596L38.929,24.979L26,24.979L42.25,8.362Z"/>
+          <path id="e1" d="M57.799,32.504L73.299,32.504L72.799,35.004L47.299,35.004L51.499,14.004L76.999,14.004L74.099,28.504L58.599,28.504L57.799,32.504ZM66.499,16.504L60.999,16.504L59.099,26.004L64.599,26.004L66.499,16.504Z"/>
+          <path id="l" d="M91.799,5.004L81.799,5.004L75.799,35.004L85.799,35.004L91.799,5.004Z"/>
+          <path id="e2" d="M99.299,32.504L114.799,32.504L114.299,35.004L88.799,35.004L92.999,14.004L118.499,14.004L115.599,28.504L100.099,28.504L99.299,32.504ZM107.999,16.504L102.499,16.504L100.599,26.004L106.099,26.004L107.999,16.504Z"/>
+          <path id="k" d="M147.828,16.504L143.799,16.504L147.499,35.005L137.499,35.005L133.299,14.004L148.328,14.004L147.828,16.504ZM133.299,5.004L127.299,35.004L117.299,35.004L123.299,5.004L133.299,5.004Z"/>
+          <path id="t" d="M154.699,14.004L156.499,5.004L166.499,5.004L164.699,14.004L169.199,14.004L168.699,16.504L164.199,16.504L160.499,35.004L150.499,35.004L154.199,16.504L150.799,16.504L151.299,14.004L154.699,14.004Z"/>
+          <path id="r" d="M172.199,14.005L197.999,14.005L196.599,21.004L186.299,21.004L187.199,16.504L181.699,16.504L177.999,35.004L167.999,35.004L172.199,14.005Z"/>
+          <path id="o" d="M222.299,35.004L196.799,35.004L200.999,14.004L226.499,14.005L222.299,35.004ZM215.999,16.504L210.499,16.504L207.299,32.504L212.799,32.504L215.999,16.504Z"/>
+          <path id="n" d="M229.501,14.004L255.001,14.005L250.801,35.004L240.801,35.004L244.501,16.504L239.001,16.504L235.301,35.004L225.301,35.004L229.501,14.004Z"/>
+        </svg>
+        <span class="badge">TP-7 / FIELD CAPTURE</span>
+      </div>
+      <div style="font-family: 'Share Tech Mono', monospace; font-size: 13px; font-weight: 800; color: #1e293b;">
+        48kHz 24-BIT // TAPE ENGINE
+      </div>
+    </header>
+
+    <!-- OLED MAIN SCREEN -->
+    <div class="oled-screen">
+      <div class="oled-top-bar">
+        <div class="oled-title">
+          <span class="rec-indicator" id="recLed"></span>
+          <span id="engineStatus">STANDBY // READY</span>
+        </div>
+        <div class="oled-timecode" id="timecodeDisplay">00:00.00</div>
+      </div>
+
+      <div class="tape-visual-area">
+        <!-- Dual Spool Reels -->
+        <div class="reels-container">
+          <div class="reel" id="leftReel">
+            <div class="reel-spoke"></div>
+            <div class="reel-spoke"></div>
+            <div class="reel-spoke"></div>
+          </div>
+          <div class="reel" id="rightReel">
+            <div class="reel-spoke"></div>
+            <div class="reel-spoke"></div>
+            <div class="reel-spoke"></div>
+          </div>
+        </div>
+
+        <!-- Live Waveform & Playback Scope -->
+        <div class="waveform-box">
+          <canvas id="waveCanvas"></canvas>
+        </div>
+
+        <!-- Stereo VU Meters -->
+        <div class="vu-meter-box">
+          <div class="vu-channel">
+            <span>L</span>
+            <div class="vu-track"><div class="vu-fill" id="vuL"></div></div>
+          </div>
+          <div class="vu-channel">
+            <span>R</span>
+            <div class="vu-track"><div class="vu-fill" id="vuR"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HARDWARE TRANSPORT CONTROLS -->
+    <div class="transport-bar">
+      <div class="transport-buttons">
+        <button class="hw-btn btn-rec" id="recBtn" onclick="toggleRecord()">
+          <span>●</span> <span>REC [MIC]</span>
+        </button>
+        <button class="hw-btn btn-play" id="playBtn" onclick="togglePlay()">
+          <span>▶</span> <span>PLAY</span>
+        </button>
+        <button class="hw-btn" id="stopBtn" onclick="stopAll()">
+          <span>■</span> <span>STOP</span>
+        </button>
+      </div>
+
+      <div class="transport-buttons">
+        <button class="hw-btn btn-export" id="exportBtn" onclick="exportWav()">
+          <span>💾</span> <span>EXPORT WAV</span>
+        </button>
+        <button class="hw-btn" onclick="clearBuffer()">
+          <span>🗑</span> <span>CLEAR</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- DSP ANALOG PARAMETERS -->
+    <div class="dsp-controls-grid">
+      <div class="dsp-card">
+        <div class="dsp-header">
+          <span>INPUT PREAMP GAIN</span>
+          <span class="dsp-value" id="valGain">+0 dB</span>
+        </div>
+        <input type="range" id="paramGain" min="0" max="3" step="0.05" value="1.0" oninput="updateDSP()">
+      </div>
+
+      <div class="dsp-card">
+        <div class="dsp-header">
+          <span>TAPE WARMTH / DRIVE</span>
+          <span class="dsp-value" id="valDrive">OFF</span>
+        </div>
+        <input type="range" id="paramDrive" min="0" max="100" step="1" value="25" oninput="updateDSP()">
+      </div>
+
+      <div class="dsp-card">
+        <div class="dsp-header">
+          <span>LOW CUT (HIGHPASS)</span>
+          <span class="dsp-value" id="valHp">40 Hz</span>
+        </div>
+        <input type="range" id="paramHp" min="20" max="300" step="5" value="40" oninput="updateDSP()">
+      </div>
+
+      <div class="dsp-card">
+        <div class="dsp-header">
+          <span>VARISPEED PITCH</span>
+          <span class="dsp-value" id="valSpeed">1.00x (NORM)</span>
+        </div>
+        <input type="range" id="paramSpeed" min="0.5" max="2.0" step="0.05" value="1.0" oninput="updateDSP()">
+      </div>
+    </div>
+
+    <!-- RECORDED TAKES HISTORY -->
+    <div class="takes-panel">
+      <div class="takes-header">
+        <span>RECORDED TAKES // BUFFER SAMPLES</span>
+        <span id="takesCount" style="color: #64748b;">0 TAKES SAVED</span>
+      </div>
+      <div class="takes-list" id="takesList">
+        <div style="color: #94a3b8; font-family: 'Share Tech Mono', monospace; padding: 12px; text-align: center;">
+          Geen opnames in buffer. Druk op [● REC] om live audio/microfoon op te nemen.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let audioCtx = null;
+    let micStream = null;
+    let micSource = null;
+    let gainNode = null;
+    let hpFilter = null;
+    let analyser = null;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let recordedBlob = null;
+    let recordedBuffer = null;
+    let currentSource = null;
+
+    let isRecording = false;
+    let isPlaying = false;
+    let recordStartTime = 0;
+    let timerInterval = null;
+    let takes = [];
+
+    const recLed = document.getElementById('recLed');
+    const recBtn = document.getElementById('recBtn');
+    const playBtn = document.getElementById('playBtn');
+    const engineStatus = document.getElementById('engineStatus');
+    const timecodeDisplay = document.getElementById('timecodeDisplay');
+    const leftReel = document.getElementById('leftReel');
+    const rightReel = document.getElementById('rightReel');
+    const waveCanvas = document.getElementById('waveCanvas');
+    const canvasCtx = waveCanvas.getContext('2d');
+    const vuL = document.getElementById('vuL');
+    const vuR = document.getElementById('vuR');
+
+    // Init WebAudio on first user interaction
+    async function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 512;
+        gainNode = audioCtx.createGain();
+        hpFilter = audioCtx.createBiquadFilter();
+        hpFilter.type = "highpass";
+        hpFilter.frequency.value = 40;
+
+        gainNode.connect(hpFilter);
+        hpFilter.connect(analyser);
+      }
+      if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+      }
+    }
+
+    // Toggle Record
+    async function toggleRecord() {
+      await initAudio();
+
+      if (isRecording) {
+        stopRecord();
+      } else {
+        startRecord();
+      }
+    }
+
+    async function startRecord() {
+      try {
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        micSource = audioCtx.createMediaStreamSource(micStream);
+        micSource.connect(gainNode);
+
+        mediaRecorder = new MediaRecorder(micStream);
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = e => {
+          if (e.data.size > 0) audioChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = async () => {
+          recordedBlob = new Blob(audioChunks, { type: 'audio/wav' });
+          const arrayBuffer = await recordedBlob.arrayBuffer();
+          recordedBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+          
+          // Save Take
+          const takeObj = {
+            id: takes.length + 1,
+            time: new Date().toLocaleTimeString(),
+            duration: ((Date.now() - recordStartTime) / 1000).toFixed(1) + 's',
+            blob: recordedBlob,
+            buffer: recordedBuffer
+          };
+          takes.unshift(takeObj);
+          renderTakes();
+          drawBufferWaveform();
+        };
+
+        mediaRecorder.start(100);
+        isRecording = true;
+        recordStartTime = Date.now();
+        recBtn.classList.add('active');
+        recLed.classList.add('active');
+        leftReel.classList.add('spinning');
+        rightReel.classList.add('spinning');
+        engineStatus.textContent = 'RECORDING // LIVE CAPTURE';
+
+        timerInterval = setInterval(updateTimer, 50);
+        drawScope();
+      } catch (err) {
+        alert("Microfoon toegang vereist voor de Field Recorder: " + err.message);
+      }
+    }
+
+    function stopRecord() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+      if (micStream) {
+        micStream.getTracks().forEach(t => t.stop());
+      }
+      isRecording = false;
+      recBtn.classList.remove('active');
+      recLed.classList.remove('active');
+      leftReel.classList.remove('spinning');
+      rightReel.classList.remove('spinning');
+      engineStatus.textContent = 'CAPTURE COMPLETE // BUFFER LOADED';
+      clearInterval(timerInterval);
+    }
+
+    function togglePlay() {
+      if (isPlaying) {
+        stopPlayback();
+      } else {
+        startPlayback();
+      }
+    }
+
+    async function startPlayback() {
+      if (!recordedBuffer) {
+        alert("Geen audio in de buffer. Neem eerst een take op!");
+        return;
+      }
+      await initAudio();
+
+      currentSource = audioCtx.createBufferSource();
+      currentSource.buffer = recordedBuffer;
+      currentSource.playbackRate.value = parseFloat(document.getElementById('paramSpeed').value);
+      
+      currentSource.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      currentSource.onended = () => {
+        stopPlayback();
+      };
+
+      currentSource.start(0);
+      isPlaying = true;
+      playBtn.classList.add('active');
+      leftReel.classList.add('spinning');
+      rightReel.classList.add('spinning');
+      engineStatus.textContent = 'PLAYING // TAPE BUFFER';
+
+      drawScope();
+    }
+
+    function stopPlayback() {
+      if (currentSource) {
+        try { currentSource.stop(); } catch(e){}
+        currentSource = null;
+      }
+      isPlaying = false;
+      playBtn.classList.remove('active');
+      leftReel.classList.remove('spinning');
+      rightReel.classList.remove('spinning');
+      engineStatus.textContent = 'STOPPED // READY';
+    }
+
+    function stopAll() {
+      if (isRecording) stopRecord();
+      if (isPlaying) stopPlayback();
+    }
+
+    function updateTimer() {
+      const elapsedMs = Date.now() - recordStartTime;
+      const mins = Math.floor(elapsedMs / 60000).toString().padStart(2, '0');
+      const secs = Math.floor((elapsedMs % 60000) / 1000).toString().padStart(2, '0');
+      const cs = Math.floor((elapsedMs % 1000) / 10).toString().padStart(2, '0');
+      timecodeDisplay.textContent = `${mins}:${secs}.${cs}`;
+    }
+
+    // Oscilloscope & VU Render Loop
+    function drawScope() {
+      if (!analyser) return;
+
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      function render() {
+        if (!isRecording && !isPlaying) return;
+
+        requestAnimationFrame(render);
+        analyser.getByteTimeDomainData(dataArray);
+
+        // Resize Canvas dynamically
+        waveCanvas.width = waveCanvas.parentElement.clientWidth;
+        waveCanvas.height = waveCanvas.parentElement.clientHeight;
+
+        canvasCtx.fillStyle = '#090b10';
+        canvasCtx.fillRect(0, 0, waveCanvas.width, waveCanvas.height);
+
+        canvasCtx.lineWidth = 2.5;
+        canvasCtx.strokeStyle = '#0284c7';
+        canvasCtx.shadowBlur = 8;
+        canvasCtx.shadowColor = 'rgba(2, 132, 199, 0.8)';
+        canvasCtx.beginPath();
+
+        const sliceWidth = waveCanvas.width * 1.0 / bufferLength;
+        let x = 0;
+        let peak = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          const v = dataArray[i] / 128.0;
+          const y = v * waveCanvas.height / 2;
+          const deviation = Math.abs(dataArray[i] - 128);
+          if (deviation > peak) peak = deviation;
+
+          if (i === 0) canvasCtx.moveTo(x, y);
+          else canvasCtx.lineTo(x, y);
+
+          x += sliceWidth;
+        }
+
+        canvasCtx.lineTo(waveCanvas.width, waveCanvas.height / 2);
+        canvasCtx.stroke();
+
+        // Update VU Meters
+        const vuPercent = Math.min(100, Math.round((peak / 128) * 100 * 1.5));
+        vuL.style.width = vuPercent + '%';
+        vuR.style.width = Math.max(0, vuPercent - 3) + '%';
+      }
+      render();
+    }
+
+    function drawBufferWaveform() {
+      if (!recordedBuffer) return;
+      waveCanvas.width = waveCanvas.parentElement.clientWidth;
+      waveCanvas.height = waveCanvas.parentElement.clientHeight;
+
+      const data = recordedBuffer.getChannelData(0);
+      const step = Math.ceil(data.length / waveCanvas.width);
+      const amp = waveCanvas.height / 2;
+
+      canvasCtx.fillStyle = '#090b10';
+      canvasCtx.fillRect(0, 0, waveCanvas.width, waveCanvas.height);
+
+      canvasCtx.fillStyle = '#0284c7';
+      for (let i = 0; i < waveCanvas.width; i++) {
+        let min = 1.0;
+        let max = -1.0;
+        for (let j = 0; j < step; j++) {
+          const datum = data[(i * step) + j];
+          if (datum < min) min = datum;
+          if (datum > max) max = datum;
+        }
+        canvasCtx.fillRect(i, (1 + min) * amp, 1, Math.max(1, (max - min) * amp));
+      }
+    }
+
+    function updateDSP() {
+      const gainVal = parseFloat(document.getElementById('paramGain').value);
+      const driveVal = parseFloat(document.getElementById('paramDrive').value);
+      const hpVal = parseFloat(document.getElementById('paramHp').value);
+      const speedVal = parseFloat(document.getElementById('paramSpeed').value);
+
+      document.getElementById('valGain').textContent = (gainVal >= 1 ? '+' : '') + Math.round((gainVal - 1) * 6) + ' dB';
+      document.getElementById('valDrive').textContent = driveVal === 0 ? 'OFF' : driveVal + '% TAPE';
+      document.getElementById('valHp').textContent = hpVal + ' Hz';
+      document.getElementById('valSpeed').textContent = speedVal.toFixed(2) + 'x';
+
+      if (gainNode) gainNode.gain.value = gainVal;
+      if (hpFilter) hpFilter.frequency.value = hpVal;
+      if (currentSource) currentSource.playbackRate.value = speedVal;
+    }
+
+    function renderTakes() {
+      const list = document.getElementById('takesList');
+      document.getElementById('takesCount').textContent = takes.length + ' TAKES SAVED';
+
+      if (takes.length === 0) {
+        list.innerHTML = `<div style="color: #94a3b8; font-family: 'Share Tech Mono', monospace; padding: 12px; text-align: center;">Geen opnames in buffer. Druk op [● REC] om live audio/microfoon op te nemen.</div>`;
+        return;
+      }
+
+      list.innerHTML = takes.map((t, idx) => `
+        <div class="take-item">
+          <div class="take-name">
+            <span style="color: var(--accent);">[#${t.id}]</span>
+            <span>TAKE_${String(t.id).padStart(2, '0')}</span>
+            <span style="color: #64748b; font-size: 11px;">(${t.duration} // ${t.time})</span>
+          </div>
+          <div class="take-actions">
+            <button class="take-btn" onclick="loadTake(${idx})">LOAD</button>
+            <button class="take-btn" onclick="downloadTake(${idx})">SAVE WAV</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function loadTake(idx) {
+      recordedBuffer = takes[idx].buffer;
+      recordedBlob = takes[idx].blob;
+      drawBufferWaveform();
+      engineStatus.textContent = `TAKE #${takes[idx].id} LOADED // READY`;
+    }
+
+    function downloadTake(idx) {
+      const t = takes[idx];
+      const url = URL.createObjectURL(t.blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ELEKTRON_FIELD_TAKE_${t.id}.wav`;
+      a.click();
+    }
+
+    function exportWav() {
+      if (!recordedBlob) {
+        alert("Neem eerst een take op voordat je WAV exporteert!");
+        return;
+      }
+      const url = URL.createObjectURL(recordedBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ELEKTRON_FIELD_CAPTURE_${Date.now()}.wav`;
+      a.click();
+    }
+
+    function clearBuffer() {
+      stopAll();
+      recordedBuffer = null;
+      recordedBlob = null;
+      timecodeDisplay.textContent = '00:00.00';
+      engineStatus.textContent = 'BUFFER CLEARED';
+      canvasCtx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
+      vuL.style.width = '0%';
+      vuR.style.width = '0%';
+    }
+
+    window.addEventListener('resize', () => {
+      if (recordedBuffer) drawBufferWaveform();
+    });
+  </script>
+</body>
+</html>

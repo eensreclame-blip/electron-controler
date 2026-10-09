@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELEKTRON // Lege Pagina</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;700;800;900&display=swap');
+
+    :root {
+      --chassis-bg: #90938f;
+      --chassis-surface: #9ea19c;
+      --chassis-recess: #828580;
+      --panel-border: #747772;
+      --text: #26282b;
+      --text-muted: #55595f;
+      --text-dim: #73787f;
+      --accent: #ff7538;
+      --accent-glow: rgba(255, 117, 56, 0.65);
+      --oled-bg: #ffffff;
+      --oled-text: #0f172a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+
+    body {
+      background: radial-gradient(circle at 50% 20%, #1f2126 0%, #0d0e11 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 30px 16px;
+      font-size: 12px;
+      letter-spacing: -0.01em;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .elektron-device {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: var(--chassis-bg);
+      border: 3px solid #6b6e68;
+      border-radius: 20px;
+      padding: 24px 28px;
+      box-shadow: 
+        0 40px 80px rgba(0,0,0,0.85),
+        inset 0 2px 2px rgba(255,255,255,0.45),
+        inset 0 -4px 8px rgba(0,0,0,0.4);
+      position: relative;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 18px;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.18);
+      margin-bottom: 24px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .elektron-svg-logo {
+      height: 24px;
+      width: auto;
+      color: var(--text);
+      display: block;
+      filter: drop-shadow(0 1px 0 rgba(255,255,255,0.25));
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 6px;
+      background: #7a7d77;
+      padding: 3px;
+      border-radius: 7px;
+      border: 1px solid #636660;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .nav-btn {
+      text-decoration: none;
+      color: #2a2c30;
+      padding: 6px 14px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      transition: all 0.1s;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255,255,255,0.25);
+      color: #000;
+    }
+
+    .nav-btn.active {
+      background: #ffffff;
+      color: #000;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+    }
+
+    /* OLED EMPTY SCREEN PANEL */
+    .oled-screen {
+      background: #ffffff;
+      border: 3px solid #1a1c20;
+      border-radius: 8px;
+      padding: 40px 24px;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      box-shadow: 
+        inset 0 0 10px rgba(0,0,0,0.1),
+        0 2px 6px rgba(0,0,0,0.2),
+        0 0 0 2px #737670;
+      text-align: center;
+    }
+
+    .oled-screen h2 {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 20px;
+      letter-spacing: 2px;
+      color: #0f172a;
+      text-transform: uppercase;
+    }
+
+    .oled-screen p {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: #64748b;
+      letter-spacing: 1px;
+      max-width: 500px;
+      line-height: 1.6;
+    }
+
+    .footer-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px solid #757873;
+      padding-top: 12px;
+      font-family: 'Share Tech Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="elektron-device">
+    <header>
+      <div class="logo">
+        <svg class="elektron-svg-logo" viewBox="0 0 260 40" height="24" fill="currentColor" style="fill-rule:evenodd;">
+          <path id="logo-icon" d="M47,4.965L11,4.974L5,35L41,34.991L47,4.965ZM42.25,8.362L14.393,8.368L9.75,31.603L37.607,31.596L38.929,24.979L26,24.979L42.25,8.362Z"/>
+          <path id="e1" d="M57.799,32.504L73.299,32.504L72.799,35.004L47.299,35.004L51.499,14.004L76.999,14.004L74.099,28.504L58.599,28.504L57.799,32.504ZM66.499,16.504L60.999,16.504L59.099,26.004L64.599,26.004L66.499,16.504Z"/>
+          <path id="l" d="M91.799,5.004L81.799,5.004L75.799,35.004L85.799,35.004L91.799,5.004Z"/>
+          <path id="e2" d="M99.299,32.504L114.799,32.504L114.299,35.004L88.799,35.004L92.999,14.004L118.499,14.004L115.599,28.504L100.099,28.504L99.299,32.504ZM107.999,16.504L102.499,16.504L100.599,26.004L106.099,26.004L107.999,16.504Z"/>
+          <path id="k" d="M147.828,16.504L143.799,16.504L147.499,35.005L137.499,35.005L133.299,14.004L148.328,14.004L147.828,16.504ZM133.299,5.004L127.299,35.004L117.299,35.004L123.299,5.004L133.299,5.004Z"/>
+          <path id="t" d="M154.699,14.004L156.499,5.004L166.499,5.004L164.699,14.004L169.199,14.004L168.699,16.504L164.199,16.504L160.499,35.004L150.499,35.004L154.199,16.504L150.799,16.504L151.299,14.004L154.699,14.004Z"/>
+          <path id="r" d="M172.199,14.005L197.999,14.005L196.599,21.004L186.299,21.004L187.199,16.504L181.699,16.504L177.999,35.004L167.999,35.004L172.199,14.005Z"/>
+          <path id="o" d="M222.299,35.004L196.799,35.004L200.999,14.004L226.499,14.005L222.299,35.004ZM215.999,16.504L210.499,16.504L207.299,32.504L212.799,32.504L215.999,16.504Z"/>
+          <path id="n" d="M229.501,14.004L255.001,14.005L250.801,35.004L240.801,35.004L244.501,16.504L239.001,16.504L235.301,35.004L225.301,35.004L229.501,14.004Z"/>
+        </svg>
+      </div>
+
+      <nav class="nav-links">
+        <a href="index.html" class="nav-btn">SEQUENCER</a>
+        <a href="empty.html" class="nav-btn active">PAGE 2</a>
+      </nav>
+    </header>
+
+    <div class="oled-screen">
+      <h2>// BLANK WORKSPACE</h2>
+      <p>Deze pagina is leeg en klaar voor nieuwe onderdelen, modules of documentatie.</p>
+    </div>
+
+    <div class="footer-bar">
+      <div>Elektron Hardware Environment</div>
+      <div>Page 2 / Empty Template</div>
+    </div>
+  </div>
+</body>
+</html>

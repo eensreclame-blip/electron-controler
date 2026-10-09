@@ -517,7 +517,7 @@
       transition: width 0.05s ease;
     }
 
-    /* MASTER TRANSPORT BAR */
+    /* MASTER HARDWARE TRANSPORT CONTROLS */
     .transport-bar {
       display: flex;
       justify-content: space-between;
@@ -609,10 +609,6 @@
       display: flex;
       align-items: center;
       gap: 8px;
-    }
-    .macro-actions {
-      display: flex;
-      gap: 6px;
     }
 
     .loops-grid {
@@ -720,6 +716,14 @@
     .loop-voice-card.l2 input[type="range"] { accent-color: var(--l2-color); }
     .loop-voice-card.l3 input[type="range"] { accent-color: var(--l3-color); }
     .loop-voice-card.l4 input[type="range"] { accent-color: var(--l4-color); }
+
+    /* Crossfade Specific Styling */
+    .xfade-row {
+      background: rgba(0,0,0,0.12);
+      padding: 5px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
 
     .dir-select-group {
       display: flex;
@@ -1007,6 +1011,9 @@
         <button class="hw-btn btn-macro" onclick="macroSpreadLoops()">
           <span>↔</span> <span>SPREAD EVENLY</span>
         </button>
+        <button class="hw-btn btn-macro" onclick="macroSmoothCrossfades(500)">
+          <span>🌊</span> <span>SMOOTH X-FADES (500ms)</span>
+        </button>
         <button class="hw-btn" style="background: var(--accent); color: #fff;" onclick="exportDroneWav()">
           <span>💾</span> <span>EXPORT DRONE WAV</span>
         </button>
@@ -1019,7 +1026,7 @@
         <span>🎛</span> <span>4-VOICE LOOP CHANNELS MATRIX // DIRECT REGION SETTING</span>
       </div>
       <div style="font-size: 11px; color: #475569; font-weight: 700;">
-        INDIVIDUELE START/EIND PUNTEN, VARISPEED PITCH, DIRECTION & FILTERS
+        START/EIND, EQUAL-POWER CROSSFADE, VARISPEED PITCH, DIRECTION & FILTERS
       </div>
     </div>
 
@@ -1047,6 +1054,15 @@
             <input type="range" id="startL1" min="0" max="95" step="0.5" value="0" oninput="updateVoiceParam(0)">
             <input type="range" id="endL1" min="5" max="100" step="0.5" value="25" oninput="updateVoiceParam(0)">
           </div>
+        </div>
+
+        <!-- DEDICATED CROSSFADE CONTROL -->
+        <div class="param-row xfade-row">
+          <div class="param-label">
+            <span style="color: var(--l1-color); font-weight: 800;">🌊 CROSSFADE (X-FADE)</span>
+            <span class="param-val" id="lblXfadeL1" style="color: var(--l1-color);">250 ms</span>
+          </div>
+          <input type="range" id="xfadeL1" min="0" max="2500" step="25" value="250" oninput="updateVoiceParam(0)">
         </div>
 
         <div class="param-row">
@@ -1111,6 +1127,15 @@
           </div>
         </div>
 
+        <!-- DEDICATED CROSSFADE CONTROL -->
+        <div class="param-row xfade-row">
+          <div class="param-label">
+            <span style="color: var(--l2-color); font-weight: 800;">🌊 CROSSFADE (X-FADE)</span>
+            <span class="param-val" id="lblXfadeL2" style="color: var(--l2-color);">350 ms</span>
+          </div>
+          <input type="range" id="xfadeL2" min="0" max="2500" step="25" value="350" oninput="updateVoiceParam(1)">
+        </div>
+
         <div class="param-row">
           <div class="param-label">
             <span>DIRECTION</span>
@@ -1173,6 +1198,15 @@
           </div>
         </div>
 
+        <!-- DEDICATED CROSSFADE CONTROL -->
+        <div class="param-row xfade-row">
+          <div class="param-label">
+            <span style="color: var(--l3-color); font-weight: 800;">🌊 CROSSFADE (X-FADE)</span>
+            <span class="param-val" id="lblXfadeL3" style="color: var(--l3-color);">400 ms</span>
+          </div>
+          <input type="range" id="xfadeL3" min="0" max="2500" step="25" value="400" oninput="updateVoiceParam(2)">
+        </div>
+
         <div class="param-row">
           <div class="param-label">
             <span>DIRECTION</span>
@@ -1233,6 +1267,15 @@
             <input type="range" id="startL4" min="0" max="95" step="0.5" value="60" oninput="updateVoiceParam(3)">
             <input type="range" id="endL4" min="5" max="100" step="0.5" value="95" oninput="updateVoiceParam(3)">
           </div>
+        </div>
+
+        <!-- DEDICATED CROSSFADE CONTROL -->
+        <div class="param-row xfade-row">
+          <div class="param-label">
+            <span style="color: var(--l4-color); font-weight: 800;">🌊 CROSSFADE (X-FADE)</span>
+            <span class="param-val" id="lblXfadeL4" style="color: var(--l4-color);">500 ms</span>
+          </div>
+          <input type="range" id="xfadeL4" min="0" max="2500" step="25" value="500" oninput="updateVoiceParam(3)">
         </div>
 
         <div class="param-row">
@@ -1352,7 +1395,7 @@
     let isDronePlaying = false;
     let takes = [];
 
-    // 4 Independent Loop Voices Configuration
+    // 4 Independent Loop Voices Configuration with Dedicated Crossfades
     const voices = [
       {
         id: 0,
@@ -1360,6 +1403,7 @@
         color: "#0284c7",
         startPct: 0.0,
         endPct: 0.25,
+        xfadeMs: 250,
         direction: 'fwd',
         pitchSt: 0,
         vol: 0.9,
@@ -1371,9 +1415,7 @@
         sourceNode: null,
         gainNode: null,
         panNode: null,
-        filterNode: null,
-        playheadPct: 0.0,
-        pingpongForward: true
+        filterNode: null
       },
       {
         id: 1,
@@ -1381,6 +1423,7 @@
         color: "#f59e0b",
         startPct: 0.20,
         endPct: 0.55,
+        xfadeMs: 350,
         direction: 'fwd',
         pitchSt: 7,
         vol: 0.8,
@@ -1392,9 +1435,7 @@
         sourceNode: null,
         gainNode: null,
         panNode: null,
-        filterNode: null,
-        playheadPct: 0.20,
-        pingpongForward: true
+        filterNode: null
       },
       {
         id: 2,
@@ -1402,6 +1443,7 @@
         color: "#10b981",
         startPct: 0.40,
         endPct: 0.75,
+        xfadeMs: 400,
         direction: 'rev',
         pitchSt: 12,
         vol: 0.75,
@@ -1413,9 +1455,7 @@
         sourceNode: null,
         gainNode: null,
         panNode: null,
-        filterNode: null,
-        playheadPct: 0.75,
-        pingpongForward: false
+        filterNode: null
       },
       {
         id: 3,
@@ -1423,6 +1463,7 @@
         color: "#a855f7",
         startPct: 0.60,
         endPct: 0.95,
+        xfadeMs: 500,
         direction: 'pingpong',
         pitchSt: -12,
         vol: 0.85,
@@ -1434,9 +1475,7 @@
         sourceNode: null,
         gainNode: null,
         panNode: null,
-        filterNode: null,
-        playheadPct: 0.60,
-        pingpongForward: true
+        filterNode: null
       }
     ];
 
@@ -1539,7 +1578,6 @@
     // AUDIO FILE LOADING & IMPORTING
     // ==========================================
 
-    // Drag & Drop handlers
     dropZone.addEventListener('dragover', (e) => {
       e.preventDefault();
       dropZone.classList.add('dragover');
@@ -1569,7 +1607,6 @@
         loadedFileLabel.textContent = `${file.name.substring(0, 24)} (${masterAudioBuffer.duration.toFixed(1)}s)`;
         engineStatus.textContent = `BUFFER GELADEN // 4-VOICE DRONE KLAAR`;
         
-        // Add to takes list
         takes.unshift({
           id: takes.length + 1,
           name: file.name,
@@ -1617,12 +1654,10 @@
         }
         loadedFileLabel.textContent = `PRESET_SUB_DRONE_54Hz.wav (12.0s)`;
       } else if (type === 'ambient') {
-        // Rain + Stream noise with warm resonances
         let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0;
         for (let i = 0; i < length; i++) {
           const t = i / sampleRate;
           const white = Math.random() * 2 - 1;
-          // Pink noise filter approximation
           b0 = 0.99886 * b0 + white * 0.0555179;
           b1 = 0.99332 * b1 + white * 0.0750759;
           b2 = 0.96900 * b2 + white * 0.1538520;
@@ -1668,6 +1703,88 @@
     }
 
     // ==========================================
+    // SEAMLESS CROSSFADE BUFFER SYNTHESIS
+    // ==========================================
+    // Generates a perfectly crossfaded, 100% click-free loop slice
+    function createCrossfadedLoopBuffer(origBuffer, startSec, endSec, xfadeMs, direction = 'fwd') {
+      const sampleRate = origBuffer.sampleRate;
+      let startSample = Math.floor(startSec * sampleRate);
+      let endSample = Math.min(origBuffer.length, Math.floor(endSec * sampleRate));
+      let rawLength = Math.max(256, endSample - startSample);
+
+      // Extract slice channels
+      const channels = origBuffer.numberOfChannels;
+      let rawSlice = [];
+      for (let ch = 0; ch < channels; ch++) {
+        const fullData = origBuffer.getChannelData(ch);
+        const slice = new Float32Array(rawLength);
+        for (let i = 0; i < rawLength; i++) {
+          slice[i] = fullData[startSample + i];
+        }
+
+        // Handle reverse
+        if (direction === 'rev') {
+          slice.reverse();
+        } else if (direction === 'pingpong') {
+          // Ping-Pong: Forward slice concatenated with reversed slice
+          const ppSlice = new Float32Array(rawLength * 2);
+          for (let i = 0; i < rawLength; i++) {
+            ppSlice[i] = slice[i];
+            ppSlice[rawLength * 2 - 1 - i] = slice[i];
+          }
+          rawSlice.push(ppSlice);
+          continue;
+        }
+        rawSlice.push(slice);
+      }
+
+      if (direction === 'pingpong') {
+        rawLength = rawLength * 2;
+      }
+
+      // Calculate crossfade samples (capped at 45% of slice length)
+      let xfadeSamples = Math.floor((xfadeMs / 1000) * sampleRate);
+      xfadeSamples = Math.min(xfadeSamples, Math.floor(rawLength * 0.45));
+
+      if (xfadeSamples <= 2) {
+        // No crossfade, return direct buffer
+        const directBuf = audioCtx.createBuffer(channels, rawLength, sampleRate);
+        for (let ch = 0; ch < channels; ch++) {
+          directBuf.getChannelData(ch).set(rawSlice[ch]);
+        }
+        return directBuf;
+      }
+
+      // Equal-power crossfaded length = rawLength - xfadeSamples
+      const finalLength = rawLength - xfadeSamples;
+      const xfadedBuf = audioCtx.createBuffer(channels, finalLength, sampleRate);
+
+      for (let ch = 0; ch < channels; ch++) {
+        const srcData = rawSlice[ch];
+        const outData = xfadedBuf.getChannelData(ch);
+
+        // 1. Crossfade region: overlap end tail with start head
+        for (let i = 0; i < xfadeSamples; i++) {
+          const ratio = i / xfadeSamples;
+          // Equal power crossfade curve
+          const fadeIn = Math.sin(ratio * Math.PI * 0.5);
+          const fadeOut = Math.cos(ratio * Math.PI * 0.5);
+
+          const startVal = srcData[i];
+          const endVal = srcData[rawLength - xfadeSamples + i];
+          outData[i] = (startVal * fadeIn) + (endVal * fadeOut);
+        }
+
+        // 2. Middle region: pure unadulterated source
+        for (let i = xfadeSamples; i < finalLength; i++) {
+          outData[i] = srcData[i];
+        }
+      }
+
+      return xfadedBuf;
+    }
+
+    // ==========================================
     // MULTI-LOOP 4-VOICE SCHEDULER & PLAYBACK
     // ==========================================
 
@@ -1691,7 +1808,7 @@
       droneMasterBtn.innerHTML = '<span>■</span> <span>PAUZE DRONE ENGINE</span>';
       leftReel.classList.add('spinning');
       rightReel.classList.add('spinning');
-      engineStatus.textContent = '4-VOICE FIELD DRONE // RUNNING';
+      engineStatus.textContent = '4-VOICE FIELD DRONE // RUNNING (CROSSFADE ACTIVE)';
 
       voices.forEach((v, idx) => {
         if (v.isPlaying && !v.isMuted) {
@@ -1720,7 +1837,7 @@
       stopAllDroneVoices();
     }
 
-    // Voice Loop Triggering
+    // Voice Loop Triggering with Dynamic Crossfade Buffer
     function startVoiceLoop(idx) {
       if (!audioCtx || !masterAudioBuffer) return;
       const v = voices[idx];
@@ -1731,19 +1848,20 @@
       let endSec = v.endPct * dur;
       if (endSec <= startSec) endSec = startSec + 0.1;
 
-      // Handle reverse buffer slice
-      let playBuffer = masterAudioBuffer;
-      if (v.direction === 'rev') {
-        playBuffer = createReversedSliceBuffer(masterAudioBuffer, startSec, endSec);
-        startSec = 0;
-        endSec = playBuffer.duration;
-      }
+      // Synthesize seamless crossfade loop buffer
+      const crossfadedSlice = createCrossfadedLoopBuffer(
+        masterAudioBuffer,
+        startSec,
+        endSec,
+        v.xfadeMs,
+        v.direction
+      );
 
       const src = audioCtx.createBufferSource();
-      src.buffer = playBuffer;
+      src.buffer = crossfadedSlice;
       src.loop = true;
-      src.loopStart = startSec;
-      src.loopEnd = endSec;
+      src.loopStart = 0;
+      src.loopEnd = crossfadedSlice.duration;
 
       // Pitch calculation (semitones to playback rate: 2^(st/12))
       const rate = Math.pow(2, v.pitchSt / 12);
@@ -1767,7 +1885,7 @@
       panner.connect(gain);
       gain.connect(masterDrive);
 
-      src.start(0, startSec);
+      src.start(0);
 
       v.sourceNode = src;
       v.gainNode = gain;
@@ -1797,24 +1915,6 @@
       });
     }
 
-    // Creates reversed audio buffer slice for true tape reverse looping
-    function createReversedSliceBuffer(origBuffer, startSec, endSec) {
-      const sampleRate = origBuffer.sampleRate;
-      const startSample = Math.floor(startSec * sampleRate);
-      const endSample = Math.min(origBuffer.length, Math.floor(endSec * sampleRate));
-      const sliceLength = Math.max(128, endSample - startSample);
-
-      const revBuffer = audioCtx.createBuffer(origBuffer.numberOfChannels, sliceLength, sampleRate);
-      for (let ch = 0; ch < origBuffer.numberOfChannels; ch++) {
-        const origData = origBuffer.getChannelData(ch);
-        const revData = revBuffer.getChannelData(ch);
-        for (let i = 0; i < sliceLength; i++) {
-          revData[i] = origData[endSample - 1 - i];
-        }
-      }
-      return revBuffer;
-    }
-
     // ==========================================
     // VOICE PARAMETERS UPDATES
     // ==========================================
@@ -1825,6 +1925,7 @@
 
       const startVal = parseFloat(document.getElementById(`startL${i}`).value) / 100;
       const endVal = parseFloat(document.getElementById(`endL${i}`).value) / 100;
+      const xfadeVal = parseInt(document.getElementById(`xfadeL${i}`).value);
       const pitchVal = parseInt(document.getElementById(`pitchL${i}`).value);
       const volVal = parseFloat(document.getElementById(`volL${i}`).value);
       const panVal = parseFloat(document.getElementById(`panL${i}`).value);
@@ -1832,6 +1933,7 @@
 
       v.startPct = Math.min(startVal, endVal - 0.02);
       v.endPct = Math.max(endVal, v.startPct + 0.02);
+      v.xfadeMs = xfadeVal;
       v.pitchSt = pitchVal;
       v.vol = volVal;
       v.pan = panVal;
@@ -1839,6 +1941,8 @@
 
       // Update UI Labels
       document.getElementById(`lblRangeL${i}`).textContent = `${Math.round(v.startPct*100)}% - ${Math.round(v.endPct*100)}%`;
+      document.getElementById(`lblXfadeL${i}`).textContent = xfadeVal === 0 ? 'OFF (0ms)' : `${xfadeVal} ms`;
+      
       const pitchRate = Math.pow(2, pitchVal / 12).toFixed(2);
       document.getElementById(`lblPitchL${i}`).textContent = `${pitchVal >= 0 ? '+' : ''}${pitchVal} st (${pitchRate}x)`;
       
@@ -1854,7 +1958,7 @@
       if (v.gainNode && !v.isMuted) v.gainNode.gain.value = v.vol;
       if (v.filterNode) v.filterNode.frequency.value = v.filterCutoff;
 
-      // If loop boundary or pitch changed, restart loop node smoothly
+      // If loop boundary, crossfade or pitch changed, restart loop node smoothly
       if (isDronePlaying && v.isPlaying && !v.isMuted) {
         startVoiceLoop(idx);
       }
@@ -1929,7 +2033,6 @@
     // ==========================================
 
     function macroHarmonize() {
-      // Set musical chord intervals (Root, 5th, Octave, Sub Octave)
       voices[0].pitchSt = 0;
       voices[1].pitchSt = 7;
       voices[2].pitchSt = 12;
@@ -1956,7 +2059,6 @@
     }
 
     function macroSpreadLoops() {
-      // Evenly distribute 4 quarters
       voices[0].startPct = 0.0;  voices[0].endPct = 0.25;
       voices[1].startPct = 0.25; voices[1].endPct = 0.50;
       voices[2].startPct = 0.50; voices[2].endPct = 0.75;
@@ -1968,6 +2070,15 @@
         updateVoiceParam(i);
       }
       engineStatus.textContent = 'MACRO: 4 LOOPS EVENLY DISTRIBUTED';
+    }
+
+    function macroSmoothCrossfades(ms = 500) {
+      for (let i = 0; i < 4; i++) {
+        voices[i].xfadeMs = ms;
+        document.getElementById(`xfadeL${i+1}`).value = ms;
+        updateVoiceParam(i);
+      }
+      engineStatus.textContent = `MACRO: ${ms}ms EQUAL-POWER CROSSFADE APPLIED TO ALL 4 VOICES`;
     }
 
     function updateMasterDSP() {
@@ -2034,7 +2145,7 @@
         canvasCtx.fillRect(i, (1 + min) * amp, 1, Math.max(1, (max - min) * amp));
       }
 
-      // Draw 4 Loop Colored Regions & Overlays
+      // Draw 4 Loop Colored Regions & Overlays with Crossfade indicators
       const voiceColors = ['#0284c7', '#f59e0b', '#10b981', '#a855f7'];
       const voiceAlphas = ['rgba(2, 132, 199, 0.28)', 'rgba(245, 158, 11, 0.28)', 'rgba(16, 185, 129, 0.28)', 'rgba(168, 85, 247, 0.28)'];
 
@@ -2064,13 +2175,34 @@
         canvasCtx.lineWidth = (idx === activeVoiceIndex) ? 2.5 : 1.5;
         canvasCtx.strokeRect(x1, 0, width, h);
 
+        // Crossfade visual gradient zones at boundaries
+        if (v.xfadeMs > 0 && masterAudioBuffer.duration > 0) {
+          const xfadeFrac = (v.xfadeMs / 1000) / masterAudioBuffer.duration;
+          const xfadePx = Math.min(width * 0.45, xfadeFrac * w);
+          if (xfadePx > 2) {
+            // Gradient start
+            const gradStart = canvasCtx.createLinearGradient(x1, 0, x1 + xfadePx, 0);
+            gradStart.addColorStop(0, 'rgba(255, 255, 255, 0.35)');
+            gradStart.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+            canvasCtx.fillStyle = gradStart;
+            canvasCtx.fillRect(x1, 0, xfadePx, h);
+
+            // Gradient end
+            const gradEnd = canvasCtx.createLinearGradient(x2 - xfadePx, 0, x2, 0);
+            gradEnd.addColorStop(0, 'rgba(255, 255, 255, 0.0)');
+            gradEnd.addColorStop(1, 'rgba(255, 255, 255, 0.35)');
+            canvasCtx.fillStyle = gradEnd;
+            canvasCtx.fillRect(x2 - xfadePx, 0, xfadePx, h);
+          }
+        }
+
         // Loop ID Tag
         canvasCtx.fillStyle = voiceColors[idx];
-        canvasCtx.fillRect(x1, 0, 24, 14);
+        canvasCtx.fillRect(x1, 0, 36, 14);
         canvasCtx.fillStyle = '#ffffff';
         canvasCtx.font = 'bold 9px Share Tech Mono, monospace';
         canvasCtx.textAlign = 'center';
-        canvasCtx.fillText(`L${idx+1}`, x1 + 12, 10);
+        canvasCtx.fillText(`L${idx+1} 🌊`, x1 + 18, 10);
       });
     }
 
@@ -2280,7 +2412,7 @@
       offReverbGain.connect(offMasterGain);
       offMasterGain.connect(offlineCtx.destination);
 
-      // Render all active voices
+      // Render all active voices with true equal-power crossfades
       voices.forEach((v) => {
         if (!v.isPlaying || v.isMuted) return;
 
@@ -2288,18 +2420,19 @@
         let startSec = v.startPct * dur;
         let endSec = v.endPct * dur;
 
-        let playBuffer = masterAudioBuffer;
-        if (v.direction === 'rev') {
-          playBuffer = createReversedSliceBuffer(masterAudioBuffer, startSec, endSec);
-          startSec = 0;
-          endSec = playBuffer.duration;
-        }
+        const crossfadedSlice = createCrossfadedLoopBuffer(
+          masterAudioBuffer,
+          startSec,
+          endSec,
+          v.xfadeMs,
+          v.direction
+        );
 
         const src = offlineCtx.createBufferSource();
-        src.buffer = playBuffer;
+        src.buffer = crossfadedSlice;
         src.loop = true;
-        src.loopStart = startSec;
-        src.loopEnd = endSec;
+        src.loopStart = 0;
+        src.loopEnd = crossfadedSlice.duration;
         src.playbackRate.value = Math.pow(2, v.pitchSt / 12);
 
         const filter = offlineCtx.createBiquadFilter();
@@ -2318,7 +2451,7 @@
         gain.connect(offDryGain);
         gain.connect(offReverb);
 
-        src.start(0, startSec);
+        src.start(0);
       });
 
       const renderedBuffer = await offlineCtx.startRendering();
@@ -2382,7 +2515,6 @@
       drawWaveform();
     });
 
-    // Auto load sub drone on first click anywhere
     window.addEventListener('click', () => {
       if (!audioCtx) initAudio();
     }, { once: true });

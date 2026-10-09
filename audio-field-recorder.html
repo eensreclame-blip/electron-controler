@@ -1214,8 +1214,8 @@
         <button class="hw-btn btn-harm" onclick="macroHarmonize()">
           <span>🎲 🎵</span> <span>RANDOM HARMONIZE</span>
         </button>
-        <button class="hw-btn btn-macro" onclick="macroSliceToTransients()">
-          <span>⚡</span> <span>SLICE 4 TRANSIENTS</span>
+        <button class="hw-btn btn-macro" onclick="macroSliceToTransients()" title="Genereer willekeurige muzikale slices gesnapt op gedetecteerde transiënten">
+          <span>⚡ 🎲</span> <span>RANDOM SLICE TRANSIENTS</span>
         </button>
         <button class="hw-btn btn-macro" onclick="macroRandomizeLoops()">
           <span>🎲</span> <span>RANDOM LOOPS</span>
@@ -1935,37 +1935,114 @@
       updateVoiceParam(idx);
     }
 
+    let transientSliceRollCount = 0;
+
     function macroSliceToTransients() {
-      if (!masterAudioBuffer || detectedTransients.length < 2) {
-        alert("Laad eerst een audiobestand met transiënten!");
+      if (!masterAudioBuffer) {
+        alert("Laad eerst een audiobestand of selecteer een preset om transiënten te slicen!");
         return;
+      }
+
+      if (!detectedTransients || detectedTransients.length < 2) {
+        detectedTransients = analyzeBufferTransients(masterAudioBuffer);
       }
 
       const t = detectedTransients;
       const count = t.length;
-      
-      if (count >= 5) {
-        const q1 = Math.floor(count * 0.25);
-        const q2 = Math.floor(count * 0.50);
-        const q3 = Math.floor(count * 0.75);
+      transientSliceRollCount++;
 
-        voices[0].startPct = t[0];       voices[0].endPct = t[q1];
-        voices[1].startPct = t[q1];      voices[1].endPct = t[q2];
-        voices[2].startPct = t[q2];      voices[2].endPct = t[q3];
-        voices[3].startPct = t[q3];      voices[3].endPct = t[count - 1];
+      let sliceLabels = [];
+
+      if (count >= 4) {
+        // Creative slicing algorithms: scattered, polyrhythmic, micro-chops, and random partition
+        const modes = ['scattered', 'polyrhythm', 'microchops', 'partitions'];
+        const mode = modes[Math.floor(Math.random() * modes.length)];
+
+        if (mode === 'partitions' && count >= 8) {
+          // Choose 4 non-overlapping sequential or shuffled partitions
+          let cutPoints = [0];
+          let available = [];
+          for (let k = 1; k < count - 1; k++) available.push(k);
+          for (let p = 0; p < 3; p++) {
+            if (available.length > 0) {
+              const rIdx = Math.floor(Math.random() * available.length);
+              cutPoints.push(available.splice(rIdx, 1)[0]);
+            }
+          }
+          cutPoints.push(count - 1);
+          cutPoints.sort((a, b) => a - b);
+
+          for (let i = 0; i < 4; i++) {
+            const sIdx = cutPoints[i];
+            const eIdx = cutPoints[i + 1] || Math.min(count - 1, sIdx + 1);
+            voices[i].startPct = t[sIdx];
+            voices[i].endPct = Math.max(t[eIdx], t[sIdx] + 0.015);
+            sliceLabels.push(`L${i+1}[T${sIdx}→T${eIdx}]`);
+          }
+        } else if (mode === 'polyrhythm') {
+          // Different musical window lengths (1-beat, 2-beat, 3-beat, 4-beat loops)
+          const steps = [1, 2, 3, 4, 6].sort(() => Math.random() - 0.5);
+          for (let i = 0; i < 4; i++) {
+            const step = steps[i % steps.length];
+            const maxStart = Math.max(0, count - 1 - step);
+            const sIdx = Math.floor(Math.random() * (maxStart + 1));
+            const eIdx = Math.min(count - 1, sIdx + step);
+            voices[i].startPct = t[sIdx];
+            voices[i].endPct = Math.max(t[eIdx], t[sIdx] + 0.015);
+            sliceLabels.push(`L${i+1}[T${sIdx}→T${eIdx}]`);
+          }
+        } else if (mode === 'microchops') {
+          // Tight punchy transient hits (1 or 2 transient intervals)
+          for (let i = 0; i < 4; i++) {
+            const sIdx = Math.floor(Math.random() * Math.max(1, count - 2));
+            const span = 1 + Math.floor(Math.random() * 2);
+            const eIdx = Math.min(count - 1, sIdx + span);
+            voices[i].startPct = t[sIdx];
+            voices[i].endPct = Math.max(t[eIdx], t[sIdx] + 0.012);
+            sliceLabels.push(`L${i+1}[T${sIdx}→T${eIdx}]`);
+          }
+        } else {
+          // Scattered random transient windows
+          for (let i = 0; i < 4; i++) {
+            const sIdx = Math.floor(Math.random() * Math.max(1, count - 2));
+            const maxSpan = Math.min(count - 1 - sIdx, Math.max(2, Math.floor(count * 0.45)));
+            const span = 1 + Math.floor(Math.random() * maxSpan);
+            const eIdx = Math.min(count - 1, sIdx + span);
+            voices[i].startPct = t[sIdx];
+            voices[i].endPct = Math.max(t[eIdx], t[sIdx] + 0.015);
+            sliceLabels.push(`L${i+1}[T${sIdx}→T${eIdx}]`);
+          }
+        }
+
+        for (let i = 0; i < 4; i++) {
+          document.getElementById(`startL${i+1}`).value = (voices[i].startPct * 100).toFixed(1);
+          document.getElementById(`endL${i+1}`).value = (voices[i].endPct * 100).toFixed(1);
+          updateVoiceParam(i);
+        }
+
+        drawWaveform();
+        if (isDronePlaying) {
+          restartAllVoices();
+        }
+
+        engineStatus.textContent = `🎲 TRANSIËNT SLICE #${transientSliceRollCount}: ${sliceLabels.join(' ')} (${count} ONSETS)`;
       } else {
-        voices[0].startPct = t[0];       voices[0].endPct = t[1] || 0.25;
-        voices[1].startPct = t[1] || 0.25; voices[1].endPct = t[2] || 0.50;
-        voices[2].startPct = t[2] || 0.50; voices[2].endPct = t[3] || 0.75;
-        voices[3].startPct = t[3] || 0.75; voices[3].endPct = 1.0;
+        // Fallback for audio with few onsets
+        for (let i = 0; i < 4; i++) {
+          const rStart = Math.random() * 0.6;
+          const rEnd = rStart + 0.12 + Math.random() * 0.28;
+          voices[i].startPct = snapToNearestTransient(rStart);
+          voices[i].endPct = Math.max(snapToNearestTransient(rEnd), voices[i].startPct + 0.02);
+          document.getElementById(`startL${i+1}`).value = (voices[i].startPct * 100).toFixed(1);
+          document.getElementById(`endL${i+1}`).value = (voices[i].endPct * 100).toFixed(1);
+          updateVoiceParam(i);
+        }
+        drawWaveform();
+        if (isDronePlaying) {
+          restartAllVoices();
+        }
+        engineStatus.textContent = `🎲 RANDOM TRANSIENT SLICES #${transientSliceRollCount} TOEGEWEZEN`;
       }
-
-      for (let i = 0; i < 4; i++) {
-        document.getElementById(`startL${i+1}`).value = (voices[i].startPct * 100).toFixed(1);
-        document.getElementById(`endL${i+1}`).value = (voices[i].endPct * 100).toFixed(1);
-        updateVoiceParam(i);
-      }
-      engineStatus.textContent = `⚡ 4 VOICES AUTOMATISCH GESNAPT AAN ${detectedTransients.length} TRANSIËNTEN`;
     }
 
     // ==========================================

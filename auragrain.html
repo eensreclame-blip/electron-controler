@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuraGrain MKII - Hyper-Responsive Granular Scrubber</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Inter:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+body {
+font-family: 'Inter', sans-serif;
+background-color: #07080b;
+color: #e2e8f0;
+overflow-x: hidden;
+user-select: none;
+}
+.font-mono-code {
+font-family: 'JetBrains Mono', monospace;
+}
+/* TOP GLOBAL NAVIGATION BAR */
+.top-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: #0a0c13;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+.top-nav-brand {
+  font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #00f59b;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.top-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.top-nav-item {
+  text-decoration: none;
+  font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #94a3b8;
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+}
+.top-nav-item:hover {
+  color: #ffffff;
+  background: #151821;
+  border-color: #334155;
+}
+.top-nav-item.active {
+  color: #000000;
+  background: #00f59b;
+  border-color: #00f59b;
+  box-shadow: 0 0 10px rgba(0, 245, 155, 0.65);
+}
+.top-nav-divider {
+  color: #334155;
+  font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
+  font-size: 12px;
+  user-select: none;
+}
+input[type=range] {
+-webkit-appearance: none;
+background: #151821;
+height: 6px;
+border-radius: 9999px;
+outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+-webkit-appearance: none;
+width: 14px;
+height: 14px;
+border-radius: 50%;
+background: #00f59b;
+cursor: pointer;
+box-shadow: 0 0 10px rgba(0, 245, 155, 0.8);
+transition: transform 0.08s ease, background 0.08s;
+}
+input[type=range]::-webkit-slider-thumb:hover {
+transform: scale(1.3);
+background: #38bdf8;
+}
+.neon-border-green {
+border-color: rgba(0, 245, 155, 0.4);
+box-shadow: 0 0 20px -3px rgba(0, 245, 155, 0.25);
+}
+.grid-pattern {
+background-size: 24px 24px;
+background-image:
+linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+</style>
+</head>
+<body class="min-h-screen bg-[#07080b] grid-pattern flex flex-col justify-between selection:bg-[#00f59b] selection:text-black p-3 sm:p-4">
+
+<!-- TOP GLOBAL NAVIGATION BAR -->
+<nav class="top-nav-bar w-full max-w-7xl mx-auto mb-3">
+  <div class="top-nav-brand">
+    <a href="audio.html" class="flex items-center gap-2 text-inherit no-underline">
+      <span>⚙</span> ELEKTRON // SUITE
+    </a>
+  </div>
+  <div class="top-nav-links">
+    <a href="index.html" class="top-nav-item">MIDI</a>
+    <span class="top-nav-divider">|</span>
+    <a href="audio.html" class="top-nav-item active">AUDIO</a>
+    <span class="top-nav-divider">|</span>
+    <a href="visuals.html" class="top-nav-item">VISUALS</a>
+  </div>
+</nav>
+
+<header class="border-b border-slate-800/90 bg-[#0a0c13]/95 backdrop-blur-md sticky top-0 z-50 px-4 py-2.5 rounded-xl border border-slate-800 max-w-7xl mx-auto w-full mb-4">
+<div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#00f59b] to-emerald-700 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+<svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+</svg>
+</div>
+<div>
+<h1 class="text-sm font-extrabold tracking-wider uppercase text-white flex items-center gap-2">
+AuraGrain <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-[#00f59b] border border-emerald-800 font-mono-code font-bold">MKII // HYPER-SENSITIVE</span>
+</h1>
+<p class="text-[11px] text-slate-400">Extreme-Range Optical CV Granular Synthesizer &amp; MIDI Bridge</p>
+</div>
+</div>
+<!-- Realtime Status Monitors -->
+<div class="flex items-center space-x-2 font-mono-code text-[11px]">
+<div class="bg-slate-900/90 border border-slate-800 rounded-lg px-2.5 py-1 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-slate-600" id="audioLed"></span>
+<span class="text-slate-400">ENGINE:</span>
+<span id="audioStateText" class="text-slate-300 font-semibold">OFFLINE</span>
+</div>
+<div class="bg-slate-900/90 border border-slate-800 rounded-lg px-2.5 py-1 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-slate-600" id="camLed"></span>
+<span class="text-slate-400">CV:</span>
+<span id="camStateText" class="text-slate-300 font-semibold">STANDBY</span>
+</div>
+<div class="bg-slate-900/90 border border-slate-800 rounded-lg px-2.5 py-1 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-slate-600" id="midiLed"></span>
+<span class="text-slate-400">MIDI:</span>
+<span id="midiStateText" class="text-slate-300 font-semibold">STANDBY</span>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto w-full p-3 sm:p-4 lg:p-6 space-y-4 flex-grow">
+<!-- Top Display: Waveform Visualizer & Grain Particle Cloud -->
+<div class="relative bg-slate-950/90 rounded-xl border border-slate-800/90 shadow-2xl overflow-hidden p-3 sm:p-4">
+<div class="flex flex-wrap items-center justify-between pb-2 border-b border-slate-800/80 mb-2 gap-2">
+<div class="flex items-center gap-3">
+<span class="text-xs font-mono-code uppercase font-bold text-[#00f59b] flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-[#00f59b] animate-pulse"></span> Audio Buffer Matrix
+</span>
+<span id="audioFileName" class="text-xs font-mono-code text-slate-400 truncate max-w-[200px] sm:max-w-md">Multi-Texture Harmonic Drone (Ready)</span>
+</div>
+<!-- Real-time dynamic readouts -->
+<div class="flex flex-wrap items-center gap-3 text-xs font-mono-code">
+<span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">Scrub X: <strong id="hudScrubPct" class="text-[#00f59b] font-bold">50.0%</strong></span>
+<span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">Pitch Y: <strong id="hudPitchSemitones" class="text-yellow-400 font-bold">0 st (1.00x)</strong></span>
+<span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">Cutoff: <strong id="hudFilterHz" class="text-cyan-400 font-bold">12,000 Hz</strong></span>
+<span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">Grains: <strong id="hudGrainCount" class="text-pink-400 font-bold">0</strong></span>
+</div>
+</div>
+<!-- Main Waveform Canvas -->
+<div class="relative w-full h-44 sm:h-56 rounded-lg bg-[#040508] overflow-hidden border border-slate-900 cursor-ew-resize">
+<canvas id="waveformCanvas" class="w-full h-full block"></canvas>
+<!-- Interactive Playhead Tag -->
+<div id="playheadTag" class="absolute top-2 pointer-events-none -translate-x-1/2 px-2 py-0.5 rounded bg-[#00f59b] text-black font-mono-code text-[11px] font-extrabold shadow-lg">
+0.00s
+</div>
+</div>
+<!-- Quick Actions / Transport -->
+<div class="mt-3 flex flex-wrap items-center justify-between gap-2.5 text-xs">
+<div class="flex flex-wrap items-center gap-2">
+<button id="toggleEngineBtn" class="px-5 py-2.5 rounded-lg bg-[#00f59b] hover:bg-emerald-400 text-black font-extrabold flex items-center gap-2 transition-all shadow-md shadow-emerald-500/20 active:scale-95 text-xs uppercase tracking-wider">
+<svg id="playIcon" class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M4.5 3.5v13l11-6.5-11-6.5z"/></svg>
+<span id="playText">START SYNTH</span>
+</button>
+<button id="synthDroneBtn" class="px-3.5 py-2.5 rounded-lg bg-indigo-600/80 hover:bg-indigo-500 text-white font-semibold flex items-center gap-1.5 border border-indigo-500/30 transition-all active:scale-95">
+<svg class="w-4 h-4 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+Re-Gen Rich Drone
+</button>
+<label class="px-3.5 py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 cursor-pointer border border-slate-700 flex items-center gap-1.5 transition-all active:scale-95">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+Load File
+<input type="file" id="audioFileInput" accept="audio/*" class="hidden">
+</label>
+</div>
+<div class="flex items-center gap-4 font-mono-code text-[11px] text-slate-400">
+<label class="flex items-center gap-2 cursor-pointer hover:text-slate-200">
+<input type="checkbox" id="reverseScrubCheck" class="rounded bg-slate-900 border-slate-700 text-[#00f59b] focus:ring-0">
+<span>Invert Horizontal</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer hover:text-slate-200">
+<input type="checkbox" id="freezePositionCheck" class="rounded bg-slate-900 border-slate-700 text-[#00f59b] focus:ring-0">
+<span>Freeze Position</span>
+</label>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+<!-- Webcam Tracking Pipeline & Visual Feedback (5 cols) -->
+<div class="lg:col-span-5 bg-slate-950/90 rounded-xl border border-slate-800/90 p-3.5 flex flex-col justify-between space-y-3.5 shadow-xl">
+<div>
+<div class="flex items-center justify-between pb-2 border-b border-slate-800/70 mb-2.5">
+<h2 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2 font-mono-code">
+<svg class="w-4 h-4 text-[#00f59b]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+Optical CV Engine
+</h2>
+<button id="toggleCameraBtn" class="px-3 py-1.5 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-1.5 transition-all">
+<span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+<span>Enable Camera</span>
+</button>
+</div>
+<!-- Video Processing & CV Target Monitor -->
+<div class="relative w-full aspect-video rounded-lg bg-black border border-slate-800 overflow-hidden flex items-center justify-center">
+<video id="webcamVideo" playsinline muted autoplay class="hidden"></video>
+<canvas id="cameraCanvas" class="w-full h-full block transform -scale-x-100"></canvas>
+<!-- Standby Overlay -->
+<div id="camPrompt" class="absolute inset-0 flex flex-col items-center justify-center text-center p-3 bg-slate-950/85">
+<p class="text-xs font-semibold text-slate-300">Click <span class="text-[#00f59b]">"Enable Camera"</span></p>
+<p class="text-[10px] text-slate-500 mt-0.5">Or drag your mouse directly on the waveform above to test</p>
+</div>
+<!-- Optical Tracker Crosshair Overlay -->
+<div id="targetCrosshair" class="absolute pointer-events-none transition-transform duration-75 ease-out opacity-0" style="left:50%; top:50%; transform:translate(-50%, -50%);">
+<div class="w-9 h-9 rounded-full border-2 border-[#00f59b] border-dashed animate-spin"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-[#00f59b] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 shadow-lg shadow-[#00f59b]"></div>
+</div>
+<!-- Dynamic Velocity Radar HUD on Video -->
+<div class="absolute bottom-2 left-2 pointer-events-none bg-black/75 px-2 py-0.5 rounded border border-slate-800 font-mono-code text-[10px] text-[#00f59b]">
+VEL: <span id="overlayVelocity">0.00</span>
+</div>
+</div>
+</div>
+<!-- Optical Algorithm & Extreme Sensitivity Controls -->
+<div class="space-y-2.5 pt-1">
+<div class="grid grid-cols-2 gap-2 text-xs">
+<label class="flex flex-col gap-1 text-slate-400">
+<span class="text-[10px] font-mono-code text-slate-400">ALGORITHM</span>
+<select id="trackingModeSelect" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-1.5 text-slate-200 outline-none focus:border-[#00f59b] text-xs">
+<option value="motion">Motion Delta (High Contrast Differencing)</option>
+<option value="brightest">Flashlight / Torch (Peak Luminance)</option>
+<option value="color">Bright Color / Red-Hue Tracking</option>
+</select>
+</label>
+<label class="flex flex-col gap-1 text-slate-400">
+<span class="text-[10px] font-mono-code text-slate-400">Y-AXIS ROUTING</span>
+<select id="yAxisTargetSelect" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-1.5 text-slate-200 outline-none focus:border-[#00f59b] text-xs">
+<option value="pitchExtreme">Pitch Extreme (-24 to +24 Semitones)</option>
+<option value="grainSize">Grain Duration (8ms Glitch to 500ms Cloud)</option>
+<option value="filterSweep">Filter Cutoff (100Hz to 18,000Hz)</option>
+<option value="density">Density (4 to 90 grains/sec)</option>
+</select>
+</label>
+</div>
+<!-- CV Tuning Matrix -->
+<div class="grid grid-cols-3 gap-2.5 font-mono-code text-[11px] bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
+<div>
+<div class="flex justify-between text-slate-400 mb-1">
+<span>GAIN / BOOST</span>
+<span id="sensVal" class="text-[#00f59b] font-bold">4.0x</span>
+</div>
+<input type="range" id="motionSens" min="1.0" max="10.0" step="0.2" value="4.0" class="w-full">
+</div>
+<div>
+<div class="flex justify-between text-slate-400 mb-1">
+<span>THRESH</span>
+<span id="threshVal" class="text-[#00f59b] font-bold">18</span>
+</div>
+<input type="range" id="motionThreshold" min="3" max="80" value="18" class="w-full">
+</div>
+<div>
+<div class="flex justify-between text-slate-400 mb-1">
+<span>RESPONSIVE</span>
+<span id="smoothVal" class="text-[#00f59b] font-bold">0.00 (RAW)</span>
+</div>
+<input type="range" id="motionSmoothing" min="0.0" max="0.8" step="0.02" value="0.0" class="w-full">
+</div>
+</div>
+<!-- Dynamic Velocity Modulation Settings -->
+<div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800 flex items-center justify-between text-[11px] font-mono-code text-slate-300">
+<label class="flex items-center gap-2 cursor-pointer">
+<input type="checkbox" id="velToFilterCheck" checked class="rounded bg-slate-950 border-slate-700 text-[#00f59b] focus:ring-0">
+<span>Velocity &rarr; Auto Filter Open (Whip)</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input type="checkbox" id="velToSprayCheck" checked class="rounded bg-slate-950 border-slate-700 text-[#00f59b] focus:ring-0">
+<span>Velocity &rarr; Grain Spray Scatter</span>
+</label>
+</div>
+</div>
+</div>
+<!-- Granular DSP Core & FX Matrix (7 cols) -->
+<div class="lg:col-span-7 bg-slate-950/90 rounded-xl border border-slate-800/90 p-3.5 space-y-3.5 shadow-xl flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-2 border-b border-slate-800/70 mb-2.5">
+<h2 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2 font-mono-code">
+<svg class="w-4 h-4 text-[#00f59b]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+Extreme Granular DSP Matrix
+</h2>
+<div class="flex items-center gap-2 text-[10px] font-mono-code">
+<span class="text-slate-400">ENVELOPE:</span>
+<span class="px-2 py-0.5 rounded bg-slate-900 text-[#00f59b] border border-slate-800">CLICK-FREE HANN</span>
+</div>
+</div>
+<!-- Sliders Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+<!-- Pitch Octave Transpose -->
+<div class="bg-slate-900/70 border border-slate-800/80 rounded-lg p-2.5">
+<div class="flex justify-between items-center text-xs mb-1 font-mono-code">
+<span class="text-slate-300 font-semibold">Pitch / Rate</span>
+<span id="pitchVal" class="text-yellow-400 font-bold">1.00x (0 st)</span>
+</div>
+<input type="range" id="paramPitch" min="-24" max="24" step="0.5" value="0" class="w-full">
+<div class="flex justify-between text-[10px] text-slate-500 mt-1 font-mono-code">
+<span>-24 st (0.25x)</span>
+<span>0 st</span>
+<span>+24 st (4.00x)</span>
+</div>
+</div>
+<!-- Grain Duration -->
+<div class="bg-slate-900/70 border border-slate-800/80 rounded-lg p-2.5">
+<div class="flex justify-between items-center text-xs mb-1 font-mono-code">
+<span class="text-slate-300 font-semibold">Grain Duration</span>
+<span id="durVal" class="text-[#00f59b] font-bold">110 ms</span>
+</div>
+<input type="range" id="paramDuration" min="0.008" max="0.5" step="0.004" value="0.11" class="w-full">
+<div class="flex justify-between text-[10px] text-slate-500 mt-1 font-mono-code">
+<span>8ms (Buzz)</span>
+<span>500ms (Wash)</span>
+</div>
+</div>
+<!-- Grain Density -->
+<div class="bg-slate-900/70 border border-slate-800/80 rounded-lg p-2.5">
+<div class="flex justify-between items-center text-xs mb-1 font-mono-code">
+<span class="text-slate-300 font-semibold">Density / Spawn Rate</span>
+<span id="rateVal" class="text-[#00f59b] font-bold">40 /sec</span>
+</div>
+<input type="range" id="paramRate" min="5" max="95" step="1" value="40" class="w-full">
+<div class="flex justify-between text-[10px] text-slate-500 mt-1 font-mono-code">
+<span>5 /s (Sparse)</span>
+<span>95 /s (Hyper Cloud)</span>
+</div>
+</div>
+<!-- Spray / Scatter Offset -->
+<div class="bg-slate-900/70 border border-slate-800/80 rounded-lg p-2.5">
+<div class="flex justify-between items-center text-xs mb-1 font-mono-code">
+<span class="text-slate-300 font-semibold">Spray Jitter Window</span>
+<span id="sprayVal" class="text-[#00f59b] font-bold">25 ms</span>
+</div>
+<input type="range" id="paramSpray" min="0" max="0.5" step="0.005" value="0.025" class="w-full">
+<div class="flex justify-between text-[10px] text-slate-500 mt-1 font-mono-code">
+<span>0ms (Laser Precise)</span>
+<span>500ms (Total Chaos)</span>
+</div>
+</div>
+<!-- Lowpass Filter Cutoff -->
+<div class="bg-slate-900/70 border border-slate-800/80 rounded-lg p-2.5">
+<div class="flex justify-between items-center text-xs mb-1 font-mono-code">
+<span class="text-slate-300 font-semibold">Filter Cutoff (24dB LP)</span>
+<span id="filterVal" class="text-cyan-400 font-bold">12,000 Hz</span>
+</div>
+<input type="range" id="paramFilter" min="100" max="18000" step="50" value="12000" class="w-full">
+<div class="flex justify-between text-[10px] text-slate-500 mt-1 font-mono-code">
+<span>100Hz (Deep Sub)</span>
+<span>18kHz (Wide Open)</span>
+</div>
+</div>
+<!-- Drive / Saturation -->
+<div class="bg-slate-900/70 border border-slate-800/80 rounded-lg p-2.5">
+<div class="flex justify-between items-center text-xs mb-1 font-mono-code">
+<span class="text-slate-300 font-semibold">Overdrive / Tape Heat</span>
+<span id="driveVal" class="text-rose-400 font-bold">25%</span>
+</div>
+<input type="range" id="paramDrive" min="0" max="1" step="0.02" value="0.25" class="w-full">
+<div class="flex justify-between text-[10px] text-slate-500 mt-1 font-mono-code">
+<span>Clean</span>
+<span>Warm Crunch</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Master FX & Web MIDI Output -->
+<div class="border-t border-slate-800/70 pt-2.5 space-y-2.5">
+<div class="grid grid-cols-2 gap-2.5">
+<!-- Delay Wet -->
+<div class="bg-slate-900/80 rounded-lg p-2 border border-slate-800">
+<div class="flex justify-between items-center text-xs mb-1 font-mono-code">
+<span class="text-slate-300">Space Delay Wet</span>
+<span id="delayVal" class="text-emerald-400 font-bold">25%</span>
+</div>
+<input type="range" id="paramDelayWet" min="0" max="0.8" step="0.01" value="0.25" class="w-full">
+</div>
+<!-- Master Volume -->
+<div class="bg-slate-900/80 rounded-lg p-2 border border-slate-800">
+<div class="flex justify-between items-center text-xs mb-1 font-mono-code">
+<span class="text-slate-300">Master Level</span>
+<span id="gainVal" class="text-[#00f59b] font-bold">80%</span>
+</div>
+<input type="range" id="paramGain" min="0" max="1" step="0.01" value="0.8" class="w-full">
+</div>
+</div>
+<!-- Web MIDI Bar -->
+<div class="bg-slate-900 border border-slate-800 rounded-lg p-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+<div class="flex items-center gap-2">
+<div class="w-2.5 h-2.5 rounded-full bg-slate-600" id="midiPortDot"></div>
+<span class="font-mono-code text-slate-300 text-[11px]">MIDI Output:</span>
+<select id="midiOutputSelect" class="bg-slate-950 border border-slate-800 rounded px-2 py-1 text-slate-200 outline-none focus:border-[#00f59b] text-xs">
+<option value="">No MIDI Ports Detected</option>
+</select>
+</div>
+<div class="flex items-center gap-3 text-[10px] font-mono-code text-slate-400">
+<span>CC 16: <strong class="text-[#00f59b]">Scrub X</strong></span>
+<span>CC 17: <strong class="text-yellow-400">Pitch Y</strong></span>
+<span>CC 18: <strong class="text-cyan-400">Velocity/Cutoff</strong></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="border-t border-slate-900 bg-[#06070a] px-4 py-2.5 text-center text-xs text-slate-500 font-mono-code max-w-7xl mx-auto w-full mt-4">
+AuraGrain MKII &bull; Instant High-Contrast Optical Scrubber &bull; Hand Motion &rarr; Granular Transpose
+</footer>
+<!-- Notification Toast -->
+<div id="toastBox" class="fixed bottom-6 right-6 z-50 pointer-events-none transition-all duration-300 transform translate-y-10 opacity-0 bg-slate-900 border border-[#00f59b]/50 text-[#00f59b] px-4 py-3 rounded-lg shadow-2xl font-mono-code text-xs flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[#00f59b]"></span>
+<span id="toastMsg">Ready</span>
+</div>
+<script>
+let audioCtx = null;
+let masterGain = null;
+let masterFilter1 = null;
+let masterFilter2 = null; // Cascaded 24dB steep filter
+let driveNode = null;
+let delayNode = null;
+let delayGain = null;
+let delayFeedback = null;
+let audioBuffer = null;
+let isPlaying = false;
+// Granular Scheduler State
+let nextGrainTime = 0;
+let activeGrainCount = 0;
+let schedulerTimerId = null;
+// Core Parameters
+const params = {
+position: 0.5, // 0.0 to 1.0 (Scrub position)
+pitchSemitones: 0, // -24 to +24 semitones
+pitchRatio: 1.0, // Derived playback rate
+grainDuration: 0.11, // seconds
+grainRate: 40, // grains per second
+spray: 0.025, // position jitter ratio
+panSpread: 0.8,
+gain: 0.8,
+baseFilterFreq: 12000,
+activeFilterFreq: 12000,
+drive: 0.25,
+delayWet: 0.25,
+reverseX: false,
+freezePosition: false,
+yMapping: 'pitchExtreme',
+velToFilter: true,
+velToSpray: true
+};
+// Precalculate Hann Window Curve
+const HANN_SIZE = 512;
+const hannCurve = new Float32Array(HANN_SIZE);
+for (let i = 0; i < HANN_SIZE; i++) {
+hannCurve[i] = 0.5 * (1 - Math.cos((2 * Math.PI * i) / (HANN_SIZE - 1)));
+}
+// Overdrive distortion curve generator
+function makeDistortionCurve(amount = 0.2) {
+const k = amount * 40;
+const n_samples = 44100;
+const curve = new Float32Array(n_samples);
+const deg = Math.PI / 180;
+for (let i = 0; i < n_samples; ++i) {
+const x = (i * 2) / n_samples - 1;
+if (k === 0) {
+curve[i] = x;
+} else {
+curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+}
+}
+return curve;
+}
+function showToast(msg) {
+const toast = document.getElementById('toastBox');
+const text = document.getElementById('toastMsg');
+text.textContent = msg;
+toast.classList.remove('translate-y-10', 'opacity-0');
+clearTimeout(toast._timer);
+toast._timer = setTimeout(() => {
+toast.classList.add('translate-y-10', 'opacity-0');
+}, 2600);
+}
+function initAudioContext() {
+if (audioCtx) return;
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+audioCtx = new AudioContext();
+// Master Gain
+masterGain = audioCtx.createGain();
+masterGain.gain.setValueAtTime(params.gain, audioCtx.currentTime);
+// Cascaded 24dB/oct resonant filter
+masterFilter1 = audioCtx.createBiquadFilter();
+masterFilter1.type = 'lowpass';
+masterFilter1.frequency.setValueAtTime(params.activeFilterFreq, audioCtx.currentTime);
+masterFilter1.Q.setValueAtTime(2.2, audioCtx.currentTime);
+masterFilter2 = audioCtx.createBiquadFilter();
+masterFilter2.type = 'lowpass';
+masterFilter2.frequency.setValueAtTime(params.activeFilterFreq, audioCtx.currentTime);
+masterFilter2.Q.setValueAtTime(1.0, audioCtx.currentTime);
+// Distortion / Saturation WaveShaper
+driveNode = audioCtx.createWaveShaper();
+driveNode.curve = makeDistortionCurve(params.drive);
+driveNode.oversample = '2x';
+// Spatial Delay
+delayNode = audioCtx.createDelay(1.5);
+delayNode.delayTime.setValueAtTime(0.24, audioCtx.currentTime);
+delayFeedback = audioCtx.createGain();
+delayFeedback.gain.setValueAtTime(0.38, audioCtx.currentTime);
+delayGain = audioCtx.createGain();
+delayGain.gain.setValueAtTime(params.delayWet, audioCtx.currentTime);
+// Delay wiring
+delayNode.connect(delayFeedback);
+delayFeedback.connect(delayNode);
+delayNode.connect(delayGain);
+delayGain.connect(masterFilter1);
+// Filter Cascade & Master wiring
+masterFilter1.connect(masterFilter2);
+masterFilter2.connect(driveNode);
+driveNode.connect(masterGain);
+masterGain.connect(audioCtx.destination);
+document.getElementById('audioLed').className = 'w-2 h-2 rounded-full bg-[#00f59b] shadow-sm shadow-[#00f59b]';
+document.getElementById('audioStateText').textContent = 'ONLINE';
+}
+function generateRichTestDrone() {
+initAudioContext();
+const sampleRate = audioCtx.sampleRate;
+const durationSeconds = 14.0;
+const length = sampleRate * durationSeconds;
+const buffer = audioCtx.createBuffer(2, length, sampleRate);
+const chL = buffer.getChannelData(0);
+const chR = buffer.getChannelData(1);
+// Evolving textures: Bass fundamentals, metallic FM harmonics, vocal formants & transient blips
+const baseFreqs = [55.0, 110.0, 164.81, 220.0, 277.18, 329.63, 440.0, 659.25, 880.0];
+for (let i = 0; i < length; i++) {
+const t = i / sampleRate;
+const normT = i / length;
+// Evolving timbre across time so scrubbing sounds dramatically different everywhere
+let sampleL = 0;
+let sampleR = 0;
+// Section 1 (0-30%): Deep sub-heavy warm analog saw chord
+const saw1 = (2 * ((t * 55.0) % 1) - 1) * 0.25;
+const sub = Math.sin(2 * Math.PI * 55.0 * t) * 0.4;
+// Section 2 (30-70%): FM metallic clang & vowel sweeps
+const modFreq = 110 + Math.sin(t * 3.5) * 80;
+const modIndex = 4.0 * Math.sin(t * 2.0);
+const modulator = Math.sin(2 * Math.PI * modFreq * t) * modIndex;
+const fmTone = Math.sin(2 * Math.PI * 220.0 * t + modulator) * 0.3;
+// Section 3 (70-100%): Rhythmic transient clicks & high sparkling bells
+const sparkle = Math.sin(2 * Math.PI * (880.0 + Math.sin(t * 12) * 200) * t) * 0.2;
+const clickBurst = ((Math.sin(2 * Math.PI * 8.0 * t) > 0.96) ? (Math.random() * 2 - 1) * 0.5 : 0);
+// Morph coefficients across buffer
+const w1 = Math.max(0, 1.0 - normT * 2.0);
+const w2 = Math.sin(Math.PI * normT);
+const w3 = Math.max(0, (normT - 0.5) * 2.0);
+sampleL = (saw1 + sub) * w1 + fmTone * w2 + (sparkle + clickBurst) * w3;
+sampleR = (saw1 * 0.9 + sub) * w1 + fmTone * Math.cos(t) * w2 + (sparkle * 1.1 + clickBurst) * w3;
+// Master envelope to loop smoothly
+const loopFade = Math.sin(Math.PI * normT);
+chL[i] = sampleL * loopFade * 0.6;
+chR[i] = sampleR * loopFade * 0.6;
+}
+audioBuffer = buffer;
+document.getElementById('audioFileName').textContent = 'Multi-Texture Harmonic Drone (14s Stereo)';
+renderWaveform();
+showToast('Rich test audio drone initialized!');
+}
+async function loadAudioFile(file) {
+initAudioContext();
+showToast(`Loading: ${file.name}...`);
+try {
+const arrayBuffer = await file.arrayBuffer();
+const decoded = await audioCtx.decodeAudioData(arrayBuffer);
+audioBuffer = decoded;
+document.getElementById('audioFileName').textContent = `${file.name} (${decoded.duration.toFixed(1)}s)`;
+renderWaveform();
+showToast('Audio loaded into granular memory!');
+} catch (err) {
+console.error('Audio decode error:', err);
+showToast('Error decoding audio file.');
+}
+}
+function scheduleGrain(time) {
+if (!audioBuffer || !audioCtx) return;
+const dur = params.grainDuration;
+const bufferDuration = audioBuffer.duration;
+// Calculate position
+let scrubPos = params.reverseX ? (1 - params.position) : params.position;
+let offset = scrubPos * bufferDuration;
+// Add dynamic spray jitter
+if (params.spray > 0) {
+const jitter = (Math.random() * 2 - 1) * params.spray * bufferDuration;
+offset += jitter;
+}
+// Keep within valid buffer window
+if (offset < 0) offset = 0;
+if (offset + dur > bufferDuration) offset = Math.max(0, bufferDuration - dur);
+const source = audioCtx.createBufferSource();
+source.buffer = audioBuffer;
+source.playbackRate.setValueAtTime(params.pitchRatio, time);
+// Hann Window Envelope
+const grainGain = audioCtx.createGain();
+grainGain.gain.setValueCurveAtTime(hannCurve, time, dur);
+// Stereo Panner
+let grainOutput = grainGain;
+if (audioCtx.createStereoPanner) {
+const panner = audioCtx.createStereoPanner();
+panner.pan.setValueAtTime((Math.random() * 2 - 1) * params.panSpread, time);
+grainGain.connect(panner);
+grainOutput = panner;
+}
+// Connect to FX bus & master filter
+grainOutput.connect(masterFilter1);
+grainOutput.connect(delayNode);
+source.connect(grainGain);
+source.start(time, offset, dur);
+source.stop(time + dur);
+activeGrainCount++;
+emitGrainParticle(offset / bufferDuration);
+setTimeout(() => {
+activeGrainCount = Math.max(0, activeGrainCount - 1);
+}, dur * 1000);
+}
+// Ultra-tight scheduler loop
+function granularSchedulerLoop() {
+if (!isPlaying || !audioCtx) return;
+const currentTime = audioCtx.currentTime;
+while (nextGrainTime < currentTime + 0.08) {
+scheduleGrain(nextGrainTime);
+const interval = 1.0 / Math.max(1, params.grainRate);
+nextGrainTime += interval;
+}
+document.getElementById('hudGrainCount').textContent = activeGrainCount;
+schedulerTimerId = setTimeout(granularSchedulerLoop, 20);
+}
+function togglePlayback() {
+initAudioContext();
+if (!audioBuffer) {
+generateRichTestDrone();
+}
+if (audioCtx.state === 'suspended') {
+audioCtx.resume();
+}
+isPlaying = !isPlaying;
+const btn = document.getElementById('toggleEngineBtn');
+const text = document.getElementById('playText');
+const icon = document.getElementById('playIcon');
+if (isPlaying) {
+nextGrainTime = audioCtx.currentTime;
+granularSchedulerLoop();
+btn.classList.replace('bg-[#00f59b]', 'bg-rose-500');
+btn.classList.replace('hover:bg-emerald-400', 'hover:bg-rose-400');
+text.textContent = 'STOP SYNTH';
+icon.innerHTML = `<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />`;
+} else {
+clearTimeout(schedulerTimerId);
+btn.classList.replace('bg-rose-500', 'bg-[#00f59b]');
+btn.classList.replace('hover:bg-rose-400', 'hover:bg-emerald-400');
+text.textContent = 'START SYNTH';
+icon.innerHTML = `<path d="M4.5 3.5v13l11-6.5-11-6.5z"/>`;
+}
+}
+const waveCanvas = document.getElementById('waveformCanvas');
+const waveCtx = waveCanvas.getContext('2d');
+let grainParticles = [];
+function resizeWaveformCanvas() {
+const rect = waveCanvas.getBoundingClientRect();
+const dpr = window.devicePixelRatio || 1;
+waveCanvas.width = rect.width * dpr;
+waveCanvas.height = rect.height * dpr;
+waveCtx.scale(dpr, dpr);
+}
+function emitGrainParticle(normPos) {
+const rect = waveCanvas.getBoundingClientRect();
+grainParticles.push({
+x: normPos * rect.width,
+y: rect.height * 0.5 + (Math.random() * 30 - 15),
+vx: (Math.random() - 0.5) * 3,
+vy: -Math.random() * 3.5 - 1.2,
+alpha: 1.0,
+radius: Math.random() * 3 + 1.5,
+color: Math.random() > 0.4 ? '#00f59b' : '#38bdf8'
+});
+if (grainParticles.length > 100) grainParticles.shift();
+}
+function renderWaveform() {
+const rect = waveCanvas.getBoundingClientRect();
+const w = rect.width;
+const h = rect.height;
+waveCtx.clearRect(0, 0, w, h);
+// Grid guidelines
+waveCtx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+waveCtx.lineWidth = 1;
+for (let x = 0; x < w; x += 35) {
+waveCtx.beginPath();
+waveCtx.moveTo(x, 0);
+waveCtx.lineTo(x, h);
+waveCtx.stroke();
+}
+// Waveform Peaks
+if (audioBuffer) {
+const data = audioBuffer.getChannelData(0);
+const step = Math.ceil(data.length / w);
+const amp = h / 2.2;
+waveCtx.fillStyle = 'rgba(0, 245, 155, 0.2)';
+waveCtx.strokeStyle = '#00f59b';
+waveCtx.lineWidth = 1.5;
+waveCtx.beginPath();
+waveCtx.moveTo(0, h / 2);
+for (let i = 0; i < w; i++) {
+let min = 1.0;
+let max = -1.0;
+const start = i * step;
+for (let j = 0; j < step; j += 4) {
+const val = data[start + j];
+if (val !== undefined) {
+if (val < min) min = val;
+if (val > max) max = val;
+}
+}
+if (max < min) { min = 0; max = 0; }
+waveCtx.lineTo(i, (h / 2) + max * amp);
+}
+for (let i = w - 1; i >= 0; i--) {
+let min = 1.0;
+const start = i * step;
+for (let j = 0; j < step; j += 4) {
+const val = data[start + j];
+if (val !== undefined && val < min) min = val;
+}
+if (min > 0) min = 0;
+waveCtx.lineTo(i, (h / 2) + min * amp);
+}
+waveCtx.closePath();
+waveCtx.fill();
+waveCtx.stroke();
+}
+// Spark Particles
+for (let i = grainParticles.length - 1; i >= 0; i--) {
+const p = grainParticles[i];
+p.x += p.vx;
+p.y += p.vy;
+p.alpha -= 0.025;
+if (p.alpha <= 0) {
+grainParticles.splice(i, 1);
+continue;
+}
+waveCtx.save();
+waveCtx.globalAlpha = p.alpha;
+waveCtx.fillStyle = p.color;
+waveCtx.shadowColor = p.color;
+waveCtx.shadowBlur = 6;
+waveCtx.beginPath();
+waveCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+waveCtx.fill();
+waveCtx.restore();
+}
+// Aggressive Laser Playhead
+const effPos = params.reverseX ? (1 - params.position) : params.position;
+const playheadX = effPos * w;
+waveCtx.save();
+waveCtx.strokeStyle = 'rgba(0, 245, 155, 0.45)';
+waveCtx.lineWidth = 8;
+waveCtx.beginPath();
+waveCtx.moveTo(playheadX, 0);
+waveCtx.lineTo(playheadX, h);
+waveCtx.stroke();
+waveCtx.strokeStyle = '#ffffff';
+waveCtx.lineWidth = 2.5;
+waveCtx.beginPath();
+waveCtx.moveTo(playheadX, 0);
+waveCtx.lineTo(playheadX, h);
+waveCtx.stroke();
+// Spray window spread
+if (params.spray > 0) {
+const sprayW = params.spray * w;
+waveCtx.fillStyle = 'rgba(0, 245, 155, 0.1)';
+waveCtx.fillRect(playheadX - sprayW, 0, sprayW * 2, h);
+}
+waveCtx.restore();
+// Playhead tag update
+if (audioBuffer) {
+const tag = document.getElementById('playheadTag');
+tag.style.left = `${playheadX}px`;
+const currSeconds = effPos * audioBuffer.duration;
+tag.textContent = `${currSeconds.toFixed(2)}s (${Math.round(effPos * 100)}%)`;
+document.getElementById('hudScrubPct').textContent = `${(effPos * 100).toFixed(1)}%`;
+}
+requestAnimationFrame(renderWaveform);
+}
+const video = document.getElementById('webcamVideo');
+const camCanvas = document.getElementById('cameraCanvas');
+const camCtx = camCanvas.getContext('2d', { willReadFrequently: true });
+const crosshair = document.getElementById('targetCrosshair');
+let isCameraActive = false;
+let prevFrameData = null;
+let targetTrackerX = 0.5;
+let targetTrackerY = 0.5;
+let smoothTrackerX = 0.5;
+let smoothTrackerY = 0.5;
+let motionVelocity = 0;
+let lastSmoothX = 0.5;
+let lastSmoothY = 0.5;
+// CV Configuration
+const cvSettings = {
+threshold: 18,
+smoothing: 0.0, // Default RAW (0.0 = instant zero-lag)
+sensitivity: 4.0, // 4x auto-gain multiplier
+mode: 'motion' // 'motion', 'brightest', 'color'
+};
+async function toggleWebcam() {
+const btn = document.getElementById('toggleCameraBtn');
+const prompt = document.getElementById('camPrompt');
+if (!isCameraActive) {
+try {
+const stream = await navigator.mediaDevices.getUserMedia({
+video: { width: { ideal: 320 }, height: { ideal: 240 }, frameRate: { ideal: 60 } },
+audio: false
+});
+video.srcObject = stream;
+await video.play();
+isCameraActive = true;
+prompt.classList.add('hidden');
+crosshair.classList.remove('opacity-0');
+btn.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span><span>Disable Camera</span>`;
+btn.className = "px-3 py-1.5 text-xs rounded-lg bg-rose-700 hover:bg-rose-600 text-white font-bold flex items-center gap-1.5 transition-all";
+document.getElementById('camLed').className = 'w-2 h-2 rounded-full bg-[#00f59b] shadow-sm shadow-[#00f59b]';
+document.getElementById('camStateText').textContent = 'TRACKING';
+showToast('Optical CV Online. Hyper-responsive tracking active!');
+requestAnimationFrame(processCameraFrame);
+} catch (err) {
+console.error('Camera access failed:', err);
+showToast('Unable to open camera. Check permissions.');
+}
+} else {
+if (video.srcObject) {
+video.srcObject.getTracks().forEach(t => t.stop());
+}
+isCameraActive = false;
+prompt.classList.remove('hidden');
+crosshair.classList.add('opacity-0');
+btn.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-white"></span><span>Enable Camera</span>`;
+btn.className = "px-3 py-1.5 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-1.5 transition-all";
+document.getElementById('camLed').className = 'w-2 h-2 rounded-full bg-slate-600';
+document.getElementById('camStateText').textContent = 'STANDBY';
+}
+}
+function processCameraFrame() {
+if (!isCameraActive) return;
+if (video.readyState >= video.HAVE_CURRENT_DATA) {
+const cw = 160;
+const ch = 120;
+if (camCanvas.width !== cw) {
+camCanvas.width = cw;
+camCanvas.height = ch;
+}
+camCtx.drawImage(video, 0, 0, cw, ch);
+const frame = camCtx.getImageData(0, 0, cw, ch);
+const data = frame.data;
+let sumX = 0;
+let sumY = 0;
+let activeWeight = 0;
+if (cvSettings.mode === 'motion') {
+// Motion Delta differencing
+if (prevFrameData) {
+const prev = prevFrameData.data;
+const thresh = cvSettings.threshold * 3;
+for (let i = 0; i < data.length; i += 4) {
+const diff = Math.abs(data[i] - prev[i]) +
+Math.abs(data[i + 1] - prev[i + 1]) +
+Math.abs(data[i + 2] - prev[i + 2]);
+if (diff > thresh) {
+const pxIndex = i / 4;
+const x = pxIndex % cw;
+const y = Math.floor(pxIndex / cw);
+// Weight by difference magnitude multiplied by sensitivity gain
+const weight = (diff / 255) * cvSettings.sensitivity;
+sumX += x * weight;
+sumY += y * weight;
+activeWeight += weight;
+// High contrast visualizer on webcam feed
+data[i] = 0;
+data[i + 1] = 245;
+data[i + 2] = 155;
+}
+}
+}
+prevFrameData = frame;
+} else if (cvSettings.mode === 'brightest') {
+// Flashlight / Peak Luminance
+const lumThresh = cvSettings.threshold * 2.8;
+for (let i = 0; i < data.length; i += 4) {
+const lum = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+if (lum > lumThresh) {
+const pxIndex = i / 4;
+const x = pxIndex % cw;
+const y = Math.floor(pxIndex / cw);
+const weight = Math.pow(lum / 255, 3); // High exponent highlights the exact hotspot
+sumX += x * weight;
+sumY += y * weight;
+activeWeight += weight;
+data[i] = 255;
+data[i + 1] = 220;
+data[i + 2] = 0;
+}
+}
+} else if (cvSettings.mode === 'color') {
+// Red-dominant Chrominance Tracker (e.g. red cup, marker or skin tone)
+for (let i = 0; i < data.length; i += 4) {
+const r = data[i];
+const g = data[i + 1];
+const b = data[i + 2];
+const redDominance = r - Math.max(g, b);
+if (redDominance > cvSettings.threshold) {
+const pxIndex = i / 4;
+const x = pxIndex % cw;
+const y = Math.floor(pxIndex / cw);
+sumX += x * redDominance;
+sumY += y * redDominance;
+activeWeight += redDominance;
+data[i] = 255;
+data[i + 1] = 0;
+data[i + 2] = 128;
+}
+}
+}
+// Draw tracked highlight back to canvas
+camCtx.putImageData(frame, 0, 0);
+// Calculate Target Centroid
+if (activeWeight > 5) {
+targetTrackerX = (sumX / activeWeight) / cw;
+targetTrackerY = (sumY / activeWeight) / ch;
+}
+// Apply Smoothing: 0.0 means instant raw responsiveness
+if (cvSettings.smoothing === 0) {
+smoothTrackerX = targetTrackerX;
+smoothTrackerY = targetTrackerY;
+} else {
+const factor = Math.max(0.05, 1.0 - cvSettings.smoothing);
+smoothTrackerX += (targetTrackerX - smoothTrackerX) * factor;
+smoothTrackerY += (targetTrackerY - smoothTrackerY) * factor;
+}
+// Calculate Instant Motion Velocity
+const dx = (smoothTrackerX - lastSmoothX);
+const dy = (smoothTrackerY - lastSmoothY);
+motionVelocity = Math.sqrt(dx * dx + dy * dy) * 12 * cvSettings.sensitivity;
+lastSmoothX = smoothTrackerX;
+lastSmoothY = smoothTrackerY;
+// Position Crosshair on camera preview (mirrored horizontally)
+const mirroredX = (1 - smoothTrackerX) * 100;
+const visualY = smoothTrackerY * 100;
+crosshair.style.left = `${mirroredX}%`;
+crosshair.style.top = `${visualY}%`;
+document.getElementById('overlayVelocity').textContent = motionVelocity.toFixed(2);
+// Apply CV coordinates to Granular Synthesizer
+applyCVToSynthesis(smoothTrackerX, smoothTrackerY, motionVelocity);
+// Dispatch MIDI CC
+dispatchMidiCC(smoothTrackerX, smoothTrackerY, motionVelocity);
+}
+requestAnimationFrame(processCameraFrame);
+}
+function applyCVToSynthesis(x, y, vel) {
+// 1. Scrub Position X
+if (!params.freezePosition) {
+params.position = Math.max(0, Math.min(1, x));
+}
+// 2. Y-Axis Mapping
+const normY = 1.0 - Math.max(0, Math.min(1, y)); // Invert so top = high
+if (params.yMapping === 'pitchExtreme') {
+// Massive range: -24 to +24 semitones (0.25x to 4.0x)
+const semitones = -24 + normY * 48;
+params.pitchSemitones = semitones;
+params.pitchRatio = Math.pow(2, semitones / 12);
+document.getElementById('paramPitch').value = semitones;
+document.getElementById('pitchVal').textContent = `${params.pitchRatio.toFixed(2)}x (${semitones > 0 ? '+' : ''}${Math.round(semitones)} st)`;
+document.getElementById('hudPitchSemitones').textContent = `${semitones > 0 ? '+' : ''}${Math.round(semitones)} st (${params.pitchRatio.toFixed(2)}x)`;
+} else if (params.yMapping === 'grainSize') {
+// 8ms to 500ms
+const dur = 0.008 + Math.pow(normY, 2) * (0.5 - 0.008);
+params.grainDuration = dur;
+document.getElementById('paramDuration').value = dur;
+document.getElementById('durVal').textContent = `${Math.round(dur * 1000)} ms`;
+} else if (params.yMapping === 'filterSweep') {
+// 100Hz to 18000Hz
+const cutoff = 100 * Math.pow(18000 / 100, normY);
+params.baseFilterFreq = cutoff;
+document.getElementById('paramFilter').value = cutoff;
+document.getElementById('filterVal').textContent = `${Math.round(cutoff)} Hz`;
+} else if (params.yMapping === 'density') {
+// 5 to 95 grains/sec
+const rate = Math.round(5 + normY * (95 - 5));
+params.grainRate = rate;
+document.getElementById('paramRate').value = rate;
+document.getElementById('rateVal').textContent = `${rate} /sec`;
+}
+// 3. Dynamic Velocity Modulation
+// Instant movement speed opens filter cutoff and adds spray chaos
+let targetCutoff = params.baseFilterFreq;
+if (params.velToFilter) {
+const velBoost = Math.min(12000, vel * 1800);
+targetCutoff = Math.min(18000, params.baseFilterFreq + velBoost);
+}
+params.activeFilterFreq = targetCutoff;
+if (masterFilter1 && masterFilter2 && audioCtx) {
+masterFilter1.frequency.setTargetAtTime(targetCutoff, audioCtx.currentTime, 0.015);
+masterFilter2.frequency.setTargetAtTime(targetCutoff, audioCtx.currentTime, 0.015);
+document.getElementById('hudFilterHz').textContent = `${Math.round(targetCutoff)} Hz`;
+}
+if (params.velToSpray) {
+const velSpray = Math.min(0.2, (vel / 10) * 0.15);
+params.spray = 0.025 + velSpray;
+}
+}
+let midiAccess = null;
+let selectedMidiOutput = null;
+let lastMidiSent = 0;
+async function initWebMidi() {
+if (!navigator.requestMIDIAccess) {
+document.getElementById('midiStateText').textContent = 'UNSUPPORTED';
+return;
+}
+try {
+midiAccess = await navigator.requestMIDIAccess({ sysex: false });
+updateMidiOutputs();
+midiAccess.onstatechange = updateMidiOutputs;
+document.getElementById('midiStateText').textContent = 'ONLINE';
+document.getElementById('midiLed').className = 'w-2 h-2 rounded-full bg-[#00f59b] shadow-sm shadow-[#00f59b]';
+} catch (err) {
+console.warn('Web MIDI not granted:', err);
+document.getElementById('midiStateText').textContent = 'STANDBY';
+}
+}
+function updateMidiOutputs() {
+if (!midiAccess) return;
+const select = document.getElementById('midiOutputSelect');
+select.innerHTML = '<option value="">None (Local Audio Only)</option>';
+const outputs = Array.from(midiAccess.outputs.values());
+outputs.forEach(output => {
+const opt = document.createElement('option');
+opt.value = output.id;
+opt.textContent = `${output.name} (${output.manufacturer || 'MIDI'})`;
+select.appendChild(opt);
+});
+if (outputs.length > 0 && !selectedMidiOutput) {
+selectedMidiOutput = outputs[0];
+select.value = outputs[0].id;
+document.getElementById('midiPortDot').className = 'w-2.5 h-2.5 rounded-full bg-emerald-400';
+}
+}
+function dispatchMidiCC(x, y, vel) {
+if (!selectedMidiOutput) return;
+const now = performance.now();
+if (now - lastMidiSent < 20) return; // 50Hz MIDI CC stream
+lastMidiSent = now;
+try {
+const ccX = Math.floor(Math.max(0, Math.min(1, x)) * 127);
+const ccY = Math.floor(Math.max(0, Math.min(1, 1 - y)) * 127);
+const ccVel = Math.floor(Math.max(0, Math.min(1, vel / 4.0)) * 127);
+selectedMidiOutput.send([0xB0, 16, ccX]);
+selectedMidiOutput.send([0xB0, 17, ccY]);
+selectedMidiOutput.send([0xB0, 18, ccVel]);
+} catch (e) {
+console.error('MIDI output error:', e);
+}
+}
+window.addEventListener('DOMContentLoaded', () => {
+resizeWaveformCanvas();
+window.addEventListener('resize', resizeWaveformCanvas);
+// Buttons
+document.getElementById('toggleEngineBtn').addEventListener('click', togglePlayback);
+document.getElementById('synthDroneBtn').addEventListener('click', generateRichTestDrone);
+document.getElementById('toggleCameraBtn').addEventListener('click', toggleWebcam);
+// Drag & Drop / File Input
+const fileInput = document.getElementById('audioFileInput');
+fileInput.addEventListener('change', (e) => {
+if (e.target.files.length > 0) loadAudioFile(e.target.files[0]);
+});
+window.addEventListener('dragover', (e) => e.preventDefault());
+window.addEventListener('drop', (e) => {
+e.preventDefault();
+if (e.dataTransfer.files.length > 0) {
+loadAudioFile(e.dataTransfer.files[0]);
+}
+});
+// Manual Mouse Scrubber on Waveform
+let isDragging = false;
+function onScrub(e) {
+const rect = waveCanvas.getBoundingClientRect();
+const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+const norm = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+params.position = params.reverseX ? (1 - norm) : norm;
+}
+waveCanvas.addEventListener('mousedown', (e) => { isDragging = true; onScrub(e); });
+window.addEventListener('mousemove', (e) => { if (isDragging) onScrub(e); });
+window.addEventListener('mouseup', () => { isDragging = false; });
+waveCanvas.addEventListener('touchstart', (e) => { isDragging = true; onScrub(e); }, { passive: false });
+window.addEventListener('touchmove', (e) => { if (isDragging) onScrub(e); }, { passive: false });
+window.addEventListener('touchend', () => { isDragging = false; });
+// Parameter Sliders
+document.getElementById('paramPitch').addEventListener('input', (e) => {
+const st = parseFloat(e.target.value);
+params.pitchSemitones = st;
+params.pitchRatio = Math.pow(2, st / 12);
+document.getElementById('pitchVal').textContent = `${params.pitchRatio.toFixed(2)}x (${st > 0 ? '+' : ''}${Math.round(st)} st)`;
+document.getElementById('hudPitchSemitones').textContent = `${st > 0 ? '+' : ''}${Math.round(st)} st (${params.pitchRatio.toFixed(2)}x)`;
+});
+document.getElementById('paramDuration').addEventListener('input', (e) => {
+params.grainDuration = parseFloat(e.target.value);
+document.getElementById('durVal').textContent = `${Math.round(params.grainDuration * 1000)} ms`;
+});
+document.getElementById('paramRate').addEventListener('input', (e) => {
+params.grainRate = parseInt(e.target.value);
+document.getElementById('rateVal').textContent = `${params.grainRate} /sec`;
+});
+document.getElementById('paramSpray').addEventListener('input', (e) => {
+params.spray = parseFloat(e.target.value);
+document.getElementById('sprayVal').textContent = `${Math.round(params.spray * 1000)} ms`;
+});
+document.getElementById('paramFilter').addEventListener('input', (e) => {
+params.baseFilterFreq = parseFloat(e.target.value);
+document.getElementById('filterVal').textContent = `${Math.round(params.baseFilterFreq)} Hz`;
+});
+document.getElementById('paramDrive').addEventListener('input', (e) => {
+params.drive = parseFloat(e.target.value);
+document.getElementById('driveVal').textContent = `${Math.round(params.drive * 100)}%`;
+if (driveNode) {
+driveNode.curve = makeDistortionCurve(params.drive);
+}
+});
+document.getElementById('paramDelayWet').addEventListener('input', (e) => {
+params.delayWet = parseFloat(e.target.value);
+document.getElementById('delayVal').textContent = `${Math.round(params.delayWet * 100)}%`;
+if (delayGain && audioCtx) {
+delayGain.gain.setTargetAtTime(params.delayWet, audioCtx.currentTime, 0.02);
+}
+});
+document.getElementById('paramGain').addEventListener('input', (e) => {
+params.gain = parseFloat(e.target.value);
+document.getElementById('gainVal').textContent = `${Math.round(params.gain * 100)}%`;
+if (masterGain && audioCtx) {
+masterGain.gain.setTargetAtTime(params.gain, audioCtx.currentTime, 0.02);
+}
+});
+// CV Settings
+document.getElementById('motionSens').addEventListener('input', (e) => {
+cvSettings.sensitivity = parseFloat(e.target.value);
+document.getElementById('sensVal').textContent = `${cvSettings.sensitivity.toFixed(1)}x`;
+});
+document.getElementById('motionThreshold').addEventListener('input', (e) => {
+cvSettings.threshold = parseInt(e.target.value);
+document.getElementById('threshVal').textContent = cvSettings.threshold;
+});
+document.getElementById('motionSmoothing').addEventListener('input', (e) => {
+cvSettings.smoothing = parseFloat(e.target.value);
+document.getElementById('smoothVal').textContent = cvSettings.smoothing === 0 ? '0.00 (RAW)' : cvSettings.smoothing.toFixed(2);
+});
+document.getElementById('trackingModeSelect').addEventListener('change', (e) => {
+cvSettings.mode = e.target.value;
+});
+document.getElementById('yAxisTargetSelect').addEventListener('change', (e) => {
+params.yMapping = e.target.value;
+});
+document.getElementById('velToFilterCheck').addEventListener('change', (e) => {
+params.velToFilter = e.target.checked;
+});
+document.getElementById('velToSprayCheck').addEventListener('change', (e) => {
+params.velToSpray = e.target.checked;
+});
+document.getElementById('reverseScrubCheck').addEventListener('change', (e) => {
+params.reverseX = e.target.checked;
+});
+document.getElementById('freezePositionCheck').addEventListener('change', (e) => {
+params.freezePosition = e.target.checked;
+});
+document.getElementById('midiOutputSelect').addEventListener('change', (e) => {
+const id = e.target.value;
+if (!midiAccess || !id) {
+selectedMidiOutput = null;
+document.getElementById('midiPortDot').className = 'w-2.5 h-2.5 rounded-full bg-slate-600';
+return;
+}
+selectedMidiOutput = midiAccess.outputs.get(id);
+document.getElementById('midiPortDot').className = 'w-2.5 h-2.5 rounded-full bg-emerald-400';
+showToast(`MIDI Port: ${selectedMidiOutput.name}`);
+});
+// Initialize MIDI & auto-generate rich sample buffer on startup
+initWebMidi();
+generateRichTestDrone();
+requestAnimationFrame(renderWaveform);
+});
+</script>
+</body>
+</html>

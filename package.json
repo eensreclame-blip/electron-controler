@@ -1,0 +1,13 @@
+{
+  "name": "electron-controler",
+  "version": "1.0.0",
+  "description": "Static web audio and visual controller applications",
+  "private": true,
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "wrangler:dev": "wrangler dev",
+    "wrangler:deploy": "wrangler deploy"
+  },
+  "keywords": []
+}

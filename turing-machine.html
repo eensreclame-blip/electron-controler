@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Optical Turing Machine Sequencer</title>
+<!-- Tailwind CSS via CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+body {
+font-family: 'Inter', sans-serif;
+background-color: #0d0f12;
+color: #e2e8f0;
+user-select: none;
+-webkit-font-smoothing: antialiased;
+}
+.font-mono-code {
+font-family: 'JetBrains Mono', monospace;
+}
+/* TOP GLOBAL NAVIGATION BAR */
+.top-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: #12151a;
+  border: 1px solid #2d3748;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+.top-nav-brand {
+  font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #f59e0b;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.top-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.top-nav-item {
+  text-decoration: none;
+  font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #94a3b8;
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+}
+.top-nav-item:hover {
+  color: #ffffff;
+  background: #1e222a;
+  border-color: #333846;
+}
+.top-nav-item.active {
+  color: #000000;
+  background: #f59e0b;
+  border-color: #f59e0b;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.65);
+}
+.top-nav-divider {
+  color: #3f4452;
+  font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
+  font-size: 12px;
+  user-select: none;
+}
+/* Custom Euro-rack hardware knobs & styling */
+.eurorack-panel {
+background: radial-gradient(circle at 50% 0%, #1a1e24 0%, #12151a 100%);
+box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 25px -5px rgba(0, 0, 0, 0.7);
+border: 1px solid #2d3748;
+}
+.eurorack-module {
+background: #15191f;
+border: 1px solid #232a35;
+box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+/* LEDs */
+.led {
+width: 10px;
+height: 10px;
+border-radius: 9999px;
+transition: background-color 0.06s ease, box-shadow 0.06s ease;
+background-color: #1f2937;
+border: 1px solid #374151;
+}
+.led-active-red {
+background-color: #ef4444 !important;
+box-shadow: 0 0 10px #ef4444, inset 0 0 4px #fee2e2;
+border-color: #f87171;
+}
+.led-active-amber {
+background-color: #f59e0b !important;
+box-shadow: 0 0 10px #f59e0b, inset 0 0 4px #fef3c7;
+border-color: #fbbf24;
+}
+.led-active-cyan {
+background-color: #06b6d4 !important;
+box-shadow: 0 0 10px #06b6d4, inset 0 0 4px #cffafe;
+border-color: #67e8f9;
+}
+/* Sliders */
+input[type=range] {
+accent-color: #f59e0b;
+}
+</style>
+</head>
+<body class="p-2 sm:p-4 min-h-screen flex flex-col justify-between">
+
+<!-- TOP GLOBAL NAVIGATION BAR -->
+<nav class="top-nav-bar w-full max-w-7xl mx-auto mb-3">
+  <div class="top-nav-brand">
+    <a href="index.html" class="flex items-center gap-2 text-inherit no-underline">
+      <span>⚙</span> ELEKTRON // SUITE
+    </a>
+  </div>
+  <div class="top-nav-links">
+    <a href="index.html" class="top-nav-item active">MIDI</a>
+    <span class="top-nav-divider">|</span>
+    <a href="audio.html" class="top-nav-item">AUDIO</a>
+    <span class="top-nav-divider">|</span>
+    <a href="visuals.html" class="top-nav-item">VISUALS</a>
+  </div>
+</nav>
+
+<!-- TOP HEADER / STATUS -->
+<header class="max-w-7xl mx-auto w-full eurorack-panel rounded-xl p-4 mb-4 flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-3.5 h-3.5 rounded-full bg-amber-500 shadow-[0_0_12px_#f59e0b]"></div>
+<div>
+<h1 class="text-xl font-bold tracking-wider font-mono-code text-zinc-100 flex items-center gap-2">
+OPTICAL TURING MACHINE <span class="text-xs px-2 py-0.5 rounded bg-zinc-800 text-amber-400 border border-zinc-700">16-BIT SCANNER</span>
+</h1>
+<p class="text-xs text-zinc-400">Shift Register Chaos Matrix • Pulses + Volts DAC Expander</p>
+</div>
+</div>
+<!-- Master Controls -->
+<div class="flex flex-wrap items-center gap-3">
+<!-- MIDI & Audio Inits -->
+<button id="btn-init-midi" class="px-3 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-xs font-mono-code font-semibold border border-zinc-600 transition flex items-center gap-2">
+<span id="midi-status-led" class="led"></span>
+<span>ENABLE MIDI</span>
+</button>
+<!-- Audio Mute Master -->
+<button id="btn-audio-toggle" class="px-3 py-1.5 rounded bg-emerald-950/60 border border-emerald-600/60 hover:bg-emerald-900/60 text-emerald-300 text-xs font-mono-code transition flex items-center gap-2">
+<span>AUDIO PREVIEW:</span> <span id="audio-toggle-state" class="font-bold">ON</span>
+</button>
+<!-- Panic -->
+<button id="btn-panic" class="px-3 py-1.5 rounded bg-red-950/70 border border-red-700 text-red-300 hover:bg-red-900 text-xs font-mono-code font-bold transition">
+PANIC (ALL OFF)
+</button>
+</div>
+</header>
+<main class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-4 flex-grow">
+<!-- LEFT PANEL: Image Scanner & Shift Register Display (Col 5) -->
+<section class="lg:col-span-5 flex flex-col gap-4">
+<!-- Optical Source Module -->
+<div class="eurorack-module rounded-xl p-4 flex flex-col gap-3">
+<div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+<span class="text-xs font-mono-code font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
+<svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+OPTICAL SCANNER
+</span>
+<div class="flex items-center gap-2">
+<label class="cursor-pointer text-xs bg-zinc-800 hover:bg-zinc-700 text-amber-400 px-2 py-1 rounded border border-zinc-700 font-mono-code transition">
+LOAD IMAGE
+<input type="file" id="image-loader" accept="image/*" class="hidden">
+</label>
+<button id="btn-gen-pattern" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2 py-1 rounded border border-zinc-700 font-mono-code">
+TEST NOISE
+</button>
+</div>
+</div>
+<!-- Canvas Container -->
+<div class="relative w-full aspect-video bg-black rounded-lg overflow-hidden border border-zinc-800 flex items-center justify-center">
+<canvas id="scanner-canvas" class="w-full h-full object-cover block"></canvas>
+<div id="drop-overlay" class="absolute inset-0 bg-amber-500/10 border-2 border-dashed border-amber-500 rounded-lg flex items-center justify-center text-amber-300 font-mono-code text-xs pointer-events-none opacity-0 transition-opacity">
+DROP IMAGE FILE HERE
+</div>
+</div>
+<!-- Scanning parameters -->
+<div class="grid grid-cols-2 gap-3 text-xs font-mono-code">
+<div>
+<label class="block text-zinc-400 mb-1">SCAN RESOLUTION</label>
+<select id="select-resolution" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-zinc-200">
+<option value="32">32 Columns</option>
+<option value="64" selected>64 Columns</option>
+<option value="128">128 Columns</option>
+</select>
+</div>
+<div>
+<label class="block text-zinc-400 mb-1">OPTICAL CHANNEL</label>
+<select id="select-channel" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-zinc-200">
+<option value="luma" selected>Luminance (B/W)</option>
+<option value="r">Red Channel</option>
+<option value="g">Green Channel</option>
+<option value="b">Blue Channel</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Shift Register & Mutation Core Module -->
+<div class="eurorack-module rounded-xl p-4 flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+<span class="text-xs font-mono-code font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#06b6d4]"></span>
+16-BIT SHIFT REGISTER CORE
+</span>
+<div class="flex items-center gap-2">
+<button id="btn-seed-register" class="text-[10px] bg-zinc-800 hover:bg-zinc-700 text-cyan-300 px-2 py-0.5 rounded border border-zinc-700 font-mono-code transition">
+SEED / RANDOMIZE
+</button>
+<span id="shift-rate-display" class="text-xs font-mono-code text-zinc-500">POS: 0</span>
+</div>
+</div>
+<!-- 16 Register LEDs Display -->
+<div class="bg-black/60 rounded-lg p-3 border border-zinc-800">
+<div class="grid grid-cols-8 gap-2 mb-2" id="register-leds-container">
+<!-- 16 LEDs generated via JS -->
+</div>
+<div class="flex justify-between text-[10px] font-mono-code text-zinc-500 px-1">
+<span>BIT 0 (LSB)</span>
+<span>BIT 15 (MSB)</span>
+</div>
+</div>
+<!-- Mutation / Lock Big Slider (The Turing Machine Dial) -->
+<div class="bg-zinc-900/60 p-3 rounded-lg border border-zinc-800 flex flex-col gap-2">
+<div class="flex justify-between items-center text-xs font-mono-code">
+<span class="text-zinc-300 font-semibold">WRITE PROBABILITY (MUTATION / LOCK)</span>
+<span id="prob-val-label" class="text-amber-400 font-bold">50% (TURING)</span>
+</div>
+<input type="range" id="slider-probability" min="0" max="100" value="50" class="w-full cursor-pointer h-2 bg-zinc-800 rounded-lg">
+<div class="flex justify-between text-[10px] font-mono-code text-zinc-500">
+<span>0% (LOCKED LOOP)</span>
+<span>50% (EVOLVING)</span>
+<span>100% (DIRECT SCAN)</span>
+</div>
+</div>
+<!-- Threshold slider -->
+<div class="flex items-center gap-3 text-xs font-mono-code">
+<label class="text-zinc-400 whitespace-nowrap">PIXEL THRESHOLD:</label>
+<input type="range" id="slider-threshold" min="0" max="255" value="128" class="flex-grow cursor-pointer h-1.5 bg-zinc-800 rounded">
+<span id="threshold-val" class="text-zinc-300 font-bold w-8 text-right">128</span>
+</div>
+</div>
+<!-- Clock & Quantizer Master Controls -->
+<div class="eurorack-module rounded-xl p-4 flex flex-col gap-3">
+<div class="text-xs font-mono-code font-bold text-zinc-300 uppercase tracking-wider border-b border-zinc-800 pb-2">
+SYNC & QUANTIZER
+</div>
+<div class="grid grid-cols-2 gap-3 text-xs font-mono-code">
+<!-- Sync Source -->
+<div>
+<label class="block text-zinc-400 mb-1">CLOCK SOURCE</label>
+<select id="select-clock-source" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-zinc-200">
+<option value="internal">Internal Master BPM</option>
+<option value="midi">MIDI Clock In (0xF8)</option>
+</select>
+</div>
+<!-- Internal BPM -->
+<div id="internal-bpm-wrap">
+<div class="flex justify-between text-zinc-400 mb-1">
+<span>INTERNAL BPM</span>
+<span id="bpm-val" class="text-amber-400 font-bold">124</span>
+</div>
+<input type="range" id="slider-bpm" min="40" max="220" value="124" class="w-full cursor-pointer h-1.5 bg-zinc-800 rounded">
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3 text-xs font-mono-code">
+<!-- Musical Key -->
+<div>
+<label class="block text-zinc-400 mb-1">ROOT KEY</label>
+<select id="select-root-key" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-zinc-200">
+<option value="0">C</option>
+<option value="1">C# / Db</option>
+<option value="2">D</option>
+<option value="3">D# / Eb</option>
+<option value="4">E</option>
+<option value="5">F</option>
+<option value="6">F# / Gb</option>
+<option value="7">G</option>
+<option value="8">G# / Ab</option>
+<option value="9">A</option>
+<option value="10">A# / Bb</option>
+<option value="11">B</option>
+</select>
+</div>
+<!-- Musical Scale -->
+<div>
+<label class="block text-zinc-400 mb-1">SCALE</label>
+<select id="select-scale" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-zinc-200">
+<option value="minor">Natural Minor (Aeolian)</option>
+<option value="major">Major (Ionian)</option>
+<option value="dorian">Dorian</option>
+<option value="phrygian">Phrygian</option>
+<option value="pentatonic_minor" selected>Minor Pentatonic</option>
+<option value="melodic_minor">Melodic Minor</option>
+<option value="harmonic_minor">Harmonic Minor</option>
+</select>
+</div>
+</div>
+<!-- MIDI Routing Ports -->
+<div class="grid grid-cols-2 gap-3 text-xs font-mono-code pt-1">
+<div>
+<label class="block text-zinc-400 mb-1">MIDI CLOCK IN PORT</label>
+<select id="select-midi-in" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-zinc-200">
+<option value="">Zoeken naar In poorten...</option>
+</select>
+</div>
+<div>
+<label class="block text-zinc-400 mb-1">MIDI NOTE OUT PORT</label>
+<select id="select-midi-out" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-zinc-200">
+<option value="">Zoeken naar Out poorten...</option>
+</select>
+</div>
+</div>
+<!-- Sync Status Badge -->
+<div class="flex items-center justify-between pt-1">
+  <span id="sync-status-badge" class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-700 text-zinc-400 text-[11px] font-mono-code flex items-center gap-2">
+    <span id="sync-led" class="led"></span>
+    <span id="sync-text">STANDBY: Wacht op Elektron...</span>
+  </span>
+</div>
+<!-- Run / Stop Internal -->
+<button id="btn-transport" class="mt-2 w-full py-2 rounded bg-amber-500 hover:bg-amber-400 text-black font-bold font-mono-code text-xs uppercase tracking-wider transition">
+START SEQUENCER
+</button>
+</div>
+</section>
+<!-- RIGHT PANEL: 6 Expanders Tracks (Pulses + Volts) (Col 7) -->
+<section class="lg:col-span-7 flex flex-col gap-3">
+<div class="flex items-center justify-between px-1">
+<h2 class="text-xs font-mono-code font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]"></span>
+6-TRACK EXPANDER RACK (PULSES GATES & VOLTS DAC)
+</h2>
+<div class="flex items-center gap-2">
+<button id="btn-random-all-tracks" title="Randomize parameters across all 6 tracks" class="px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/50 text-[11px] font-mono-code font-bold transition flex items-center gap-1.5 shadow-sm">
+<span>🎲 RANDOM ALL</span>
+</button>
+<span class="text-[11px] font-mono-code text-zinc-500 hidden sm:inline">INDIVIDUAL MIDI CHANNELS & LOGIC</span>
+</div>
+</div>
+<!-- Tracks Container -->
+<div id="tracks-rack" class="flex flex-col gap-2.5">
+<!-- Rendered dynamically by JavaScript to guarantee absolute consistency -->
+</div>
+</section>
+</main>
+<footer class="max-w-7xl mx-auto w-full mt-4 text-center text-xs text-zinc-600 font-mono-code">
+Optical Turing Engine • Web MIDI API 24 PPQN sync capable • Web Audio Sub-oscillators enabled
+</footer>
+<script>
+/* =========================================================================
+* 1. MUSICAL & LOGIC DEFINITIONS
+* ========================================================================= */
+const SCALES = {
+minor: [0, 2, 3, 5, 7, 8, 10],
+major: [0, 2, 4, 5, 7, 9, 11],
+dorian: [0, 2, 3, 5, 7, 9, 10],
+phrygian: [0, 1, 3, 5, 7, 8, 10],
+pentatonic_minor: [0, 3, 5, 7, 10],
+melodic_minor: [0, 2, 3, 5, 7, 9, 11],
+harmonic_minor: [0, 2, 3, 5, 7, 8, 11]
+};
+const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const LOGIC_FORMULAS = [
+{ id: 'pulse', name: 'Pulse (bit 0)', fn: (r) => !!r[0] },
+{ id: 'and', name: 'AND (bit 1 & 4)', fn: (r) => !!(r[1] && r[4]) },
+{ id: 'xor', name: 'XOR (bit 2 ^ 5)', fn: (r) => !!(r[2] ^ r[5]) },
+{ id: 'or_and', name: 'Complex ((b0|b3) & !b6)', fn: (r) => !!((r[0] || r[3]) && !r[6]) },
+{ id: 'nand', name: 'NAND (!(b7 & b9) & b1)', fn: (r) => !!(!(r[7] && r[9]) && r[1]) },
+{ id: 'accent', name: 'ACCENT (b8 & b11 & b13)', fn: (r) => !!(r[8] && r[11] && r[13]) }
+];
+// State of the 16-bit shift register (array of 0s and 1s)
+let shiftRegister = [1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0];
+// 6 Track configurations
+const trackConfigs = [
+{ id: 0, name: 'TRACK 1 (KICK / BASS)', midiCh: 1, divider: 4, octave: -1, bitStart: 0, bitLen: 4, formula: 'pulse', mute: false, solo: false, synthType: 'sine' },
+{ id: 1, name: 'TRACK 2 (PERC / CHORD)', midiCh: 2, divider: 2, octave: 0, bitStart: 2, bitLen: 4, formula: 'and', mute: false, solo: false, synthType: 'triangle' },
+{ id: 2, name: 'TRACK 3 (OFFBEAT / ARP)', midiCh: 3, divider: 2, octave: 0, bitStart: 4, bitLen: 4, formula: 'xor', mute: false, solo: false, synthType: 'sawtooth' },
+{ id: 3, name: 'TRACK 4 (MELODIC LEAD)', midiCh: 4, divider: 1, octave: 1, bitStart: 6, bitLen: 4, formula: 'or_and', mute: false, solo: false, synthType: 'square' },
+{ id: 4, name: 'TRACK 5 (POLYRHYTHM)', midiCh: 5, divider: 3, octave: 1, bitStart: 8, bitLen: 4, formula: 'nand', mute: false, solo: false, synthType: 'sawtooth' },
+{ id: 5, name: 'TRACK 6 (BELL / ACCENT)', midiCh: 6, divider: 8, octave: 2, bitStart: 10, bitLen: 4, formula: 'accent', mute: false, solo: false, synthType: 'triangle' }
+];
+// Active playing state
+let isPlaying = false;
+let isHardwareSlaveRunning = false;
+let internalBpm = 124;
+let midiTickCount = 0; // 24 PPQN counter
+let stepCount = 0; // 16th note step counter
+let scanXIndex = 0; // current column on image
+let previewAudioEnabled = true;
+// Web Audio Context & Synthesizers
+let audioCtx = null;
+let trackSynths = [];
+// Web MIDI
+let midiAccess = null;
+let midiInput = null;
+let midiOutput = null;
+// Image scan data cached
+let imageColumnsData = []; // Array of brightness values [0..255] per column
+let totalColumns = 64;
+/* =========================================================================
+* 2. INITIALIZE WEB AUDIO ENGINE
+* ========================================================================= */
+function initAudio() {
+if (!audioCtx) {
+const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+audioCtx = new AudioContextClass();
+}
+if (audioCtx.state === 'suspended') {
+audioCtx.resume();
+}
+}
+function midiNoteToFreq(note) {
+return 440 * Math.pow(2, (note - 69) / 12);
+}
+function playInternalSynthNote(trackIdx, midiNote, duration = 0.12) {
+if (!previewAudioEnabled || !audioCtx) return;
+const now = audioCtx.currentTime;
+const osc = audioCtx.createOscillator();
+const gain = audioCtx.createGain();
+const filter = audioCtx.createBiquadFilter();
+const conf = trackConfigs[trackIdx];
+osc.type = conf.synthType || 'sawtooth';
+osc.frequency.setValueAtTime(midiNoteToFreq(midiNote), now);
+// Lowpass filter for analog warm feel
+filter.type = 'lowpass';
+filter.frequency.setValueAtTime(2200, now);
+filter.frequency.exponentialRampToValueAtTime(400, now + duration);
+// Snappy envelope
+gain.gain.setValueAtTime(0.0001, now);
+gain.gain.linearRampToValueAtTime(0.2, now + 0.005);
+gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+osc.connect(filter);
+filter.connect(gain);
+gain.connect(audioCtx.destination);
+osc.start(now);
+osc.stop(now + duration + 0.02);
+}
+/* =========================================================================
+* 3. QUANTIZER & VOLTS LOGIC
+* ========================================================================= */
+function quantizeVolts(dacValue, maxDac, rootKey, scaleName, octaveShift) {
+const scale = SCALES[scaleName] || SCALES.pentatonic_minor;
+const scaleLength = scale.length;
+// Map DAC value into scale note index
+const noteDegree = dacValue % scaleLength;
+const octaveOffset = Math.floor(dacValue / scaleLength) + octaveShift + 3; // Center around octave 3/4
+const semitone = scale[noteDegree];
+const midiNote = Math.max(12, Math.min(108, (octaveOffset * 12) + rootKey + semitone));
+const noteName = NOTE_NAMES[midiNote % 12];
+const noteOct = Math.floor(midiNote / 12) - 1;
+return { midiNote, label: `${noteName}${noteOct}` };
+}
+function calculateTrackPitch(track) {
+// Volts DAC bit extraction: grab bitLen bits starting at bitStart
+let dacVal = 0;
+for (let i = 0; i < track.bitLen; i++) {
+const bitIdx = (track.bitStart + i) % 16;
+if (shiftRegister[bitIdx]) {
+dacVal |= (1 << i);
+}
+}
+const rootKey = parseInt(document.getElementById('select-root-key').value, 10);
+const scaleName = document.getElementById('select-scale').value;
+const maxDac = (1 << track.bitLen) - 1;
+return quantizeVolts(dacVal, maxDac, rootKey, scaleName, track.octave);
+}
+/* =========================================================================
+* 4. SHIFT REGISTER & MUTATION ENGINE (TURING CORE)
+* ========================================================================= */
+let currentStepDurationMs = 120;
+let lastStepTime = 0;
+let rafPending = false;
+
+function requestVisualUpdate() {
+  if (!rafPending) {
+    rafPending = true;
+    requestAnimationFrame(() => {
+      try {
+        updateRegisterLeds();
+        drawScanner();
+      } catch (err) {
+        console.error("Visual update error:", err);
+      } finally {
+        rafPending = false;
+      }
+    });
+  }
+}
+
+function seedRegister() {
+  shiftRegister = Array.from({ length: 16 }, () => (Math.random() < 0.5 ? 1 : 0));
+  // Ensure register is not empty
+  if (shiftRegister.every(b => b === 0)) shiftRegister[0] = 1;
+  requestVisualUpdate();
+}
+
+// Advances shift register
+function mutateAndShiftRegister() {
+  const probEl = document.getElementById('slider-probability');
+  const threshEl = document.getElementById('slider-threshold');
+  const prob = probEl ? (parseInt(probEl.value, 10) || 0) : 50;
+  const threshold = threshEl ? (parseInt(threshEl.value, 10) || 128) : 128;
+
+  // Safe columns and scanhead indexing
+  const cols = Math.max(1, totalColumns || 64);
+  const curX = isNaN(scanXIndex) ? 0 : Math.abs(scanXIndex);
+
+  // Get current optical value under the scan-head
+  let opticalVal = 128;
+  if (imageColumnsData && imageColumnsData.length > 0) {
+    const rawVal = imageColumnsData[curX % imageColumnsData.length];
+    opticalVal = (typeof rawVal === 'number' && !isNaN(rawVal)) ? rawVal : 128;
+  } else {
+    opticalVal = Math.floor(Math.random() * 255);
+  }
+
+  const opticalBit = opticalVal >= threshold ? 1 : 0;
+  const endBit = (shiftRegister[15] === 1) ? 1 : 0;
+
+  let newBit;
+  if (prob === 0) {
+    // 0% Lock: pure cyclic loop (end bit recirculates cleanly forever)
+    newBit = endBit;
+  } else if (prob === 100) {
+    // 100% Write: direct image bit injection
+    newBit = opticalBit;
+  } else {
+    // Turing probability: Chance to mutate or flip based on image bit & dice roll
+    const dice = Math.random() * 100;
+    if (dice < prob) {
+      // In a real Turing Machine, mutation inverts/flips the circulating bit!
+      // Flipping guarantees the register never decays into a silent all-0 or all-1 loop.
+      const shouldFlip = Math.random() < Math.max(0.4, opticalVal / 255);
+      newBit = shouldFlip ? (endBit ? 0 : 1) : opticalBit;
+    } else {
+      // Retain circular feedback
+      newBit = endBit;
+    }
+  }
+
+  // Force strict binary 0 or 1
+  newBit = (newBit === 1) ? 1 : 0;
+
+  // Anti-Lockout Watchdog:
+  // If register decays into all 0s (silence) or all 1s (frozen chord),
+  // inject an alternate bit to keep the generative music flowing!
+  const onesCount = shiftRegister.reduce((acc, b) => acc + (b === 1 ? 1 : 0), 0);
+  if (onesCount === 0) {
+    newBit = 1; // Wake up the core!
+  } else if (onesCount === 16 && prob > 0) {
+    newBit = 0; // Break full saturation
+  }
+
+  // Shift entire register right by 1, and push newBit into bit 0
+  shiftRegister.pop();
+  shiftRegister.unshift(newBit);
+
+  // Enforce exact 16-bit register length
+  while (shiftRegister.length > 16) shiftRegister.pop();
+  while (shiftRegister.length < 16) shiftRegister.push(0);
+
+  // Advance scanhead on image safely
+  scanXIndex = (curX + 1) % cols;
+
+  // Asynchronous decoupled UI update
+  requestVisualUpdate();
+}
+
+/* =========================================================================
+* 5. TRACK GATE LOGIC & HARDWARE-TIMED MIDI SCHEDULING
+* ========================================================================= */
+function sendTrackMidiNote(channel, note, velocity = 100) {
+  if (!midiOutput) return;
+  const ch = Math.max(0, Math.min(15, (channel - 1) & 0x0F));
+  const n = Math.max(0, Math.min(127, Math.round(note)));
+  const vel = Math.max(1, Math.min(127, Math.round(velocity)));
+
+  const noteOn = 0x90 | ch;
+  const noteOff = 0x80 | ch;
+
+  try {
+    midiOutput.send([noteOn, n, vel]);
+    setTimeout(() => {
+      if (midiOutput) midiOutput.send([noteOff, n, 0]);
+    }, 90);
+  } catch (e) {
+    console.error("MIDI send error:", e);
+  }
+}
+
+function panicAllNotesOff() {
+  if (!midiOutput) return;
+  trackConfigs.forEach((track, i) => {
+    const ch = Math.max(0, Math.min(15, (track.midiCh - 1) & 0x0F));
+    setTimeout(() => {
+      try {
+        if (midiOutput) midiOutput.send([0xB0 | ch, 123, 0]);
+      } catch (e) {}
+    }, i * 5);
+  });
+}
+
+function evaluateAndTriggerSteps() {
+  const hasSolo = trackConfigs.some(t => t.solo);
+
+  trackConfigs.forEach((track, idx) => {
+    if (stepCount % track.divider !== 0) {
+      return;
+    }
+
+    const isAudible = hasSolo ? track.solo : !track.mute;
+    const formulaObj = LOGIC_FORMULAS.find(f => f.id === track.formula) || LOGIC_FORMULAS[0];
+    const gateActive = formulaObj.fn(shiftRegister);
+
+    const gateLed = document.getElementById(`gate-led-${idx}`);
+    const noteBadge = document.getElementById(`note-badge-${idx}`);
+
+    if (gateActive && isAudible) {
+      const { midiNote, label } = calculateTrackPitch(track);
+
+      // Flash Gate LED & Badge (visual only)
+      if (gateLed) {
+        gateLed.classList.add('led-active-amber');
+        setTimeout(() => gateLed.classList.remove('led-active-amber'), 80);
+      }
+      if (noteBadge) {
+        noteBadge.innerText = label;
+        noteBadge.classList.add('text-amber-400');
+        setTimeout(() => noteBadge.classList.remove('text-amber-400'), 100);
+      }
+
+      // Trigger internal Audio preview
+      playInternalSynthNote(idx, midiNote, 0.09);
+
+      // Trigger Hardware MIDI Out
+      sendTrackMidiNote(track.midiCh, midiNote, 100);
+    }
+  });
+}
+
+function onClockPulse() {
+  mutateAndShiftRegister();
+  evaluateAndTriggerSteps();
+  stepCount++;
+  const posLabel = document.getElementById('shift-rate-display');
+  if (posLabel) posLabel.innerText = `STEP: ${stepCount} | POS: ${scanXIndex}`;
+}
+
+/* =========================================================================
+* 6. CLOCK SYNC ENGINE (HARDWARE SLAVE & INTERNAL ENGINE)
+* ========================================================================= */
+let internalClockTimer = null;
+
+function startInternalClock() {
+  stopInternalClock();
+  const stepMs = (60000 / internalBpm) / 4;
+  internalClockTimer = setInterval(() => {
+    if (!isPlaying) return;
+    onClockPulse();
+  }, stepMs);
+}
+
+function stopInternalClock() {
+  if (internalClockTimer) {
+    clearInterval(internalClockTimer);
+    internalClockTimer = null;
+  }
+}
+
+// --- MIDI IN SLAVE ENGINE (HARDWARE DRIVEN - IDENTICAL TO 6-TRACK MATRIX) ---
+function handleIncomingMIDI(event) {
+  const status = event.data[0];
+
+  // 0xFA = MIDI START (Elektron drukt op Play)
+  if (status === 0xFA) {
+    isHardwareSlaveRunning = true;
+    stepCount = 0;
+    midiTickCount = 0;
+    updateSyncBadge("LOCKED: Elektron loopt (Slave Actief)", true);
+    onClockPulse();
+    return;
+  }
+
+  // 0xFB = MIDI CONTINUE (Elektron hervat)
+  if (status === 0xFB) {
+    isHardwareSlaveRunning = true;
+    updateSyncBadge("LOCKED: Elektron loopt (Slave Actief)", true);
+    return;
+  }
+
+  // 0xFC = MIDI STOP (Elektron stopt)
+  if (status === 0xFC) {
+    isHardwareSlaveRunning = false;
+    midiTickCount = 0;
+    updateSyncBadge("STANDBY: Wacht op Elektron...", false);
+    return;
+  }
+
+  // 0xF8 = MIDI TIMING CLOCK (24 ticks per kwartnoot, 6 ticks per 16e noot)
+  if (status === 0xF8 && isHardwareSlaveRunning) {
+    midiTickCount++;
+    if (midiTickCount >= 6) {
+      midiTickCount = 0;
+      onClockPulse();
+    }
+  }
+}
+/* =========================================================================
+* 7. IMAGE ANALYSIS & CANVAS ENGINE
+* ========================================================================= */
+const canvas = document.getElementById('scanner-canvas');
+const ctx = canvas.getContext('2d');
+let loadedImage = null;
+function resizeCanvas() {
+const rect = canvas.getBoundingClientRect();
+canvas.width = rect.width * window.devicePixelRatio;
+canvas.height = rect.height * window.devicePixelRatio;
+drawScanner();
+}
+function generateNoiseTexture() {
+const tempC = document.createElement('canvas');
+tempC.width = 128;
+tempC.height = 128;
+const tCtx = tempC.getContext('2d');
+const imgData = tCtx.createImageData(128, 128);
+for (let i = 0; i < imgData.data.length; i += 4) {
+// High contrast geometric / striped noise
+const x = (i / 4) % 128;
+const y = Math.floor((i / 4) / 128);
+const v = ((Math.sin(x / 8) * Math.cos(y / 8)) > 0 ? 240 : 15) ^ ((x * y) % 50);
+imgData.data[i] = v;
+imgData.data[i + 1] = Math.min(255, v + 20);
+imgData.data[i + 2] = Math.max(0, 255 - v);
+imgData.data[i + 3] = 255;
+}
+tCtx.putImageData(imgData, 0, 0);
+const img = new Image();
+img.onload = () => {
+loadedImage = img;
+sampleImageColumns();
+drawScanner();
+};
+img.src = tempC.toDataURL();
+}
+function sampleImageColumns() {
+if (!loadedImage) return;
+const colCount = parseInt(document.getElementById('select-resolution').value, 10);
+totalColumns = colCount;
+imageColumnsData = [];
+const chMode = document.getElementById('select-channel').value;
+// Offscreen downsample
+const offC = document.createElement('canvas');
+offC.width = colCount;
+offC.height = 32; // average across vertical slices
+const offCtx = offC.getContext('2d');
+offCtx.drawImage(loadedImage, 0, 0, colCount, 32);
+const pix = offCtx.getImageData(0, 0, colCount, 32).data;
+for (let x = 0; x < colCount; x++) {
+let total = 0;
+for (let y = 0; y < 32; y++) {
+const idx = (y * colCount + x) * 4;
+const r = pix[idx];
+const g = pix[idx + 1];
+const b = pix[idx + 2];
+if (chMode === 'r') total += r;
+else if (chMode === 'g') total += g;
+else if (chMode === 'b') total += b;
+else total += (0.299 * r + 0.587 * g + 0.114 * b); // luma
+}
+imageColumnsData.push(Math.round(total / 32));
+}
+}
+function drawScanner() {
+  if (!ctx || !canvas) return;
+  const w = canvas.width;
+  const h = canvas.height;
+  if (!w || !h) return;
+  ctx.fillStyle = '#0a0d12';
+  ctx.fillRect(0, 0, w, h);
+  if (loadedImage) {
+    try {
+      ctx.drawImage(loadedImage, 0, 0, w, h);
+    } catch (e) {}
+  }
+  const cols = Math.max(1, totalColumns || 64);
+  const colWidth = w / cols;
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= cols; i++) {
+    ctx.beginPath();
+    ctx.moveTo(i * colWidth, 0);
+    ctx.lineTo(i * colWidth, h);
+    ctx.stroke();
+  }
+  const curX = isNaN(scanXIndex) ? 0 : Math.abs(scanXIndex);
+  const scanHeadX = (curX % cols) * colWidth;
+  ctx.fillStyle = 'rgba(245, 158, 11, 0.25)';
+  ctx.fillRect(scanHeadX, 0, colWidth, h);
+  ctx.strokeStyle = '#f59e0b';
+  ctx.lineWidth = 2 * (window.devicePixelRatio || 1);
+  ctx.beginPath();
+  ctx.moveTo(scanHeadX, 0);
+  ctx.lineTo(scanHeadX, h);
+  ctx.stroke();
+}
+/* =========================================================================
+* 8. UI BUILDER & EVENT BINDINGS
+* ========================================================================= */
+function renderRegisterLeds() {
+const container = document.getElementById('register-leds-container');
+container.innerHTML = '';
+for (let i = 0; i < 16; i++) {
+const wrap = document.createElement('div');
+wrap.className = 'flex flex-col items-center gap-1';
+const led = document.createElement('div');
+led.id = `reg-led-${i}`;
+led.className = 'led';
+const label = document.createElement('span');
+label.className = 'text-[9px] font-mono-code text-zinc-500';
+label.innerText = i;
+wrap.appendChild(led);
+wrap.appendChild(label);
+container.appendChild(wrap);
+}
+updateRegisterLeds();
+}
+function updateRegisterLeds() {
+for (let i = 0; i < 16; i++) {
+const led = document.getElementById(`reg-led-${i}`);
+if (led) {
+if (shiftRegister[i] === 1) {
+led.classList.add('led-active-cyan');
+} else {
+led.classList.remove('led-active-cyan');
+}
+}
+}
+}
+function randomizeTrackValues(idx) {
+  const track = trackConfigs[idx];
+  if (!track) return;
+
+  const formulaIds = LOGIC_FORMULAS.map(f => f.id);
+  track.formula = formulaIds[Math.floor(Math.random() * formulaIds.length)];
+
+  const dividers = [1, 2, 3, 4, 8, 16];
+  track.divider = dividers[Math.floor(Math.random() * dividers.length)];
+
+  const octaves = [-2, -1, 0, 1, 2];
+  track.octave = octaves[Math.floor(Math.random() * octaves.length)];
+
+  const bitStarts = [0, 2, 4, 6, 8, 10, 12];
+  track.bitStart = bitStarts[Math.floor(Math.random() * bitStarts.length)];
+
+  const synths = ['sine', 'triangle', 'sawtooth', 'square'];
+  track.synthType = synths[Math.floor(Math.random() * synths.length)];
+}
+
+function randomizeTrack(idx) {
+  randomizeTrackValues(idx);
+  renderTrackRows();
+}
+
+function randomizeAllTracks() {
+  trackConfigs.forEach((_, idx) => {
+    randomizeTrackValues(idx);
+  });
+  renderTrackRows();
+}
+
+function renderTrackRows() {
+const rack = document.getElementById('tracks-rack');
+rack.innerHTML = '';
+trackConfigs.forEach((track, idx) => {
+const card = document.createElement('div');
+card.id = `track-row-${idx}`;
+card.className = 'eurorack-module rounded-lg p-2.5 flex flex-col gap-2 transition border-l-4 border-l-amber-500/70';
+card.innerHTML = `
+<div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800/80 pb-1.5">
+<div class="flex items-center gap-2">
+<span id="gate-led-${idx}" class="led"></span>
+<span class="text-xs font-mono-code font-bold text-zinc-200">${track.name}</span>
+</div>
+<!-- Current Pitch Badge & RND / Mute / Solo -->
+<div class="flex items-center gap-1.5">
+<span id="note-badge-${idx}" class="text-xs font-mono-code font-extrabold bg-zinc-900 border border-zinc-700 px-2 py-0.5 rounded text-zinc-300 min-w-[42px] text-center">
+--
+</span>
+<button id="btn-rnd-${idx}" title="Randomize Track ${idx + 1}" class="px-2 py-0.5 rounded text-[11px] font-mono-code font-bold border bg-zinc-800 text-amber-300 border-zinc-700 hover:bg-zinc-700 hover:border-amber-500/50 transition flex items-center gap-1">
+<span>🎲 RND</span>
+</button>
+<button id="btn-mute-${idx}" class="px-2 py-0.5 rounded text-[11px] font-mono-code font-bold border ${track.mute ? 'bg-red-900 text-red-100 border-red-600' : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:bg-zinc-700'}">
+MUTE
+</button>
+<button id="btn-solo-${idx}" class="px-2 py-0.5 rounded text-[11px] font-mono-code font-bold border ${track.solo ? 'bg-amber-500 text-black border-amber-400' : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:bg-zinc-700'}">
+SOLO
+</button>
+</div>
+</div>
+<!-- Parameter Row -->
+<div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[11px] font-mono-code">
+<!-- Gate Logic -->
+<div class="col-span-2 sm:col-span-1">
+<label class="block text-zinc-500 text-[10px]">LOGIC GATE</label>
+<select id="select-logic-${idx}" class="w-full bg-zinc-900 border border-zinc-700 rounded px-1.5 py-1 text-zinc-200 text-[11px]">
+${LOGIC_FORMULAS.map(f => `<option value="${f.id}" ${f.id === track.formula ? 'selected' : ''}>${f.name}</option>`).join('')}
+</select>
+</div>
+<!-- Clock Divider -->
+<div>
+<label class="block text-zinc-500 text-[10px]">CLOCK DIV</label>
+<select id="select-div-${idx}" class="w-full bg-zinc-900 border border-zinc-700 rounded px-1.5 py-1 text-zinc-200 text-[11px]">
+<option value="1" ${track.divider === 1 ? 'selected' : ''}>/1 (16th)</option>
+<option value="2" ${track.divider === 2 ? 'selected' : ''}>/2 (8th)</option>
+<option value="3" ${track.divider === 3 ? 'selected' : ''}>/3 (Triplet)</option>
+<option value="4" ${track.divider === 4 ? 'selected' : ''}>/4 (1/4)</option>
+<option value="8" ${track.divider === 8 ? 'selected' : ''}>/8 (1/2)</option>
+<option value="16" ${track.divider === 16 ? 'selected' : ''}>/16 (1 Bar)</option>
+</select>
+</div>
+<!-- Octave Shift -->
+<div>
+<label class="block text-zinc-500 text-[10px]">OCTAVE</label>
+<select id="select-oct-${idx}" class="w-full bg-zinc-900 border border-zinc-700 rounded px-1.5 py-1 text-zinc-200 text-[11px]">
+<option value="-2" ${track.octave === -2 ? 'selected' : ''}>-2</option>
+<option value="-1" ${track.octave === -1 ? 'selected' : ''}>-1</option>
+<option value="0" ${track.octave === 0 ? 'selected' : ''}>0</option>
+<option value="1" ${track.octave === 1 ? 'selected' : ''}>+1</option>
+<option value="2" ${track.octave === 2 ? 'selected' : ''}>+2</option>
+</select>
+</div>
+<!-- DAC Bit Window -->
+<div>
+<label class="block text-zinc-500 text-[10px]">VOLTS BITS</label>
+<select id="select-dac-${idx}" class="w-full bg-zinc-900 border border-zinc-700 rounded px-1.5 py-1 text-zinc-200 text-[11px]">
+<option value="0" ${track.bitStart === 0 ? 'selected' : ''}>Bits 0-3</option>
+<option value="2" ${track.bitStart === 2 ? 'selected' : ''}>Bits 2-5</option>
+<option value="4" ${track.bitStart === 4 ? 'selected' : ''}>Bits 4-7</option>
+<option value="6" ${track.bitStart === 6 ? 'selected' : ''}>Bits 6-9</option>
+<option value="8" ${track.bitStart === 8 ? 'selected' : ''}>Bits 8-11</option>
+<option value="10" ${track.bitStart === 10 ? 'selected' : ''}>Bits 10-13</option>
+<option value="12" ${track.bitStart === 12 ? 'selected' : ''}>Bits 12-15</option>
+</select>
+</div>
+<!-- MIDI Channel Out -->
+<div>
+<label class="block text-zinc-500 text-[10px]">MIDI CH</label>
+<select id="select-midich-${idx}" class="w-full bg-zinc-900 border border-zinc-700 rounded px-1.5 py-1 text-zinc-200 text-[11px]">
+${Array.from({ length: 16 }, (_, c) => `<option value="${c + 1}" ${track.midiCh === (c + 1) ? 'selected' : ''}>Ch ${c + 1}</option>`).join('')}
+</select>
+</div>
+</div>
+`;
+rack.appendChild(card);
+// Attach event handlers
+document.getElementById(`btn-rnd-${idx}`).addEventListener('click', () => {
+  randomizeTrack(idx);
+});
+document.getElementById(`btn-mute-${idx}`).addEventListener('click', () => {
+track.mute = !track.mute;
+renderTrackRows();
+});
+document.getElementById(`btn-solo-${idx}`).addEventListener('click', () => {
+track.solo = !track.solo;
+renderTrackRows();
+});
+document.getElementById(`select-logic-${idx}`).addEventListener('change', (e) => {
+track.formula = e.target.value;
+});
+document.getElementById(`select-div-${idx}`).addEventListener('change', (e) => {
+track.divider = parseInt(e.target.value, 10);
+});
+document.getElementById(`select-oct-${idx}`).addEventListener('change', (e) => {
+track.octave = parseInt(e.target.value, 10);
+});
+document.getElementById(`select-dac-${idx}`).addEventListener('change', (e) => {
+track.bitStart = parseInt(e.target.value, 10);
+});
+document.getElementById(`select-midich-${idx}`).addEventListener('change', (e) => {
+track.midiCh = parseInt(e.target.value, 10);
+});
+});
+}
+function updateTransportUI() {
+const btn = document.getElementById('btn-transport');
+if (isPlaying) {
+btn.innerText = 'STOP SEQUENCER';
+btn.className = 'mt-2 w-full py-2 rounded bg-red-600 hover:bg-red-500 text-white font-bold font-mono-code text-xs uppercase tracking-wider transition';
+} else {
+btn.innerText = 'START SEQUENCER';
+btn.className = 'mt-2 w-full py-2 rounded bg-amber-500 hover:bg-amber-400 text-black font-bold font-mono-code text-xs uppercase tracking-wider transition';
+}
+}
+/* =========================================================================
+* 9. MIDI INITIALIZATION & HARDWARE ROUTING (IDENTICAL TO 6-TRACK MATRIX)
+* ========================================================================= */
+function setupMIDI() {
+  initAudio();
+  const outSelect = document.getElementById('select-midi-out');
+  const inSelect = document.getElementById('select-midi-in');
+
+  if (navigator.requestMIDIAccess) {
+    navigator.requestMIDIAccess({ sysex: false }).then(access => {
+      midiAccess = access;
+      updateMIDIPorts();
+      midiAccess.onstatechange = updateMIDIPorts;
+    }, () => {
+      if (outSelect) outSelect.innerHTML = '<option value="">Geen Web MIDI ondersteuning</option>';
+      if (inSelect) inSelect.innerHTML = '<option value="">Geen Web MIDI ondersteuning</option>';
+      updateSyncBadge("Web MIDI geweigerd", false);
+    });
+  } else {
+    if (outSelect) outSelect.innerHTML = '<option value="">Web MIDI niet ondersteund</option>';
+    if (inSelect) inSelect.innerHTML = '<option value="">Web MIDI niet ondersteund</option>';
+    updateSyncBadge("Web MIDI niet ondersteund", false);
+  }
+}
+
+function updateMIDIPorts() {
+  const outSelect = document.getElementById('select-midi-out');
+  const inSelect = document.getElementById('select-midi-in');
+  if (!outSelect || !inSelect) return;
+
+  outSelect.innerHTML = '';
+  inSelect.innerHTML = '';
+
+  const outputs = Array.from(midiAccess.outputs.values());
+  const inputs = Array.from(midiAccess.inputs.values());
+
+  if (outputs.length === 0) {
+    outSelect.innerHTML = '<option value="">Geen Output poorten</option>';
+    midiOutput = null;
+  } else {
+    outputs.forEach(port => {
+      const opt = document.createElement('option');
+      opt.value = port.id;
+      opt.textContent = port.name;
+      outSelect.appendChild(opt);
+    });
+    const elkOut = outputs.find(p => p.name.toLowerCase().includes('elektron') || p.name.toLowerCase().includes('model'));
+    midiOutput = elkOut || outputs[0];
+    outSelect.value = midiOutput.id;
+  }
+
+  if (inputs.length === 0) {
+    inSelect.innerHTML = '<option value="">Geen Input poorten</option>';
+    setInputPort(null);
+  } else {
+    inputs.forEach(port => {
+      const opt = document.createElement('option');
+      opt.value = port.id;
+      opt.textContent = port.name;
+      inSelect.appendChild(opt);
+    });
+    const elkIn = inputs.find(p => p.name.toLowerCase().includes('elektron') || p.name.toLowerCase().includes('model'));
+    setInputPort(elkIn || inputs[0]);
+    inSelect.value = (elkIn || inputs[0]).id;
+  }
+
+  outSelect.onchange = () => {
+    midiOutput = midiAccess.outputs.get(outSelect.value);
+    updateHeaderMidiBtn();
+  };
+  inSelect.onchange = () => {
+    const port = midiAccess.inputs.get(inSelect.value);
+    setInputPort(port);
+    updateHeaderMidiBtn();
+  };
+
+  updateHeaderMidiBtn();
+}
+
+function setInputPort(port) {
+  if (midiInput) {
+    midiInput.onmidimessage = null;
+  }
+  midiInput = port;
+  if (midiInput) {
+    midiInput.onmidimessage = handleIncomingMIDI;
+  }
+}
+
+function updateSyncBadge(text, isActive) {
+  const badge = document.getElementById('sync-status-badge');
+  const led = document.getElementById('sync-led');
+  const label = document.getElementById('sync-text');
+  if (label) label.innerText = text;
+  if (led) {
+    led.className = isActive ? 'led led-active-cyan' : 'led';
+  }
+  if (badge) {
+    badge.style.borderColor = isActive ? '#06b6d4' : '#374151';
+    badge.style.color = isActive ? '#67e8f9' : '#94a3b8';
+  }
+}
+
+function updateHeaderMidiBtn() {
+  const btn = document.getElementById('btn-init-midi');
+  const led = document.getElementById('midi-status-led');
+  if (btn) {
+    const name = midiOutput ? midiOutput.name : (midiInput ? midiInput.name : null);
+    if (name) {
+      btn.querySelector('span:not(.led)').innerText = `MIDI: ${name}`;
+      btn.className = 'px-3 py-1.5 rounded bg-emerald-950/70 border border-emerald-500/70 text-emerald-300 text-xs font-mono-code font-semibold transition flex items-center gap-2';
+    } else {
+      btn.querySelector('span:not(.led)').innerText = 'GEEN MIDI APPARATEN';
+      btn.className = 'px-3 py-1.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-400 text-xs font-mono-code font-semibold transition flex items-center gap-2';
+    }
+  }
+  if (led) {
+    led.className = (midiOutput || midiInput) ? 'led led-active-cyan' : 'led';
+  }
+}
+/* =========================================================================
+* 10. SETUP & GLOBAL EVENT LISTENERS
+* ========================================================================= */
+window.addEventListener('DOMContentLoaded', () => {
+renderRegisterLeds();
+renderTrackRows();
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+// Generate default test pattern
+generateNoiseTexture();
+// Probability Slider
+const probSlider = document.getElementById('slider-probability');
+const probLabel = document.getElementById('prob-val-label');
+probSlider.addEventListener('input', (e) => {
+const val = parseInt(e.target.value, 10);
+if (val === 0) probLabel.innerText = '0% (LOCKED)';
+else if (val === 100) probLabel.innerText = '100% (DIRECT SCAN)';
+else probLabel.innerText = `${val}% (TURING MUTATION)`;
+});
+// Threshold Slider
+const threshSlider = document.getElementById('slider-threshold');
+const threshVal = document.getElementById('threshold-val');
+threshSlider.addEventListener('input', (e) => {
+threshVal.innerText = e.target.value;
+});
+// BPM Slider
+const bpmSlider = document.getElementById('slider-bpm');
+const bpmVal = document.getElementById('bpm-val');
+bpmSlider.addEventListener('input', (e) => {
+internalBpm = parseInt(e.target.value, 10);
+bpmVal.innerText = internalBpm;
+if (isPlaying && clockSource === 'internal') {
+startInternalClock();
+}
+});
+// Clock Source Select
+const clkSelect = document.getElementById('select-clock-source');
+const bpmWrap = document.getElementById('internal-bpm-wrap');
+clkSelect.addEventListener('change', (e) => {
+clockSource = e.target.value;
+if (clockSource === 'internal') {
+bpmWrap.style.opacity = '1';
+if (isPlaying) startInternalClock();
+} else {
+bpmWrap.style.opacity = '0.4';
+stopInternalClock();
+}
+});
+// Transport Toggle Button
+const btnTransport = document.getElementById('btn-transport');
+btnTransport.addEventListener('click', () => {
+initAudio();
+isPlaying = !isPlaying;
+if (isPlaying) {
+stepCount = 0;
+clockTickCount = 0;
+if (clockSource === 'internal') {
+startInternalClock();
+}
+} else {
+stopInternalClock();
+panicAllNotesOff();
+}
+updateTransportUI();
+});
+// Panic Button
+document.getElementById('btn-panic').addEventListener('click', () => {
+panicAllNotesOff();
+});
+// Audio Toggle
+const btnAudio = document.getElementById('btn-audio-toggle');
+const audioState = document.getElementById('audio-toggle-state');
+btnAudio.addEventListener('click', () => {
+initAudio();
+previewAudioEnabled = !previewAudioEnabled;
+audioState.innerText = previewAudioEnabled ? 'ON' : 'MUTED';
+if (!previewAudioEnabled) {
+btnAudio.className = 'px-3 py-1.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-400 text-xs font-mono-code transition flex items-center gap-2';
+} else {
+btnAudio.className = 'px-3 py-1.5 rounded bg-emerald-950/60 border border-emerald-600/60 hover:bg-emerald-900/60 text-emerald-300 text-xs font-mono-code transition flex items-center gap-2';
+}
+});
+// MIDI Connect
+document.getElementById('btn-init-midi').addEventListener('click', () => {
+setupMIDI();
+});
+document.getElementById('select-midi-in').addEventListener('click', () => {
+if (!midiAccess) setupMIDI();
+});
+document.getElementById('select-midi-out').addEventListener('click', () => {
+if (!midiAccess) setupMIDI();
+});
+// Auto-init MIDI directly on startup (identical to 6-track matrix)
+setupMIDI();
+// Image Upload
+const imgLoader = document.getElementById('image-loader');
+imgLoader.addEventListener('change', (e) => {
+const file = e.target.files[0];
+if (!file) return;
+const reader = new FileReader();
+reader.onload = (evt) => {
+const img = new Image();
+img.onload = () => {
+loadedImage = img;
+sampleImageColumns();
+drawScanner();
+};
+img.src = evt.target.result;
+};
+reader.readAsDataURL(file);
+});
+// Generate Test Pattern Button
+document.getElementById('btn-gen-pattern').addEventListener('click', () => {
+generateNoiseTexture();
+});
+// Seed Register Button
+const btnSeed = document.getElementById('btn-seed-register');
+if (btnSeed) {
+btnSeed.addEventListener('click', seedRegister);
+}
+// Random All Tracks Button
+const btnRandomAll = document.getElementById('btn-random-all-tracks');
+if (btnRandomAll) {
+btnRandomAll.addEventListener('click', randomizeAllTracks);
+}
+// Resolution & Channel Select
+document.getElementById('select-resolution').addEventListener('change', sampleImageColumns);
+document.getElementById('select-channel').addEventListener('change', sampleImageColumns);
+// Drag & Drop on Canvas
+const dropOverlay = document.getElementById('drop-overlay');
+window.addEventListener('dragover', (e) => {
+e.preventDefault();
+dropOverlay.style.opacity = '1';
+});
+window.addEventListener('dragleave', (e) => {
+if (e.relatedTarget === null) dropOverlay.style.opacity = '0';
+});
+window.addEventListener('drop', (e) => {
+e.preventDefault();
+dropOverlay.style.opacity = '0';
+if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+const file = e.dataTransfer.files[0];
+const reader = new FileReader();
+reader.onload = (evt) => {
+const img = new Image();
+img.onload = () => {
+loadedImage = img;
+sampleImageColumns();
+drawScanner();
+};
+img.src = evt.target.result;
+};
+reader.readAsDataURL(file);
+}
+});
+});
+</script>
+</body>
+</html>

@@ -389,7 +389,7 @@
         <span class="badge">AUDIO HUB</span>
       </div>
       <div class="hub-title">
-        SYNTHESIS & SAMPLING // 4 MODULES
+        SYNTHESIS & SAMPLING // 2 MODULES
       </div>
     </header>
 
@@ -451,106 +451,53 @@
         </div>
       </a>
 
-      <!-- AUDIO TOOL 2: SAMPLE SLICER -->
-      <div class="tool-card">
+      <!-- AUDIO TOOL 2: AURAGRAIN MKII (ACTIVE) -->
+      <a href="auragrain.html" class="tool-card">
         <div>
           <div class="card-top">
-            <span class="card-tag lab">SAMPLER</span>
+            <span class="card-tag live">GRANULAR CV</span>
             <span class="card-channel-num">02</span>
           </div>
-          <div class="card-screen">
+          <div class="card-screen" style="background:#07080b;">
             <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="320" height="100" fill="#ffffff"/>
-              <!-- Waveform with Slices -->
-              <path d="M 10 50 L 30 20 L 50 75 L 70 35 L 90 60 L 110 15 L 130 80 L 150 40 L 170 65 L 190 25 L 210 70 L 230 30 L 250 85 L 270 45 L 290 60 L 310 50" stroke="#0284c7" stroke-width="1.8" fill="none"/>
-              <!-- Slice Markers -->
-              <line x1="85" y1="10" x2="85" y2="90" stroke="#e11d48" stroke-width="2"/>
-              <line x1="160" y1="10" x2="160" y2="90" stroke="#e11d48" stroke-width="2"/>
-              <line x1="240" y1="10" x2="240" y2="90" stroke="#e11d48" stroke-width="2"/>
-              <text x="15" y="25" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#0f172a">TRANSIENT SLICING (8 SLICES)</text>
+              <rect width="320" height="100" fill="#07080b"/>
+              <!-- Grid lines -->
+              <line x1="0" y1="50" x2="320" y2="50" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+              <!-- Waveform in Neon Green -->
+              <path d="M 10 50 Q 30 20, 50 50 T 90 50 T 130 50 T 170 50 T 210 50 T 250 50 T 290 50 T 310 50" stroke="#00f59b" stroke-width="2" fill="none"/>
+              <path d="M 20 50 Q 50 10, 80 50 T 140 50 T 200 50 T 260 50 T 300 50" stroke="rgba(0, 245, 155, 0.3)" stroke-width="1" fill="none"/>
+              <!-- Laser Playhead -->
+              <line x1="160" y1="5" x2="160" y2="95" stroke="#00f59b" stroke-width="3"/>
+              <rect x="145" y="10" width="30" height="80" fill="rgba(0, 245, 155, 0.15)"/>
+              <!-- Grain Particles Cloud -->
+              <circle cx="152" cy="35" r="2.5" fill="#00f59b"/>
+              <circle cx="168" cy="42" r="3" fill="#38bdf8"/>
+              <circle cx="145" cy="58" r="2" fill="#00f59b"/>
+              <circle cx="175" cy="62" r="2.5" fill="#38bdf8"/>
+              <circle cx="158" cy="70" r="3" fill="#f43f5e"/>
+              <!-- Optical CV Crosshair Tracker -->
+              <circle cx="240" cy="35" r="12" stroke="#00f59b" stroke-width="1.5" stroke-dasharray="3 3"/>
+              <circle cx="240" cy="35" r="3" fill="#00f59b"/>
+              <text x="15" y="88" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#00f59b">AURAGRAIN MKII // OPTICAL CV + GRANULAR MATRIX</text>
             </svg>
           </div>
           <div class="card-info">
-            <h3>8-Voice Sample Slicer & Looper</h3>
-            <p>Digitakt-geïnspireerde audio slicer: sleep WAV/MP3 bestanden erin, automatische transient-detectie en realtime slice triggering via MIDI.</p>
+            <h3>AuraGrain MKII // Granular Scrubber</h3>
+            <p>Hyper-responsive optische CV granular synthesizer &amp; MIDI bridge. Beweeg je hand voor de webcam of sleep over de golfvorm voor realtime time-scrubbing, pitch shifts (-24 tot +24 st), click-free Hann grains en 24dB resonant lowpass filtering.</p>
           </div>
           <div class="card-specs">
-            <span class="spec-pill">AUTO-TRANSIENT</span>
-            <span class="spec-pill">TIME-STRETCH</span>
-            <span class="spec-pill">PITCH TUNE</span>
-            <span class="spec-pill">REVERSE SLICE</span>
+            <span class="spec-pill">GRANULAR DSP</span>
+            <span class="spec-pill">OPTICAL CV</span>
+            <span class="spec-pill">PITCH ±24 ST</span>
+            <span class="spec-pill">CLICK-FREE HANN</span>
+            <span class="spec-pill">TAPE HEAT DRIVE</span>
+            <span class="spec-pill">WEB MIDI CC</span>
           </div>
         </div>
         <div class="card-launch-btn">
-          <span>OPEN SAMPLER</span> <span>➔</span>
+          <span>OPEN AURAGRAIN</span> <span>➔</span>
         </div>
-      </div>
-
-      <!-- AUDIO TOOL 3: ANALOG FILTER & DRIVE -->
-      <div class="tool-card">
-        <div>
-          <div class="card-top">
-            <span class="card-tag lab">ANALOG FX</span>
-            <span class="card-channel-num">03</span>
-          </div>
-          <div class="card-screen">
-            <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="320" height="100" fill="#ffffff"/>
-              <!-- Resonance Peak Curve -->
-              <path d="M 15 80 L 140 80 Q 180 80, 200 15 Q 215 80, 305 85" stroke="#0284c7" stroke-width="3" fill="none"/>
-              <line x1="200" y1="15" x2="200" y2="85" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 3"/>
-              <text x="20" y="30" font-family="Share Tech Mono" font-size="11" font-weight="bold" fill="#0f172a">24dB LADDER RESONANCE + DRIVE</text>
-            </svg>
-          </div>
-          <div class="card-info">
-            <h3>Analog Filter & Multi-Drive Rack</h3>
-            <p>Analoge multi-mode filter (Lowpass, Highpass, Bandpass) gecombineerd met buis- en tape-verzadiging voor warme hardware harmonischen.</p>
-          </div>
-          <div class="card-specs">
-            <span class="spec-pill">24dB LADDER</span>
-            <span class="spec-pill">ASYMMETRIC DRIVE</span>
-            <span class="spec-pill">SELF-OSCILLATION</span>
-            <span class="spec-pill">KEY-TRACKING</span>
-          </div>
-        </div>
-        <div class="card-launch-btn">
-          <span>OPEN FILTER RACK</span> <span>➔</span>
-        </div>
-      </div>
-
-      <!-- AUDIO TOOL 4: SPATIAL DELAY & REVERB -->
-      <div class="tool-card">
-        <div>
-          <div class="card-top">
-            <span class="card-tag lab">SPATIAL</span>
-            <span class="card-channel-num">04</span>
-          </div>
-          <div class="card-screen">
-            <svg viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="320" height="100" fill="#ffffff"/>
-              <!-- Reverb Diffusion & PingPong -->
-              <path d="M 30 50 L 70 30 L 110 65 L 150 35 L 190 60 L 230 40 L 270 55 L 300 50" stroke="#0284c7" stroke-width="2" fill="none"/>
-              <circle cx="70" cy="30" r="4" fill="#0284c7"/>
-              <circle cx="150" cy="35" r="4" fill="#0284c7"/>
-              <circle cx="230" cy="40" r="4" fill="#0284c7"/>
-              <text x="15" y="88" font-family="Share Tech Mono" font-size="10" font-weight="bold" fill="#0f172a">STEREO TAPE DELAY + INFINITE DECAY HALL</text>
-            </svg>
-          </div>
-          <div class="card-info">
-            <h3>Master Delay & Reverb Processor</h3>
-            <p>Tempo-gesynchroniseerde ping-pong tape delay met lichte wow/flutter modulatie en een diepe, ambient galmkamer met oneindige decay.</p>
-          </div>
-          <div class="card-specs">
-            <span class="spec-pill">PING-PONG</span>
-            <span class="spec-pill">TAPE FLUTTER</span>
-            <span class="spec-pill">DIFFUSE REVERB</span>
-            <span class="spec-pill">FREEZE / HOLD</span>
-          </div>
-        </div>
-        <div class="card-launch-btn">
-          <span>OPEN SPATIAL FX</span> <span>➔</span>
-        </div>
-      </div>
+      </a>
 
     </div>
   </div>

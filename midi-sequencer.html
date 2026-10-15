@@ -1067,6 +1067,10 @@
     function init() {
       setupMIDI();
       setDevice('cycles');
+      const inSel = document.getElementById('midiInSelect');
+      const outSel = document.getElementById('midiOutSelect');
+      if (inSel) inSel.addEventListener('click', () => { if (!midiAccess) setupMIDI(); });
+      if (outSel) outSel.addEventListener('click', () => { if (!midiAccess) setupMIDI(); });
     }
 
     function setDevice(deviceKey) {
@@ -1514,18 +1518,30 @@
     function setupMIDI() {
       const outSelect = document.getElementById('midiOutSelect');
       const inSelect = document.getElementById('midiInSelect');
+
+      if (window.location.protocol === 'file:') {
+        const msg = 'Open via http://localhost:5173/midi-sequencer.html';
+        outSelect.innerHTML = `<option value="">${msg}</option>`;
+        inSelect.innerHTML = `<option value="">${msg}</option>`;
+        updateSyncBadge("LET OP: Open via localhost:5173 (file:// blokkeert MIDI)", "#f59e0b");
+        return;
+      }
+
       if (navigator.requestMIDIAccess) {
         navigator.requestMIDIAccess({ sysex: false }).then(access => {
           midiAccess = access;
           updateMIDIPorts();
           midiAccess.onstatechange = updateMIDIPorts;
-        }, () => {
-          outSelect.innerHTML = '<option value="">Geen Web MIDI ondersteuning</option>';
-          inSelect.innerHTML = '<option value="">Geen Web MIDI ondersteuning</option>';
+        }, (err) => {
+          console.warn("MIDI permission or access error:", err);
+          outSelect.innerHTML = '<option value="">MIDI geblokkeerd - Klik hier of check adresbalk</option>';
+          inSelect.innerHTML = '<option value="">MIDI geblokkeerd - Klik hier of check adresbalk</option>';
+          updateSyncBadge("MIDI Toestemming vereist: check instellingen in adresbalk", "#ef4444");
         });
       } else {
         outSelect.innerHTML = '<option value="">Web MIDI niet ondersteund</option>';
         inSelect.innerHTML = '<option value="">Web MIDI niet ondersteund</option>';
+        updateSyncBadge("Web MIDI niet ondersteund in deze browser", "#ef4444");
       }
     }
 
